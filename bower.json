@@ -1,0 +1,22 @@
+{
+  "name": "sortinghat",
+  "version": "0.1.0",
+  "dependencies": {
+    "angular": "~1.2.0",
+    "json3": "~3.2.4",
+    "es5-shim": "~2.1.0",
+    "jquery": "~1.10.2",
+    "sass-bootstrap": "~3.0.0",
+    "angular-resource": "~1.2.0",
+    "angular-cookies": "~1.2.0",
+    "angular-sanitize": "~1.2.0",
+    "angular-route": "~1.2.0",
+    "angular-ui-router": "~0.2.0",
+    "angular-ui-bootstrap": "~0.7.0",
+    "quizomatic-real": "~0.11.1"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.0",
+    "angular-scenario": "~1.2.0"
+  }
+}
