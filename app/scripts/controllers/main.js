@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('sortinghatApp')
-  .controller('MainCtrl', function ($scope, $timeout, data) {
-    var quiz
+  .controller('MainCtrl', function ($timeout, data) {
+    var $scope = this
+      , quiz
       ;
 
     console.log('data');

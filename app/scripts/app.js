@@ -14,7 +14,7 @@ angular.module('sortinghatApp', [
 
     nav = {
       templateUrl: '/views/nav.html'
-    , controller: 'NavCtrl'
+    , controller: 'NavCtrl as N'
     };
 
     footer = {
@@ -45,7 +45,7 @@ angular.module('sortinghatApp', [
 
       return path + '/?' + params.join('&');
     });
-    $urlRouterProvider.otherwise('/ideas');
+    $urlRouterProvider.otherwise('/');
 
     $stateProvider
       .state('root', {
@@ -54,7 +54,7 @@ angular.module('sortinghatApp', [
           nav: nav
         , body: {
             templateUrl: 'views/main.html'
-          , controller: 'MainCtrl'
+          , controller: 'MainCtrl as M'
           , resolve: {
               data: function (Data) {
                 return Data.get();
@@ -63,5 +63,17 @@ angular.module('sortinghatApp', [
           }
         , footer: footer
         }
-      });
+      })
+      .state('about', {
+        url: '/about/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/about.html'
+          }
+        , footer: footer
+        }
+      })
+      ;
+
   });
