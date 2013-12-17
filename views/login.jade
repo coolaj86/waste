@@ -1,0 +1,12 @@
+.row
+  h3 Please sign in to continue
+  p
+    button.btn.btn-facebook(type="button", ng-click="L.loginWithFb()")
+      i.fa.fa-facebook-square
+      span  | Connect with Facebook
+
+  //-p
+    a(href="", ng-click="L.loginWithEmail()") use e-mail
+.row
+  p
+    a(href="", ng-click="L.cancel()") cancel
