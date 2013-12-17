@@ -10,40 +10,40 @@ html
         a.btn.btn-lg.btn-success(ng-href='#') Splendid&excl;
 
     .row.marketing
-      div(ng-if="!current && !results") 
-        button.btn.btn-primary(ng-click="startQuiz()", type="button") Find Your House
+      div(ng-if="!M.current && !M.results") 
+        button.btn.btn-primary(ng-click="M.startQuiz()", type="button") Find Your House
         p.
           You gotsta know your house!
 
-      div(ng-if="current")
-        span {{ current.total - current.remaining }} of {{ current.total }}
+      div(ng-if="M.current")
+        span {{ M.current.total - M.current.remaining }} of {{ M.current.total }}
         strong  Which suits you best?
         span
           |  (#
-          | {{current.number}})
+          | {{ M.current.number }})
         div
-          p(ng-repeat="choice in current.choices")
-            button.btn.btn-primary(ng-click="respond($index)", type="button") {{ $index + 1 }}
+          p(ng-repeat="choice in M.current.choices")
+            button.btn.btn-primary(ng-click="M.respond($index)", type="button") {{ $index + 1 }}
             span  {{ choice.response }}
-      div(ng-if="result")
+      div(ng-if="M.result")
         .section
           h3
             span Your house is
-            strong  {{ result }}
+            strong  {{ M.result }}
 
-          p Differential Confidence: {{confidence1}}%
-          p Average Confidence: {{confidence2}}%
+          p Differential Confidence: {{ M.confidence1 }}%
+          p Average Confidence: {{ M.confidence2 }}%
 
-          div(ng-repeat="outcome in outcomes")
-            p(ng-if="result === outcome.name").
+          div(ng-repeat="outcome in M.outcomes")
+            p(ng-if="M.result === outcome.name").
               {{ outcome.message }}
 
         .section
           p Debug Totals:
-          pre {{ results | json }}
+          pre {{ M.results | json }}
 
           p Debug Responses:
-          pre {{ responses | json }}
+          pre {{ M.responses | json }}
 
         .section
           h3 More
