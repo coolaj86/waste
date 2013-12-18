@@ -14,8 +14,7 @@ module.exports.init = function (passport, config) {
 
       // this object is attached as or merged to req.session.passport.user
       done(null, {
-        public: { nick: profile.username, name: profile.displayName, fb: { link: profile.profileUrl } }
-      , email: profile.emails[0]
+        type: 'facebook'
       , profile: profile
       , accessToken: accessToken
       , refreshToken: refreshToken
