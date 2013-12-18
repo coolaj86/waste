@@ -4,7 +4,8 @@
   "dependencies": {
     "connect_router": "~1.8.7",
     "connect": "~2.11.2",
-    "grunt-contrib-jade": "~0.8.0"
+    "grunt-contrib-jade": "~0.8.0",
+    "connect-livereload": "~0.3.1"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
