@@ -2,6 +2,9 @@
 'use strict';
 
 var server = require('./server')
+  , port = 9003
+  , lrPort = 37926
+  , lrSnippet = require('connect-livereload')({ port: lrPort })
   ;
 
 // # Globbing
@@ -68,10 +71,10 @@ module.exports = function (grunt) {
     // The actual grunt server settings
     connect: {
       options: {
-        port: 9003,
+        port: port
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'localhost',
-        livereload: 36729
+      , hostname: 'localhost'
+      , livereload: lrPort
       },
       livereload: {
         options: {
@@ -82,7 +85,9 @@ module.exports = function (grunt) {
           ],
           middleware: function (/*connect*/) {
             return [
-              server
+
+              lrSnippet
+            , server
             ];
           }
         }
