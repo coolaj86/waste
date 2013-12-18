@@ -13,7 +13,7 @@
     "angular-route": "~1.2.0",
     "angular-ui-router": "~0.2.0",
     "angular-ui-bootstrap": "~0.7.0",
-    "quizomatic-real": "~0.11.1"
+    "quizomatic": "~0.11.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.0",

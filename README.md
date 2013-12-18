@@ -8,7 +8,7 @@ Install
 git clone https://github.com/coolaj86/angular-project-template.git
 pushd angular-project-template/
 npm install
-grunt serve
+bower install
 ```
 
 Use
