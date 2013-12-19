@@ -47,6 +47,11 @@ module.exports.init = function (passport, config) {
             return;
           }
 
+          // for some reason the very first time the profile comes back it is without emails
+          if (!Array.isArray(data.profile.emails)) {
+            res.redirect('/auth/facebook');
+            return;
+          }
           console.log('*******************************');
           console.log('route data');
           console.log(data);
