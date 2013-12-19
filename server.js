@@ -1,13 +1,13 @@
 'use strict';
 
 var connect = require('connect')
-  , fs = require('fs')
   , path = require('path')
   , app = connect()
   , server
   , port = process.argv[2] || 3000
   , auth = require('./auth')
   , config = require('./config')
+  , routes
   ;
 
 if (!connect.router) {
@@ -53,6 +53,7 @@ app
     })
   .use(connect.query())
   .use(connect.json())
+  .use(connect.urlencoded())
   .use(connect.compress())
   .use(connect.cookieParser())
   .use(connect.session({ secret: 'fzzysnthbeeeeaith' }))
@@ -60,7 +61,8 @@ app
   ;
   //route(app);
 
-auth.init(app, config).forEach(function (fn) {
+routes = auth.init(app, config);
+routes.forEach(function (fn) {
   app.use(connect.router(fn));
 });
 
