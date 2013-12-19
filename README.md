@@ -16,6 +16,15 @@ npm install
 bower install
 ```
 
+Configure
+===
+
+You'll need to edit `config.js` and replace the `XXX`s with your own keys and secrets
+
+```bash
+vim config.js
+```
+
 Use
 ===
 
