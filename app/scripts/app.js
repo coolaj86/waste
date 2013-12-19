@@ -64,6 +64,22 @@ angular.module('sortinghatApp', [
         , footer: footer
         }
       })
+      .state('account', {
+        url: '/account/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/account.html'
+          , controller: "AccountCtrl as A"
+          , resolve: {
+              mySession: function (StSession) {
+                return StSession.get();
+              }
+            }
+          }
+        , footer: footer
+        }
+      })
       .state('about', {
         url: '/about/'
       , views: {
