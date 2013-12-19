@@ -23,19 +23,20 @@ module.exports.create = function (opts) {
     mods[type].read = read;
   };
 
+  // Facebook
   Users.register('facebook', '1.0.0', function (prefix, data) {
     var user
       , id
       ;
 
     console.log('in create', prefix, data);
-    if (!data.id) {
+    if (!data.profile.id) {
       throw new Error("user has no uinque identifier for which to save!");
     }
 
-    id = prefix + data.id;
+    id = prefix + data.profile.id;
 
-    user = users[id] || users[data.profileUrl];
+    user = users[id] || users[data.profile.profileUrl];
 
     if (user) {
       data.uuid = user.uuid;
@@ -58,11 +59,12 @@ module.exports.create = function (opts) {
       , id
       ;
 
-    id = prefix + data.id;
+    id = prefix + data.profile.id;
     user = users[id];
 
     return user;
   });
+  // end facebook
 
   Users.create = function (data) {
     var fn = mods[data.type]

@@ -22,17 +22,19 @@ function route(rest) {
     if (req.body.fb.accessToken) {
     }
     */
-    res.send({ role: 'guest' });
+    res.send({ role: 'guest', as: 'post' });
   });
   rest.get('/api/session', function (req, res) {
-    console.log('req.user', req.user);
-    console.log('req.session', req.session);
+    console.log('req.user:', req.user);
+    console.log('req.session:', req.session);
+    req.session.count = req.session.count || 0;
+    req.session.count += 1;
     //res.json(req.session.passport.user.public);
-    res.send(req.user || { role: 'guest' });
+    res.send(req.user || { role: 'guest', as: 'get', count: req.session.count });
   });
   rest.delete('/api/session', function (req, res) {
     req.logout();
-    res.send({ role: 'guest' });
+    res.send({ role: 'guest', as: 'delete' });
   });
 }
 

@@ -5,4 +5,8 @@ module.exports = {
     id: 'XXX'
   , secret: 'XXX'
   }
+, twitter: {
+    consumerKey: 'XXX'
+  , consumerSecret: 'XXX'
+  }
 };

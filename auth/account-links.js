@@ -14,9 +14,12 @@ module.exports.create = function (opts) {
   };
 
   AccountLinks.register('facebook', function (ids, data) {
-    ids.push('fb:' + data.id);
-    console.log('data', data);
-    data.emails.forEach(function (emailObj) {
+    var profile = data.profile
+      ;
+
+    ids.push('fb:' + profile.id);
+    console.log('profile', profile);
+    profile.emails.forEach(function (emailObj) {
       // TODO should confirm e-mail address before allowing access, as facebook sometimes makes mistakes
       // see http://stackoverflow.com/questions/14280535/is-it-possible-to-check-if-an-email-is-confirmed-on-facebook
       ids.push('email:' + emailObj.value.toLowerCase());

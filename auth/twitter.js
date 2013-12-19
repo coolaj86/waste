@@ -6,12 +6,12 @@ var TwitterStrategy = require('passport-twitter').Strategy
 
 module.exports.init = function (passport, config) {
   var oa
-    , users
     , twitterAuthn
     , twitterAuthz
     , twConfig = config.twitter
     ;
 
+  // TODO to allow this user to message you, follow us
   function directMessage(user, params, cb) {
     oa.post(
       "https://api.twitter.com/1.1/direct_messages/new.json"
@@ -21,9 +21,22 @@ module.exports.init = function (passport, config) {
     , cb
     );
   }
+  function initTwitterOauth() {
+    oa = new OAuth(
+      "https://twitter.com/oauth/request_token"
+    , "https://twitter.com/oauth/access_token"
+    , twConfig.consumerKey
+    , twConfig.consumerSecret
+    , "1.0A"
+    , "http://" + config.host + "/authz/twitter/callback"
+    , "HMAC-SHA1"
+    );
+  }
+  initTwitterOauth();
+  //module.exports.directMessage = directMessage;
 
-  // TODO to allow this user to message you, follow us
-  users = _users;
+
+
 
   twitterAuthn = new TwitterStrategy({
       consumerKey: twConfig.consumerKey
@@ -35,7 +48,12 @@ module.exports.init = function (passport, config) {
 
       delete profile._raw;
       delete profile._json;
-      done(null, user);
+      done(null, {
+        type: 'twitter'
+      , profile: profile
+      , token: token
+      , tokenSecret: tokenSecret
+      });
     }
   );
   twitterAuthn.name = 'twitterAuthn';
@@ -48,40 +66,24 @@ module.exports.init = function (passport, config) {
     },
     function(token, tokenSecret, profile, done) {
       console.log('[load:twZ]');
-      var user = users.find(profile.username + ':twitter')
-        ;
 
-      // the future
       delete profile._raw;
-      user.twitter = user.twitter || {};
-      user.twitter.token = token;
-      user.twitter.tokenSecret = tokenSecret;
-      user.twitter.profile = profile;
-      // TODO a user may revoke this later so we'll have to adjust in that case
-      user.twitter.authorized = true;
-
-      user = users.set(profile.username + ':twitter', user);
-      done(null, user);
+      delete profile._json;
+      done(null, {
+        type: 'twitter'
+      , profile: profile
+      // TODO a user may revoke authorization in the future without notification
+      , authorized: true
+      , token: token
+      , tokenSecret: tokenSecret
+      });
     }
   );
   twitterAuthz.name = 'twitterAuthz';
 
-  function initTwitterOauth() {
-    oa = new OAuth(
-      "https://twitter.com/oauth/request_token"
-    , "https://twitter.com/oauth/access_token"
-    , twConfig.consumerKey
-    , twConfig.consumerSecret
-    , "1.0A"
-    , "http://" + config.host + "/authz/twitter/callback"
-    , "HMAC-SHA1"
-    );
-  }
-
   passport.use(twitterAuthn);
   passport.use(twitterAuthz);
 
-  initTwitterOauth();
 
   function route(rest) {
     // Twitter AuthN
@@ -102,7 +104,7 @@ module.exports.init = function (passport, config) {
         }
         // If we do, get this window to close on itself
         // TODO remove redirect by using req.url = 'close.html' and another static middleware
-        res.redirect('/close.html');
+        res.redirect('/tw-close.html');
       }
     );
 
@@ -118,13 +120,10 @@ module.exports.init = function (passport, config) {
     , function(req, res) {
         // Successful authentication, redirect home.
         //res.redirect(req.session.whatWasWanted || '/');
-        res.redirect('/auth-callback.html');
+        res.redirect('/tw-close.html');
       }
     );
   }
-
-  //module.exports.init = init;
-  //module.exports.directMessage = directMessage;
 
   return route;
 };

@@ -2,6 +2,7 @@
 
 var Passport = require('passport').Passport
   , facebook = require('./facebook')
+  , twitter = require('./twitter')
   , path = require('path')
   , Users = require('./users').create({ dbfile: path.join(__dirname, '..', 'data', 'users.priv.json') })
   , AccountLinks = require('./account-links').create({ dbfile: path.join(__dirname, '..', 'data', 'users-accounts.priv.json') })
@@ -24,21 +25,29 @@ module.exports.init = function (app, config) {
     var user
       ;
 
-    console.log('serialize', data);
-    user = Users.create(data.profile || data);
+    console.log('#################################');
+    console.log('serialize data');
+    console.log(data);
+
+    user = Users.create(data);
+
+    console.log('#################################');
+    console.log('serialize user');
     console.log(user);
+
     done(null, user);
   });
 
-  passport.deserializeUser(function (obj, done) {
-    console.log('deserialize', obj);
-    var user = Users.read(obj.profile || obj)
+  passport.deserializeUser(function (data, done) {
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    console.log('deserialize', data);
+    var user = Users.read(data)
       , ids = []
       , accountIdMap = {}
       , accounts = []
       ;
 
-    ids = AccountLinks.scrape(obj.profile || obj);
+    ids = AccountLinks.scrape(data);
     if (0 === ids.length) {
       // TODO bad user account
       done(new Error("unrecognized account type"));
@@ -82,7 +91,12 @@ module.exports.init = function (app, config) {
       });
     }
 
-    console.log(null, { role: 'user', user: user, accounts: accounts });
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    console.log('deserialize user');
+    console.log(user);
+
+    // TODO expose a public part of the profile
+    console.log(null, { role: 'user', user: user.profile, accounts: accounts });
     done(null, user);
   });
 
@@ -92,6 +106,7 @@ module.exports.init = function (app, config) {
     ;
 
   routes.push(facebook.init(passport, config));
+  routes.push(twitter.init(passport, config));
 
   return routes;
 };

@@ -13,6 +13,8 @@ module.exports.init = function (passport, config) {
       console.log(accessToken, refreshToken, profile);
 
       // this object is attached as or merged to req.session.passport.user
+      delete profile._raw;
+      delete profile._json;
       done(null, {
         type: 'facebook'
       , profile: profile
@@ -34,28 +36,22 @@ module.exports.init = function (passport, config) {
       //passport.authenticate('facebook', { successRedirect: '/close.html?accessToken=blar',
       //                                    failureRedirect: '/close.html?error=foo' }));
     , function (req, res, next) {
-        passport.authenticate('facebook', function(err, profile) {
-          profile = profile.profile;
-          console.log('profile');
-          console.log(profile);
-          console.log('logIn');
-          console.log(req.logIn);
-
+        passport.authenticate('facebook', function(err, data) {
           var url = '/fb-close.html'
             ;
 
-          if (err || !profile) {
+          if (err || !data) {
             url = '/fb-error.html';
             req.url = url;
             next();
             return;
           }
 
-          //if (!profile) { return res.redirect('/login'); }
-          delete profile._json;
-          delete profile._raw;
-          profile.type = 'facebook';
-          req.logIn(profile, function (err) {
+          console.log('*******************************');
+          console.log('route data');
+          console.log(data);
+          // the object passed here becomes req.user
+          req.logIn(data, function (err) {
             if (err) { return next(err); }
             //return res.redirect('/users/' + user.username);
 
@@ -74,7 +70,6 @@ module.exports.init = function (passport, config) {
             // This will pass through to the static module
             req.url = url;
             next();
-
           });
         })(req, res, next);
       }

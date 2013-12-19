@@ -1,52 +1,71 @@
 'use strict';
 
-/*globals jQuery:true*/
 angular.module('sortinghatApp')
   .controller('LoginCtrl', function ($modalInstance, StSession, mySession) {
     var $scope = this
       , login = {}
       ;
 
-    // Crazy fb login hacks and mobile chrome on ios workarounds
-    login.pollFbLogin = function () {
-      //jQuery('body').append('<p>' + 'heya' + '</p>');
-      if (!window.localStorage) {
-        clearInterval(login.pollFbInt);
-        // doomed!
-        return;
-      }
+    // Crazy window open/close hacks and mobile chrome on iOS workarounds
 
-      if (localStorage.getItem('fbStatus')) {
-        window.completeFbLogin(localStorage.getItem('fbStatus'));
-      }
-    };
-    window.completeFbLogin = function (url, accessToken, email, link) {
-      clearInterval(login.pollFbInt);
-      localStorage.removeItem('fbStatus');
-      login.loginCallback();
 
-      console.log('accessed parent function completeFbLogin', accessToken, email, link);
-      //jQuery('body').append('<p>' + url + '</p>');
-      login.loginWindow.close();
-      delete login.loginWindow;
-    };
+    //
+    // Facebook
+    //
+    function makeLogin(abbr, authUrl) {
+      var uAbbr = abbr.replace(/(^.)/, function ($1) { return $1.toUpperCase(); })
+        ;
 
-    $scope.loginWithFb = function () {
-      console.log('loginWithFb');
-      login.loginCallback = function () {
-        console.log('loginCallback');
-        StSession.read({ expire: true }).then(function (session) {
-          console.log('StSession.read()', session);
-          if (session.error) {
-            StSession.destroy();
-          }
-          $modalInstance.close(session);
-        });
+      login['poll' + uAbbr + 'Login'] = function () {
+        //jQuery('body').append('<p>' + 'heya' + '</p>');
+        if (!window.localStorage) {
+          clearInterval(login['poll' + uAbbr + 'Int']);
+          // doomed!
+          return;
+        }
+
+        if (localStorage.getItem(abbr + 'Status')) {
+          window['complete' + uAbbr + 'Login'](localStorage.getItem(abbr + 'Status'));
+        }
       };
-      login.loginWindow = window.open('/auth/facebook');
-      login.pollFbInt = setInterval(login.pollFbLogin, 300);
-    };
+      window['complete' + uAbbr + 'Login'] = function (url, accessToken, email, link) {
+        clearInterval(login['poll' + uAbbr + 'Int']);
+        localStorage.removeItem(abbr + 'Status');
+        login.loginCallback();
 
+        console.log('accessed parent function complete' + uAbbr + 'Login', accessToken, email, link);
+        //jQuery('body').append('<p>' + url + '</p>');
+        login.loginWindow.close();
+        delete login.loginWindow;
+      };
+      $scope['loginWith' + uAbbr + ''] = function () {
+        console.log('loginWith' + uAbbr + '');
+        login.loginCallback = function () {
+          console.log('loginCallback');
+          StSession.read({ expire: true }).then(function (session) {
+            console.log('StSession.read()', session);
+            if (session.error) {
+              StSession.destroy();
+            }
+            $modalInstance.close(session);
+          });
+        };
+        login.loginWindow = window.open(authUrl);
+        login['poll' + uAbbr + 'Int'] = setInterval(login['poll' + uAbbr + 'Login'], 300);
+      };
+    }
+    makeLogin('fb', '/auth/facebook');
+
+    //
+    // Twitter
+    //
+    makeLogin('tw', '/authn/twitter');
+
+
+
+    //
+    // Modal
+    //
     $scope.cancel = function () {
       $modalInstance.dismiss();
     };
