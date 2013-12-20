@@ -11,27 +11,86 @@ module.exports.create = function (opts) {
     , mods = {}
     ;
 
+  function save() {
+    fs.writeFileSync(dbpath, JSON.stringify(users, null, '  '), 'utf8');
+  }
+
   Users.all = users;
 
-  Users.isAdmin = function (user) {
-    return 'https://www.facebook.com/coolaj86' === user.profileUrl;
-  };
-
-  Users.register = function (type, ver, getId, create, read) {
+  Users.register = function (type, ver, getId, getIds) {
     mods[type] = {};
     mods[type].getId = getId;
-    mods[type].create = create;
-    mods[type].read = read;
+    mods[type].getIds = getIds;
   };
 
-  Users._get = function (id, cb) {
-    cb(users[id]);
+  Users._readByIdSync = function (loginId) {
+    return users[loginId];
+  };
+  Users._createByIdSync = function (loginId) {
+    if (users[loginId]) {
+      return users[loginId];
+    }
+
+    users[loginId] = {
+      uuid: UUID.v4()
+    , accounts: []
+    , type: loginId.split(':')[0]
+    , id: loginId
+    , fkey: loginId.split(':').slice(1).join(':')
+    , profile: {}
+    };
+
+    return users[loginId];
+  };
+
+  Users.link = function (loginId, accountId, cb) {
+    var user = Users._readByIdSync(loginId)
+      ;
+
+    if (!user) {
+      user = Users._createByIdSync(loginId);
+    }
+
+    if (-1 === user.accounts.indexOf(accountId)) {
+      user.accounts.push(accountId);
+    }
+
+    save();
+    if (cb) { cb(); }
+  };
+
+  Users._get = function (loginId, cb) {
+    if (!users[loginId]) {
+      Users._createByIdSync(loginId);
+    }
+    cb(users[loginId]);
   };
   Users.findById = Users._get;
 
+  Users._getIds = function (data) {
+    var mod = mods[data.type]
+      , ids = []
+      ;
+
+    if (!mod) {
+      throw new Error('unregistered type:' + data.type);
+    }
+
+    mod.getIds(data.profile).forEach(function (id) {
+      if ('email' === id.type) {
+        id.value = id.value.toLowerCase();
+      }
+      ids.push(id.type + ':' + id.value);
+    });
+
+    return ids;
+  };
+  Users.scrapeIds = Users._getIds;
+
   Users._set = function (id, user, cb) {
     users[id] = user;
-    fs.writeFileSync(dbpath, JSON.stringify(users, null, '  '), 'utf8');
+
+    save();
     if (cb) { cb(); }
   };
 
@@ -51,15 +110,22 @@ module.exports.create = function (opts) {
       Users._get(prefix + fkey, function (loginProfile) {
 
         if (loginProfile) {
-          data.uuid = loginProfile.uuid;
-          data.id = data.type + ':' + data.fkey;
+          // uuid, accounts, id
+          // twitter's authorized
           // TODO create callback for merging new / old data
-          data.authorized = loginProfile.authorized || data.authorized;
+          Object.keys(loginProfile).forEach(function (key) {
+            // don't overwrite the new stuff
+            if (!data.hasOwnProperty(key)) {
+              data[key] = loginProfile[key];
+            }
+          });
         }
+
         loginProfile = data;
         if (!loginProfile.uuid) {
           loginProfile.uuid = UUID.v4();
-          data.id = data.type + ':' + data.fkey;
+          loginProfile.id = data.type + ':' + data.fkey;
+          loginProfile.accounts = [];
         }
 
         Users._set(prefix + fkey, loginProfile, function () {

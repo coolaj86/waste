@@ -27,8 +27,7 @@ function getIds(profile) {
 }
 
 module.exports.init = function (passport, config, opts) {
-  opts.Users.register('facebook', '1.0.0', getId);
-  opts.AccountLinks.register('facebook', '1.0.0', getIds);
+  opts.Users.register('facebook', '1.0.0', getId, getIds);
 
   passport.use(new FacebookStrategy({
       clientID: config.facebook.id,

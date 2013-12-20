@@ -6,8 +6,14 @@ var UUID = require('node-uuid')
 
 module.exports.create = function (opts) {
   var Accounts = {}
-    , cache = {}
+    , cache  = require(opts.dbfile)
+    , dbpath = opts.dbfile
     ;
+
+  function save() {
+    fs.writeFileSync(dbpath, JSON.stringify(cache, null, '  '), 'utf8');
+  }
+
 
   Accounts.create = function (loginIds, meta) {
     var uuid = UUID.v4()
@@ -21,6 +27,7 @@ module.exports.create = function (opts) {
       }
     });
 
+    save();
     return cache[uuid];
   };
 
@@ -31,6 +38,8 @@ module.exports.create = function (opts) {
     if (-1 === account.loginIds.indexOf(loginId)) {
       account.loginIds.push(loginId);
     }
+
+    save();
   };
 
   Accounts.read = function (uuid) {

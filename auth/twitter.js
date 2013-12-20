@@ -23,8 +23,7 @@ function getIds(profile) {
 }
 
 module.exports.init = function (passport, config, opts) {
-  opts.Users.register('twitter', '1.0.0', getId);
-  opts.AccountLinks.register('twitter', '1.0.0', getIds);
+  opts.Users.register('twitter', '1.0.0', getId, getIds);
 
   var oa
     , twitterAuthn
@@ -103,6 +102,7 @@ module.exports.init = function (passport, config, opts) {
       , token: token
       , tokenSecret: tokenSecret
       // TODO a user may revoke authorization in the future without notification
+      // This is preserved auth/users.js, but should have a callback instead
       , authorized: true
       };
       done(null, authN);

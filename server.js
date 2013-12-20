@@ -22,7 +22,7 @@ function route(rest) {
     return {
       currentLoginId: reqUser.currentUser.id
     , accounts: reqUser.accounts
-    , profiles: reqUser.profiles.map(function (authN) { return authN.profile; })
+    , profiles: reqUser.profiles.map(function (authN) { authN.profile.pkey = authN.id; return authN.profile; })
     };
   }
 

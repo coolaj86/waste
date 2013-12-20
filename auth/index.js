@@ -6,7 +6,6 @@ var Passport = require('passport').Passport
   , forEachAsync = require('forEachAsync').forEachAsync
   , path = require('path')
   , Users = require('./users').create({ dbfile: path.join(__dirname, '..', 'data', 'users.priv.json') })
-  , AccountLinks = require('./account-links').create({ dbfile: path.join(__dirname, '..', 'data', 'users-accounts.priv.json') })
   , Accounts = require('./accounts').create({ dbfile: path.join(__dirname, '..', 'data', 'accounts.priv.json')})
   ;
 
@@ -45,7 +44,7 @@ module.exports.init = function (app, config) {
         , _ids
         ;
 
-      _ids = AccountLinks.scrape(authN);
+      _ids = Users.scrapeIds(authN);
       if (0 === _ids.length) {
         // TODO bad user account
         done(new Error("unrecognized account type"));
@@ -55,32 +54,40 @@ module.exports.init = function (app, config) {
         loginIds.push(id);
       });
 
-      loginIds.forEach(function (id) {
-        var links
-          ;
-
-        links = AccountLinks.find(id) || [];
-        links.forEach(function (accountId) {
-          accountIdMap[accountId] = true;
+      forEachAsync(loginIds, function (next, id) {
+        Users.findById(id, function (user) {
+          user.accounts.forEach(function (accountId) {
+            accountIdMap[accountId] = true;
+          });
+          next();
         });
-      });
+      }).then(function () {
+        Object.keys(accountIdMap).forEach(function (accountId) {
+          var account = Accounts.find(accountId)
+            ;
 
-      Object.keys(accountIdMap).forEach(function (accountId) {
-        accounts.push(Accounts.find(accountId));
-      });
-
-      if (0 === accounts.length) {
-        accounts.push(Accounts.create(loginIds, {}));
-      }
-
-      loginIds.forEach(function (id) {
-        accounts.forEach(function (account) {
-          AccountLinks.create(id, account.uuid);
-          Accounts.addLoginId(account.uuid, id);
+          if (!account) {
+            console.error('No Account', accountId);
+          } else {
+            accounts.push(Accounts.find(accountId));
+          }
         });
+
+        if (0 === accounts.length) {
+          accounts.push(Accounts.create(loginIds, {}));
+        }
+
+        loginIds.forEach(function (id) {
+          accounts.forEach(function (account) {
+            Users.link(id, account.uuid);
+            Accounts.addLoginId(account.uuid, id);
+          });
+        });
+
+        done(null, accounts);
+
       });
 
-      done(null, accounts);
     });
   }
 
@@ -110,7 +117,7 @@ module.exports.init = function (app, config) {
     }
 
     if (oldUser) {
-      loginIds = AccountLinks.scrape(oldUser);
+      loginIds = Users.scrapeIds(oldUser);
     }
 
     Users.create(currentUser, function () {
@@ -144,8 +151,8 @@ module.exports.init = function (app, config) {
     .use(passport.session())
     ;
 
-  routes.push(facebook.init(passport, config, { Users: Users, AccountLinks: AccountLinks }));
-  routes.push(twitter.init(passport, config, { Users: Users, AccountLinks: AccountLinks }));
+  routes.push(facebook.init(passport, config, { Users: Users }));
+  routes.push(twitter.init(passport, config, { Users: Users }));
 
   return routes;
 };
