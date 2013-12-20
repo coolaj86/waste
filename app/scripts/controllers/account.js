@@ -6,12 +6,14 @@ angular.module('sortinghatApp')
       ;
 
     function assignAccount(session) {
+      /*
       session.profiles.some(function (login) {
         if (session.currentLoginId.replace(/^[^:]+:/, '') === login.id) {
           $scope.profile = login;
           return true;
         }
       });
+      */
       $scope.profile = session;
     }
 

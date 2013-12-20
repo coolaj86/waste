@@ -4,13 +4,35 @@ var TwitterStrategy = require('passport-twitter').Strategy
   , OAuth = require('oauth').OAuth
   ;
 
-module.exports.init = function (passport, config) {
+function getId(profile, cb) {
+  if (!profile.id) {
+    console.log(profile);
+    throw new Error("user has no uinque identifier for which to save!");
+  }
+
+  cb(null, profile.id);
+}
+
+function getIds(profile) {
+  var ids = []
+    ;
+
+  ids.push({ type: 'twitter', value: profile.id });
+
+  return ids;
+}
+
+module.exports.init = function (passport, config, opts) {
+  opts.Users.register('twitter', '1.0.0', getId);
+  opts.AccountLinks.register('twitter', '1.0.0', getIds);
+
   var oa
     , twitterAuthn
     , twitterAuthz
     , twConfig = config.twitter
     ;
 
+  /*
   // TODO to allow this user to message you, follow us
   function directMessage(user, params, cb) {
     oa.post(
@@ -21,6 +43,8 @@ module.exports.init = function (passport, config) {
     , cb
     );
   }
+  */
+
   function initTwitterOauth() {
     oa = new OAuth(
       "https://twitter.com/oauth/request_token"
@@ -46,8 +70,11 @@ module.exports.init = function (passport, config) {
 
       delete profile._raw;
       delete profile._json;
+      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+      console.log(profile);
       done(null, {
         type: 'twitter'
+      , fkey: profile.id
       , profile: profile
       , token: token
       , tokenSecret: tokenSecret
