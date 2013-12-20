@@ -1,1 +1,23 @@
+div
+  p You are currently signed in through {{ A.profile.type }} as {{ A.profile.profile.username }}
+  p Your primary account for that login is [[ http://example.com/username ]]
+  p You also have access to these other accounts
+  ul
+    li [[ http://example.com/foo ]] [unassociate]
+    li [[ http://example.com/bar ]] [unassociate and delete] (no other sign-ins are linked)
+
+div
+  button.btn.btn-facebook(type="button", ng-click="A.loginWithFb()")
+    i.fa.fa-facebook-square
+    span  | Connect with Facebook
+  p
+    span (you must sign out to associate an additional account)
+
+div
+  button.btn.btn-twitter(type="button", ng-click="A.loginWithTw()")
+    i.fa.fa-twitter-square
+    span  | Sign in with Twitter
+  p
+    span (you must sign out to associate an additional account)
+
 pre {{ A.profile | json}}
