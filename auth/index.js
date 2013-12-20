@@ -56,7 +56,11 @@ module.exports.init = function (app, config) {
       });
 
       loginIds.forEach(function (id) {
-        AccountLinks.find(id).forEach(function (accountId) {
+        var links
+          ;
+
+        links = AccountLinks.find(id) || [];
+        links.forEach(function (accountId) {
           accountIdMap[accountId] = true;
         });
       });
@@ -72,6 +76,7 @@ module.exports.init = function (app, config) {
       loginIds.forEach(function (id) {
         accounts.forEach(function (account) {
           AccountLinks.create(id, account.uuid);
+          Accounts.addLoginId(account.uuid, id);
         });
       });
 
@@ -94,9 +99,6 @@ module.exports.init = function (app, config) {
       , loginIds = []
       ;
 
-    console.log('sanity check');
-    console.log(reqSessionUser);
-
     if (reqSessionUser.newUser) {
       currentUser = reqSessionUser.newUser;
       delete reqSessionUser.newUser;
@@ -110,9 +112,6 @@ module.exports.init = function (app, config) {
     if (oldUser) {
       loginIds = AccountLinks.scrape(oldUser);
     }
-    console.log('old / current user');
-    console.log(oldUser);
-    console.log(currentUser);
 
     Users.create(currentUser, function () {
       getAccounts(currentUser, loginIds, function (err, accounts) {

@@ -40,16 +40,21 @@ module.exports.create = function (opts) {
   });
 
   AccountLinks.read = function (id) {
-    return cache[id] || [];
+    return cache[id];
   };
   AccountLinks.find = AccountLinks.read;
 
   AccountLinks.create = function (loginId, accountId) {
-    var accounts = AccountLinks.read(loginId)
+    var accountIds = AccountLinks.read(loginId)
       ;
 
-    if (-1 === accounts.indexOf(loginId)) {
-      accounts.push(accountId);
+    if (!accountIds) {
+      accountIds = [];
+      cache[loginId] = accountIds;
+    }
+
+    if (-1 === accountIds.indexOf(accountId)) {
+      accountIds.push(accountId);
     }
 
     save();
