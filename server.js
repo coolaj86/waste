@@ -40,6 +40,16 @@ function route(rest) {
 
 app
   .use(function (req, res, next) {
+      res.redirect = function (code, href) {
+        if (!href) {
+          href = code;
+          code = 302;
+        }
+
+        res.statusCode = code;
+        res.setHeader('Location', href);
+        res.end();
+      };
       res.send = function (data) {
         if (data) {
           data = JSON.stringify(data);

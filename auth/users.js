@@ -48,19 +48,24 @@ module.exports.create = function (opts) {
   };
   Users._create = function (getId, prefix, data, cb) {
     getId(data.profile, function (err, fkey) {
-      Users._get(prefix + fkey, function (user) {
-        if (user) {
-          data.uuid = user.uuid;
+      Users._get(prefix + fkey, function (loginProfile) {
+        console.log('loginProfile at create');
+        console.log(loginProfile);
+
+        if (loginProfile) {
+          data.uuid = loginProfile.uuid;
           data.id = data.type + ':' + data.fkey;
+          // TODO create callback for merging new / old data
+          data.authorized = loginProfile.authorized || data.authorized;
         }
-        user = data;
-        if (!user.uuid) {
-          user.uuid = UUID.v4();
+        loginProfile = data;
+        if (!loginProfile.uuid) {
+          loginProfile.uuid = UUID.v4();
           data.id = data.type + ':' + data.fkey;
         }
 
-        Users._set(prefix + fkey, user, function () {
-          cb(user);
+        Users._set(prefix + fkey, loginProfile, function () {
+          cb(loginProfile);
         });
       });
     });

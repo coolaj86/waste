@@ -5,7 +5,7 @@ var FacebookStrategy = require('passport-facebook').Strategy
 
 function getId(profile, cb) {
   if (!profile.id) {
-    console.log(profile);
+    console.error(profile);
     throw new Error("user has no uinque identifier for which to save!");
   }
 
@@ -36,11 +36,10 @@ module.exports.init = function (passport, config, opts) {
       callbackURL: config.protocol + "://" + config.host + "/api/auth/facebook/callback"
     },
     function(accessToken, refreshToken, profile, done) {
-      console.log(accessToken, refreshToken, profile);
-
       // this object is attached as or merged to req.session.passport.user
       delete profile._raw;
       delete profile._json;
+
       done(null, {
         type: 'facebook'
       , fkey: profile.id
@@ -48,12 +47,6 @@ module.exports.init = function (passport, config, opts) {
       , accessToken: accessToken
       //, refreshToken: refreshToken
       });
-      /*
-      User.findOrCreate(..., function(err, user) {
-        if (err) { return done(err); }
-        done(null, user);
-      });
-      */
     }
   ));
 
@@ -80,20 +73,13 @@ module.exports.init = function (passport, config, opts) {
             res.redirect('/auth/facebook');
             return;
           }
-          console.log('[fb] *******************************');
-          console.log('route data');
-          console.log(data);
 
           // this is conditional, there may not be a req.user
-          currentUser = req.user && req.currentUser;
+          currentUser = req.user && req.user.currentUser;
 
           // the object passed here becomes req.user
           req.logIn({ newUser: data, currentUser: currentUser }, function (err) {
             if (err) { return next(err); }
-
-            console.log('req.session');
-            console.log(req.session);
-            console.log(url);
 
             req.url = url;
             next();

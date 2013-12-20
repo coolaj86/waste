@@ -26,10 +26,7 @@ module.exports.init = function (app, config) {
       });
     });
 
-    console.log('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP');
-    console.log(profileMap);
     forEachAsync(Object.keys(profileMap), function (next, loginId) {
-      console.log('loginId', loginId);
       Users.findById(loginId, function (profile) {
         if (profile) {
           profiles.push(profile);
@@ -37,7 +34,6 @@ module.exports.init = function (app, config) {
         next();
       });
     }).then(function () {
-      console.log(Users._cache);
       done(null, profiles);
     });
   }
@@ -79,9 +75,6 @@ module.exports.init = function (app, config) {
         });
       });
 
-      console.log('accounts');
-      console.log(accounts);
-      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
       done(null, accounts);
     });
   }
@@ -96,14 +89,13 @@ module.exports.init = function (app, config) {
 
   // save to db
   passport.serializeUser(function(reqSessionUser, done) {
-    console.log("#################################");
-    console.log("serialize data");
-    console.log(reqSessionUser);
-
     var currentUser
       , oldUser
       , loginIds = []
       ;
+
+    console.log('sanity check');
+    console.log(reqSessionUser);
 
     if (reqSessionUser.newUser) {
       currentUser = reqSessionUser.newUser;
@@ -118,11 +110,14 @@ module.exports.init = function (app, config) {
     if (oldUser) {
       loginIds = AccountLinks.scrape(oldUser);
     }
+    console.log('old / current user');
+    console.log(oldUser);
+    console.log(currentUser);
+
     Users.create(currentUser, function () {
       getAccounts(currentUser, loginIds, function (err, accounts) {
         getProfiles(accounts, function (/*err, profiles*/) {
           Users.getId(currentUser, function (err, id) {
-            console.log('id', id);
             done(null, id);
           });
         });
@@ -132,8 +127,6 @@ module.exports.init = function (app, config) {
 
   // session restores from db
   passport.deserializeUser(function (loginId, done) {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.log("deserialize loginId", loginId);
     Users.findById(loginId, function (authN) {
       getAccounts(authN, [], function (err, accounts) {
         getProfiles(accounts, function (err, authNs) {
@@ -141,10 +134,6 @@ module.exports.init = function (app, config) {
           var data = { currentUser: authN, accounts: accounts, profiles: authNs }
             ;
 
-          console.log("loginId deserialized");
-          console.log(data);
-          console.log(data.accounts[0].loginIds);
-          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
           done(null, data);
         });
       });
