@@ -3,7 +3,33 @@
 var FacebookStrategy = require('passport-facebook').Strategy
   ;
 
-module.exports.init = function (passport, config) {
+function getId(profile, cb) {
+  if (!profile.id) {
+    console.log(profile);
+    throw new Error("user has no uinque identifier for which to save!");
+  }
+
+  cb(null, profile.id);
+}
+
+function getIds(profile) {
+  var ids = []
+    ;
+
+  ids.push({ type: 'facebook', value: profile.id });
+  profile.emails.forEach(function (emailObj) {
+    // TODO should confirm e-mail address before allowing access, as facebook sometimes makes mistakes
+    // see http://stackoverflow.com/questions/14280535/is-it-possible-to-check-if-an-email-is-confirmed-on-facebook
+    ids.push({ type: 'email', value: emailObj.value });
+  });
+
+  return ids;
+}
+
+module.exports.init = function (passport, config, opts) {
+  opts.Users.register('facebook', '1.0.0', getId);
+  opts.AccountLinks.register('facebook', '1.0.0', getIds);
+
   passport.use(new FacebookStrategy({
       clientID: config.facebook.id,
       clientSecret: config.facebook.secret,
@@ -17,9 +43,10 @@ module.exports.init = function (passport, config) {
       delete profile._json;
       done(null, {
         type: 'facebook'
+      , fkey: profile.id
       , profile: profile
       , accessToken: accessToken
-      , refreshToken: refreshToken
+      //, refreshToken: refreshToken
       });
       /*
       User.findOrCreate(..., function(err, user) {
@@ -38,6 +65,7 @@ module.exports.init = function (passport, config) {
     , function (req, res, next) {
         passport.authenticate('facebook', function(err, data) {
           var url = '/fb-close.html'
+            , currentUser
             ;
 
           if (err || !data) {
@@ -52,27 +80,21 @@ module.exports.init = function (passport, config) {
             res.redirect('/auth/facebook');
             return;
           }
-          console.log('*******************************');
+          console.log('[fb] *******************************');
           console.log('route data');
           console.log(data);
+
+          // this is conditional, there may not be a req.user
+          currentUser = req.user && req.currentUser;
+
           // the object passed here becomes req.user
-          req.logIn(data, function (err) {
+          req.logIn({ newUser: data, currentUser: currentUser }, function (err) {
             if (err) { return next(err); }
-            //return res.redirect('/users/' + user.username);
 
             console.log('req.session');
             console.log(req.session);
-             /* ?type=fb'
-              + '&accessToken=' + req.session.passport.user.accessToken
-              + '&email=' + req.session.passport.user.profile.email
-              + '&link=' + req.session.passport.user.profile.profileUrl
-              */
-
             console.log(url);
-            //res.statusCode = 302;
-            //res.setHeader('Location', '');
-            //res.end('hello');
-            // This will pass through to the static module
+
             req.url = url;
             next();
           });

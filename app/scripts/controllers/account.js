@@ -1,9 +1,33 @@
 'use strict';
 
 angular.module('sortinghatApp')
-  .controller('AccountCtrl', function (mySession) {
+  .controller('AccountCtrl', function (StLogin, mySession) {
     var $scope = this
       ;
 
-    $scope.profile = mySession;
+    function assignAccount(session) {
+      session.profiles.some(function (login) {
+        if (session.currentLoginId.replace(/^[^:]+:/, '') === login.id) {
+          $scope.profile = login;
+          return true;
+        }
+      });
+      $scope.profile = session;
+    }
+
+    //
+    // Facebook
+    //
+    StLogin.makeLogin($scope, 'fb', '/auth/facebook', function (session) {
+      assignAccount(session);
+    });
+
+    //
+    // Twitter
+    //
+    StLogin.makeLogin($scope, 'tw', '/authn/twitter', function (session) {
+      assignAccount(session);
+    });
+
+    assignAccount(mySession);
   });

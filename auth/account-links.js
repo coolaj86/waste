@@ -9,58 +9,49 @@ module.exports.create = function (opts) {
   function save() {
   }
 
-  AccountLinks.register = function (type, fn) {
-    mods[type] = fn;
+  AccountLinks.register = function (type, ver, fn) {
+    mods[type] = {};
+    mods[type].version = ver;
+    mods[type].getIds = fn;
   };
 
-  AccountLinks.register('facebook', function (ids, data) {
-    var profile = data.profile
+  AccountLinks._getIds = function (data) {
+    var mod = mods[data.type]
+      , ids = []
       ;
 
-    ids.push('fb:' + profile.id);
-    console.log('profile', profile);
-    profile.emails.forEach(function (emailObj) {
-      // TODO should confirm e-mail address before allowing access, as facebook sometimes makes mistakes
-      // see http://stackoverflow.com/questions/14280535/is-it-possible-to-check-if-an-email-is-confirmed-on-facebook
-      ids.push('email:' + emailObj.value.toLowerCase());
+    if (!mod) {
+      throw new Error('unregistered type:' + data.type);
+    }
+
+    mod.getIds(data.profile).forEach(function (id) {
+      if ('email' === id.type) {
+        id.value = id.value.toLowerCase();
+      }
+      ids.push(id.type + ':' + id.value);
     });
 
     return ids;
-  });
+  };
+  AccountLinks.scrape = AccountLinks._getIds;
 
   AccountLinks.register('email', function (ids, data) {
     ids.push('email:' + data.email.toLowerCase());
   });
-
-  AccountLinks.scrape = function (data) {
-    var ids = []
-      , fn = mods[data.type]
-      ;
-
-    if (!fn) {
-      // TODO return error message
-      return [];
-    }
-
-    return fn(ids, data);
-  };
 
   AccountLinks.read = function (id) {
     return cache[id] || [];
   };
   AccountLinks.find = AccountLinks.read;
 
-  AccountLinks.link = function (id, accountId) {
-    AccountLinks.read(id).push(accountId);
-  };
+  AccountLinks.create = function (loginId, accountId) {
+    var accounts = AccountLinks.read(loginId)
+      ;
 
-  AccountLinks.create = function (id, aid) {
-    if (!cache[id]) {
-      cache[id] = [];
+    if (-1 === accounts.indexOf(loginId)) {
+      accounts.push(accountId);
     }
-    if (-1 === cache[id].indexOf(aid)) {
-      cache[id].push(aid);
-    }
+
     save();
   };
 

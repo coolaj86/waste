@@ -17,78 +17,85 @@ module.exports.create = function (opts) {
     return 'https://www.facebook.com/coolaj86' === user.profileUrl;
   };
 
-  Users.register = function (type, ver, create, read) {
+  Users.register = function (type, ver, getId, create, read) {
     mods[type] = {};
+    mods[type].getId = getId;
     mods[type].create = create;
     mods[type].read = read;
   };
 
-  // Facebook
-  Users.register('facebook', '1.0.0', function (prefix, data) {
-    var user
-      , id
-      ;
+  Users._get = function (id, cb) {
+    cb(users[id]);
+  };
+  Users.findById = Users._get;
 
-    console.log('in create', prefix, data);
-    if (!data.profile.id) {
-      throw new Error("user has no uinque identifier for which to save!");
-    }
-
-    id = prefix + data.profile.id;
-
-    user = users[id] || users[data.profile.profileUrl];
-
-    if (user) {
-      data.uuid = user.uuid;
-    }
-    user = data;
-    if (!user.uuid) {
-      user.uuid = UUID.v4();
-    }
-
-    //users[id] = { follow: user.uuid };
-    //users[user.uuid] = user;
+  Users._set = function (id, user, cb) {
     users[id] = user;
-    delete users[user.profileUrl];
-
     fs.writeFileSync(dbpath, JSON.stringify(users, null, '  '), 'utf8');
-
-    return user;
-  }, function (prefix, data) {
-    var user
-      , id
-      ;
-
-    id = prefix + data.profile.id;
-    user = users[id];
-
-    return user;
-  });
-  // end facebook
-
-  Users.create = function (data) {
-    var fn = mods[data.type]
-      ;
-
-    if (!fn || !fn.create) {
-      return null;
-    }
-
-    return fn.create(data.type + ':', data);
+    if (cb) { cb(); }
   };
 
-  Users.read = function (obj) {
-    var fn = mods[obj.type]
+  Users.create = function (data, cb) {
+    var mod = mods[data.type]
       ;
 
-    if (!fn || !fn.read) {
-      return null;
+    if (!mod) {
+      cb(null);
+      return;
     }
 
-    return fn.read(obj.type + ':', obj);
+    Users._create(mod.getId, data.type + ':', data, cb);
+  };
+  Users._create = function (getId, prefix, data, cb) {
+    getId(data.profile, function (err, fkey) {
+      Users._get(prefix + fkey, function (user) {
+        if (user) {
+          data.uuid = user.uuid;
+          data.id = data.type + ':' + data.fkey;
+        }
+        user = data;
+        if (!user.uuid) {
+          user.uuid = UUID.v4();
+          data.id = data.type + ':' + data.fkey;
+        }
+
+        Users._set(prefix + fkey, user, function () {
+          cb(user);
+        });
+      });
+    });
   };
 
+  Users.getId = function (obj, cb) {
+    var mod = mods[obj.type]
+      ;
+
+    if (!mod) {
+      cb(null);
+      return;
+    }
+
+    mod.getId(obj.profile, function (err, id) {
+      cb(null, obj.type + ':' + id);
+    });
+  };
+
+  Users.read = function (obj, cb) {
+    var mod = mods[obj.type]
+      ;
+
+    if (!mod) {
+      cb(null);
+    }
+
+    Users._read(mod.getId, obj.type + ':', obj, cb);
+  };
   Users.find = Users.read;
+  Users._read = function (getId, prefix, data, cb) {
+    getId(data.profile, function (err, fkey) {
+      Users._get(prefix + fkey, cb);
+    });
+  };
 
   return Users;
 };

@@ -36,8 +36,6 @@ module.exports.init = function (passport, config) {
   //module.exports.directMessage = directMessage;
 
 
-
-
   twitterAuthn = new TwitterStrategy({
       consumerKey: twConfig.consumerKey
     , consumerSecret: twConfig.consumerSecret
@@ -95,16 +93,44 @@ module.exports.init = function (passport, config) {
     // Handle the oauth callback from twitter
     rest.get(
       '/authn/twitter/callback'
-    , passport.authenticate('twitterAuthn', { failureRedirect: '/login' })
-    , function (req, res) {
-        // If we don't have authorization, get it
-        if (!req.user.twitter.authorized) {
-          res.redirect('/authz/twitter');
-          return;
-        }
-        // If we do, get this window to close on itself
-        // TODO remove redirect by using req.url = 'close.html' and another static middleware
-        res.redirect('/tw-close.html');
+    , function (req, res, next) {
+        passport.authenticate('twitterAuthn', function (err, data) {
+          var url = '/tw-close.html'
+            , currentUser
+            ;
+
+          if (err || !data) {
+            url = '/tw-error.html';
+            req.url = url;
+            next();
+            return;
+          }
+
+          console.log('[TW] *******************************');
+          console.log('route data');
+          console.log(data);
+
+          console.log('[TW] *******************************');
+          console.log('route user');
+          console.log(req.user); // want to reuse the accounts
+
+          // this is conditional, there may not be a req.user
+          currentUser = req.user && req.currentUser;
+
+          // the object passed here becomes req.user
+          // TODO currentAccount
+          req.logIn({ newUser: data, currentUser: currentUser }, function (err) {
+            if (err) { return next(err); }
+
+            console.log('req.session after login');
+            console.log(req.session);
+
+            console.log(url);
+
+            req.url = url;
+            next();
+          });
+        })(req, res, next);
       }
     );
 
@@ -113,7 +139,44 @@ module.exports.init = function (passport, config) {
     rest.get(
       '/authz/twitter'
     , passport.authenticate('twitterAuthz')
+    , function (req, res, next) {
+        passport.authenticate('twitterAuthz', function (err, data) {
+          var url = '/tw-close.html'
+            ;
+
+          if (err || !data) {
+            url = '/tw-error.html';
+            req.url = url;
+            next();
+            return;
+          }
+
+          console.log('[TW] *******************************');
+          console.log('route data');
+          console.log(data);
+
+          // the object passed here becomes req.user
+          req.logIn(data, function (err) {
+            if (err) { return next(err); }
+
+            console.log('req.session after login');
+            console.log(req.session);
+
+            console.log(url);
+
+            // If we don't have authorization, get it
+            if (!req.user.twitter.authorized) {
+              res.redirect('/authz/twitter');
+              return;
+            }
+
+            req.url = url;
+            next();
+          });
+        })(req, res, next);
+      }
     );
+
     rest.get(
       '/authz/twitter/callback'
     , passport.authenticate('twitterAuthz', { failureRedirect: '/login' })

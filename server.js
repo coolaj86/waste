@@ -15,22 +15,22 @@ if (!connect.router) {
 }
 
 function route(rest) {
-  //session.init(rest);
-  rest.post('/api/session', function (req, res) {
-    // TODO exchange short-lived for long-lived
-    /*
-    if (req.body.fb.accessToken) {
+  function getPublic(reqUser) {
+    if (!reqUser) {
+      return null;
     }
-    */
-    res.send({ role: 'guest', as: 'post' });
+    return {
+      currentLoginId: reqUser.currentUser.id
+    , accounts: reqUser.accounts
+    , profiles: reqUser.profiles.map(function (authN) { return authN.profile; })
+    };
+  }
+
+  rest.post('/api/session', function (req, res) {
+    res.send(getPublic(req.user) || { role: 'guest', as: 'post' });
   });
   rest.get('/api/session', function (req, res) {
-    console.log('req.user:', req.user);
-    console.log('req.session:', req.session);
-    req.session.count = req.session.count || 0;
-    req.session.count += 1;
-    //res.json(req.session.passport.user.public);
-    res.send(req.user || { role: 'guest', as: 'get', count: req.session.count });
+    res.send(getPublic(req.user) || { role: 'guest', as: 'get' });
   });
   rest.delete('/api/session', function (req, res) {
     req.logout();

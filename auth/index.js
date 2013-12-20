@@ -3,6 +3,7 @@
 var Passport = require('passport').Passport
   , facebook = require('./facebook')
   , twitter = require('./twitter')
+  , forEachAsync = require('forEachAsync').forEachAsync
   , path = require('path')
   , Users = require('./users').create({ dbfile: path.join(__dirname, '..', 'data', 'users.priv.json') })
   , AccountLinks = require('./account-links').create({ dbfile: path.join(__dirname, '..', 'data', 'users-accounts.priv.json') })
@@ -14,6 +15,77 @@ module.exports.init = function (app, config) {
     , routes = []
     ;
 
+  function getProfiles(accounts, done) {
+    var profiles = []
+      , profileMap = {}
+      ;
+
+    accounts.forEach(function (account) {
+      account.loginIds.forEach(function (loginId) {
+        profileMap[loginId] = true;
+      });
+    });
+
+    console.log('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP');
+    console.log(profileMap);
+    forEachAsync(Object.keys(profileMap), function (next, loginId) {
+      console.log('loginId', loginId);
+      Users.findById(loginId, function (profile) {
+        if (profile) {
+          profiles.push(profile);
+        }
+        next();
+      });
+    }).then(function () {
+      console.log(Users._cache);
+      done(null, profiles);
+    });
+  }
+
+  function getAccounts(_authN, loginIds, done) {
+    Users.read(_authN, function (authN) {
+      var accountIdMap = {}
+        , accounts = []
+        , _ids
+        ;
+
+      _ids = AccountLinks.scrape(authN);
+      if (0 === _ids.length) {
+        // TODO bad user account
+        done(new Error("unrecognized account type"));
+        return;
+      }
+      _ids.forEach(function (id) {
+        loginIds.push(id);
+      });
+
+      loginIds.forEach(function (id) {
+        AccountLinks.find(id).forEach(function (accountId) {
+          accountIdMap[accountId] = true;
+        });
+      });
+
+      Object.keys(accountIdMap).forEach(function (accountId) {
+        accounts.push(Accounts.find(accountId));
+      });
+
+      if (0 === accounts.length) {
+        accounts.push(Accounts.create(loginIds, {}));
+      }
+
+      loginIds.forEach(function (id) {
+        accounts.forEach(function (account) {
+          AccountLinks.create(id, account.uuid);
+        });
+      });
+
+      console.log('accounts');
+      console.log(accounts);
+      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+      done(null, accounts);
+    });
+  }
+
   // Passport session setup.
   //   To support persistent login sessions, Passport needs to be able to
   //   serialize users into and deserialize users out of the session.  Typically,
@@ -21,83 +93,62 @@ module.exports.init = function (app, config) {
   //   the user by ID when deserializing.  However, since this example does not
   //   have a database of user records, the complete Facebook profile is serialized
   //   and deserialized.
-  passport.serializeUser(function(data, done) {
-    var user
+
+  // save to db
+  passport.serializeUser(function(reqSessionUser, done) {
+    console.log("#################################");
+    console.log("serialize data");
+    console.log(reqSessionUser);
+
+    var currentUser
+      , oldUser
+      , loginIds = []
       ;
 
-    console.log('#################################');
-    console.log('serialize data');
-    console.log(data);
+    if (reqSessionUser.newUser) {
+      currentUser = reqSessionUser.newUser;
+      delete reqSessionUser.newUser;
 
-    user = Users.create(data);
+      oldUser = reqSessionUser.currentUser;
+      reqSessionUser.currentUser = currentUser;
+    } else {
+      currentUser = reqSessionUser.currentUser;
+    }
 
-    console.log('#################################');
-    console.log('serialize user');
-    console.log(user);
-
-    done(null, user);
+    if (oldUser) {
+      loginIds = AccountLinks.scrape(oldUser);
+    }
+    Users.create(currentUser, function () {
+      getAccounts(currentUser, loginIds, function (err, accounts) {
+        getProfiles(accounts, function (/*err, profiles*/) {
+          Users.getId(currentUser, function (err, id) {
+            console.log('id', id);
+            done(null, id);
+          });
+        });
+      });
+    });
   });
 
-  passport.deserializeUser(function (data, done) {
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log('deserialize', data);
-    var user = Users.read(data)
-      , ids = []
-      , accountIdMap = {}
-      , accounts = []
-      ;
+  // session restores from db
+  passport.deserializeUser(function (loginId, done) {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.log("deserialize loginId", loginId);
+    Users.findById(loginId, function (authN) {
+      getAccounts(authN, [], function (err, accounts) {
+        getProfiles(accounts, function (err, authNs) {
+          // Note: these profiles have access tokens and such
+          var data = { currentUser: authN, accounts: accounts, profiles: authNs }
+            ;
 
-    ids = AccountLinks.scrape(data);
-    if (0 === ids.length) {
-      // TODO bad user account
-      done(new Error("unrecognized account type"));
-      return;
-    }
-
-    ids.forEach(function (id) {
-      AccountLinks.find(id).forEach(function (accountId) {
-        accountIdMap[accountId] = true;
+          console.log("loginId deserialized");
+          console.log(data);
+          console.log(data.accounts[0].loginIds);
+          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+          done(null, data);
+        });
       });
     });
-
-    Object.keys(accountIdMap).forEach(function (accountId) {
-      accounts.push(Accounts.find(accountId));
-    });
-
-    /*
-    ids.forEach(function (id) {
-      accounts.forEach(function (account) {
-        AccountLinks.link(id, account.uuid);
-      });
-    });
-    */
-
-    //ids
-    //accounts
-    //Users.update(data, ids, Object.keys(accountIdMap));
-
-    /*
-    accounts.forEach(function (account) {
-      AccountLinks.update(account.uuid, data);
-      Accounts.update(account, data);
-    });
-
-    //done(null, { role: 'user', user: data, accounts: accounts });
-    */
-    if (0 === accounts.length) {
-      accounts.push(Accounts.create(ids, user));
-      ids.forEach(function (id) {
-        AccountLinks.create(id, accounts[0].uuid);
-      });
-    }
-
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log('deserialize user');
-    console.log(user);
-
-    // TODO expose a public part of the profile
-    console.log(null, { role: 'user', user: user.profile, accounts: accounts });
-    done(null, user);
   });
 
   app
@@ -105,8 +156,8 @@ module.exports.init = function (app, config) {
     .use(passport.session())
     ;
 
-  routes.push(facebook.init(passport, config));
-  routes.push(twitter.init(passport, config));
+  routes.push(facebook.init(passport, config, { Users: Users, AccountLinks: AccountLinks }));
+  routes.push(twitter.init(passport, config, { Users: Users, AccountLinks: AccountLinks }));
 
   return routes;
 };
