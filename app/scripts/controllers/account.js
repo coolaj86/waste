@@ -31,5 +31,12 @@ angular.module('sortinghatApp')
       assignAccount(session);
     });
 
+    //
+    // LDS.org
+    //
+    StLogin.makeLogin($scope, 'lds', '/auth/ldsauth', function (session) {
+      assignAccount(session);
+    });
+
     assignAccount(mySession);
   });

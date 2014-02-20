@@ -7,6 +7,12 @@ angular.module('sortinghatApp')
 
     // Crazy window open/close hacks and mobile chrome on iOS workarounds
 
+    //
+    // LDS.org
+    //
+    StLogin.makeLogin($scope, 'lds', '/auth/ldsauth', function (session) {
+      $modalInstance.close(session);
+    });
 
     //
     // Facebook
