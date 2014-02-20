@@ -52,6 +52,7 @@ angular.module('sortinghatApp')
 
       login['poll' + uAbbr + 'Login'] = function () {
         //jQuery('body').append('<p>' + 'heya' + '</p>');
+        console.log('[debug]', 'poll' + uAbbr + 'Login');
         if (!window.localStorage) {
           clearInterval(login['poll' + uAbbr + 'Int']);
           // doomed!
@@ -63,6 +64,7 @@ angular.module('sortinghatApp')
         }
       };
       window['complete' + uAbbr + 'Login'] = function (url, accessToken, email, link) {
+        console.log('[debug]', 'complete' + uAbbr + 'Login');
         clearInterval(login['poll' + uAbbr + 'Int']);
         localStorage.removeItem(abbr + 'Status');
         login.loginCallback();
@@ -73,7 +75,7 @@ angular.module('sortinghatApp')
         delete login.loginWindow;
       };
       scope['loginWith' + uAbbr + ''] = function () {
-        console.log('loginWith' + uAbbr + '');
+        console.log('[debug]', 'loginWith' + uAbbr + '');
         login.loginCallback = function () {
           console.log('loginCallback');
           StSession.read({ expire: true }).then(function (session) {

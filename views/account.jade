@@ -7,6 +7,14 @@ div
     li [[ http://example.com/bar ]] [unassociate and delete] (no other sign-ins are linked)
 
 div
+  button.btn.btn-facebook(type="button", ng-click="A.loginWithLds()")
+    i.fa
+      img(src="/images/moroni.png")
+    span  | Connect with LDS.org
+  p
+    span (you must sign out to associate an additional account)
+
+div
   button.btn.btn-facebook(type="button", ng-click="A.loginWithFb()")
     i.fa.fa-facebook-square
     span  | Connect with Facebook
