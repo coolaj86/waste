@@ -20,6 +20,23 @@
   font-size: 0.8em;
 }
 
+.btn-ldsauth {
+  background-color: #9aa85f;
+  color: white;
+}
+.btn-ldsauth:hover {
+  background-color: #91a053;
+  color: white;
+}
+.btn-envelope {
+  background-color: #777777;
+  color:white
+}
+.btn-envelope:hover {
+  background-color: #666666;
+  color:white
+}
+
 @media (max-width: 767px) {
   .auth-modal .signin-options {
     margin-left: 0;

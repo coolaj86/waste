@@ -12,6 +12,12 @@
       .row
         .col-md-6
           .option
+            button.btn.btn-block.btn-social.btn-lg.btn-ldsauth(type="button", ng-click="L.loginWithLds()")
+              i.fa
+                img(src="/images/moroni.png")
+              span.signin Sign In with Lds.org
+        .col-md-6
+          .option
             button.btn.btn-block.btn-social.btn-lg.btn-facebook(type="button", ng-click="L.loginWithFb()")
               i.fa.fa-facebook
               span.signin Sign In with Facebook
@@ -22,12 +28,12 @@
               span.signin Sign In with Twitter
         .col-md-6
           .option
-            button.btn.btn-block.btn-social.btn-lg.btn-google-plus
+            button.btn.btn-block.btn-social.btn-lg.btn-google-plus(type="button", ng-click="L.loginWithGplus()")
               i.fa.fa-google-plus
               span.signin Sign In with Google
         .col-md-6
           .option
-            button.btn.btn-block.btn-social.btn-lg.btn-envelope(ng-click="L.loginWithEmail()")
+            button.btn.btn-block.btn-social.btn-lg.btn-envelope(type="button", ng-click="L.loginWithEmail()")
               i.fa.fa-envelope
               span.signin Sign In with Email
 //-
