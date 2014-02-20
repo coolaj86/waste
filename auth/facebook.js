@@ -55,7 +55,7 @@ module.exports.init = function (passport, config, opts) {
       //passport.authenticate('facebook', { successRedirect: '/close.html?accessToken=blar',
       //                                    failureRedirect: '/close.html?error=foo' }));
     , function (req, res, next) {
-        passport.authenticate('facebook', function(err, data) {
+        passport.authenticate('facebook', function (err, data) {
           var url = '/fb-close.html'
             , currentUser
             ;
