@@ -1,16 +1,51 @@
-.row
-  h3 Please sign in to continue
-  p
-    button.btn.btn-facebook(type="button", ng-click="L.loginWithFb()")
-      i.fa.fa-facebook-square
-      span  | Connect with Facebook
+.auth-modal
+  .modal-header
+    button.close(type="button", ng-click="L.cancel()") &times;
+    h4.modal-title Please Sign In
+    ul.nav.nav-tabs
+      li.active
+        a(href="#") Social
+      //-li
+        a(href="#") Account
+  .modal-body
+    .signin-options
+      .row
+        .col-md-6
+          .option
+            button.btn.btn-block.btn-social.btn-lg.btn-facebook(type="button", ng-click="L.loginWithFb()")
+              i.fa.fa-facebook
+              span.signin Sign In with Facebook
+        .col-md-6
+          .option
+            button.btn.btn-block.btn-social.btn-lg.btn-twitter(type="button", ng-click="L.loginWithTw()")
+              i.fa.fa-twitter
+              span.signin Sign In with Twitter
+        .col-md-6
+          .option
+            button.btn.btn-block.btn-social.btn-lg.btn-google-plus
+              i.fa.fa-google-plus
+              span.signin Sign In with Google
+        .col-md-6
+          .option
+            button.btn.btn-block.btn-social.btn-lg.btn-envelope(ng-click="L.loginWithEmail()")
+              i.fa.fa-envelope
+              span.signin Sign In with Email
+//-
+  .row
+    h3 Please sign in to continue
+    p
+      button.btn.btn-facebook
+        i.fa.fa-facebook-square
+        span  | Connect with Facebook
 
-    button.btn.btn-twitter(type="button", ng-click="L.loginWithTw()")
-      i.fa.fa-twitter-square
-      span  | Connect with Twitter
+      button.btn.btn-twitter
+        i.fa.fa-twitter-square
+        span  | Connect with Twitter
 
-  //-p
-    a(href="", ng-click="L.loginWithEmail()") use e-mail
-.row
-  p
-    a(href="", ng-click="L.cancel()") cancel
+    //-p
+      a(href="") use e-mail
+  .row
+    p
+      a(href="", ) cancel
+
+
