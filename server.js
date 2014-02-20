@@ -3,8 +3,6 @@
 var connect = require('connect')
   , path = require('path')
   , app = connect()
-  , server
-  , port = process.argv[2] || 3000
   , auth = require('./auth')
   , config = require('./config')
   , routes
@@ -86,10 +84,18 @@ app
   ;
 
 
-if (require.main === module) {
+function run() {
+  var port = process.argv[2] || 3000
+    , server
+    ;
+
   server = app.listen(port, function () {
     console.log('Listening on http://' + server.address().address + ':' + server.address().port + '/#/');
   });
+}
+
+if (require.main === module) {
+  run();
   return;
 }
 
