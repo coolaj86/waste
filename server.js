@@ -50,7 +50,8 @@ app
       };
       res.send = function (data) {
         if (data) {
-          data = JSON.stringify(data);
+          res.setHeader('Content-Type', 'application/json');
+          data = JSON.stringify(data, null, '  ');
         } else {
           data = undefined;
         }
