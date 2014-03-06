@@ -2,6 +2,7 @@ dist
 .tmp
 .sass-cache
 app/bower_components
+app/angular-ui-bootstrap
 
 lib-cov
 *.seed

@@ -34,7 +34,7 @@ angular.module('sortinghatApp')
     //
     // LDS.org
     //
-    StLogin.makeLogin($scope, 'lds', '/auth/ldsauth', function (session) {
+    StLogin.makeLogin($scope, 'lds', '/auth/ldsconnect', function (session) {
       assignAccount(session);
     });
 

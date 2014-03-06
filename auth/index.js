@@ -2,7 +2,7 @@
 
 var Passport = require('passport').Passport
   , facebook = require('./facebook')
-  , ldsauth = require('./ldsauth')
+  , ldsconnect = require('./ldsconnect')
   , twitter = require('./twitter')
   , forEachAsync = require('forEachAsync').forEachAsync
   , path = require('path')
@@ -154,7 +154,7 @@ module.exports.init = function (app, config) {
 
   routes.push(facebook.init(passport, config, { Users: Users }));
   routes.push(twitter.init(passport, config, { Users: Users }));
-  routes.push(ldsauth.init(passport, config, { Users: Users }));
+  routes.push(ldsconnect.init(passport, config, { Users: Users }));
 
   return routes;
 };

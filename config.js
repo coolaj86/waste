@@ -11,4 +11,8 @@ module.exports = {
     consumerKey: 'XXX'
   , consumerSecret: 'XXX'
   }
+, ldsconnect: {
+    // https://ldsconnect.org/dev
+    id: 'XXX'
+  , secret: 'XXX'
 };

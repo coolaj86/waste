@@ -10,21 +10,21 @@ angular.module('sortinghatApp')
     //
     // LDS.org
     //
-    StLogin.makeLogin($scope, 'lds', '/auth/ldsauth', function (session) {
+    StLogin.makeLogin($scope, 'lds', '/auth/ldsconnect', function (err, session) {
       $modalInstance.close(session);
     });
 
     //
     // Facebook
     //
-    StLogin.makeLogin($scope, 'fb', '/auth/facebook', function (session) {
+    StLogin.makeLogin($scope, 'fb', '/auth/facebook', function (err, session) {
       $modalInstance.close(session);
     });
 
     //
     // Twitter
     //
-    StLogin.makeLogin($scope, 'tw', '/authn/twitter', function (session) {
+    StLogin.makeLogin($scope, 'tw', '/authn/twitter', function (err, session) {
       $modalInstance.close(session);
     });
 

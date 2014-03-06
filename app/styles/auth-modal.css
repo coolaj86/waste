@@ -20,11 +20,11 @@
   font-size: 0.8em;
 }
 
-.btn-ldsauth {
+.btn-ldsconnect {
   background-color: #9aa85f;
   color: white;
 }
-.btn-ldsauth:hover {
+.btn-ldsconnect:hover {
   background-color: #91a053;
   color: white;
 }

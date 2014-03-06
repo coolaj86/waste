@@ -59,6 +59,9 @@ angular.module('sortinghatApp', [
               data: function (Data) {
                 return Data.get();
               }
+            , mySession: function (StSession) {
+                return StSession.get();
+              }
             }
           }
         , footer: footer
