@@ -64,10 +64,19 @@ angular.module('sortinghatApp')
         }
       };
       window['complete' + uAbbr + 'Login'] = function (url, accessToken, email, link) {
+        var err = null
+          ;
+
+        if (/deny|denied/i.test(url)) {
+          err = new Error('Access Denied: ' + url);
+        } else if (/error/i.test(url)) {
+          err = new Error('Auth Error: ' + url);
+        }
+
         console.log('[debug]', 'complete' + uAbbr + 'Login');
         clearInterval(login['poll' + uAbbr + 'Int']);
         localStorage.removeItem(abbr + 'Status');
-        login.loginCallback();
+        login.loginCallback(err);
 
         console.log('accessed parent function complete' + uAbbr + 'Login', accessToken, email, link);
         //jQuery('body').append('<p>' + url + '</p>');
@@ -76,14 +85,19 @@ angular.module('sortinghatApp')
       };
       scope['loginWith' + uAbbr + ''] = function () {
         console.log('[debug]', 'loginWith' + uAbbr + '');
-        login.loginCallback = function () {
+        login.loginCallback = function (err) {
           console.log('loginCallback');
+          if (err) {
+            cb(err);
+            return;
+          }
+
           StSession.read({ expire: true }).then(function (session) {
             console.log('StSession.read()', session);
             if (session.error) {
               StSession.destroy();
             }
-            cb(session);
+            cb(null, session);
           });
         };
         login.loginWindow = window.open(authUrl);
