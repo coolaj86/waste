@@ -1,8 +1,11 @@
 .header
-  ul.nav.pull-right
+  ul.nav.nav-pills.pull-right
     li
       a(ng-show="!N.session", href="", ng-click="N.login()") Login
-      a(ng-show="N.session", href="", ui-sref="account") Account
+      a(ng-show="N.session", href="", ng-click="N.logout()") Logout
+  ul.nav.pull-right
+    li(ng-show="N.session")
+      a(href="", ui-sref="account") Account
   ul.nav.nav-pills.pull-right
     li(ng-repeat="tab in N.tabs", ng-class="{ active: tab.active }")
       a(ng-href="{{tab.href}}") {{ tab.title }}

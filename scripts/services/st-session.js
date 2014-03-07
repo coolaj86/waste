@@ -4,7 +4,9 @@ angular.module('sortinghatApp')
   .service('StSession', function StSession($http, $q, $timeout) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     var user
+      , gettingSession
       , noopts = {}
+      , notifier = $q.defer()
       ;
 
     function read(opts) {
@@ -12,11 +14,17 @@ angular.module('sortinghatApp')
       var d = $q.defer()
         ;
 
+      if (gettingSession) {
+        return gettingSession;
+      }
+      gettingSession = d.promise;
+
       if (opts.expire) { // also try Date.now() - user.touchedAt
         user = null;
       }
 
-      d.promise.then(function () {
+      gettingSession.then(function () {
+        gettingSession = null;
         console.log('resolved by StSession');
       });
 
@@ -26,7 +34,7 @@ angular.module('sortinghatApp')
           d.resolve(user);
         }, 0);
         console.log('returning resolved promise');
-        return d.promise;
+        return gettingSession;
       }
 
       $http.get('/api/session').success(function (_user) {
@@ -36,7 +44,7 @@ angular.module('sortinghatApp')
         d.resolve(user);
       });
 
-      return d.promise;
+      return gettingSession;
     }
 
     function create(email, passphrase) {
@@ -56,6 +64,11 @@ angular.module('sortinghatApp')
     // external auth (i.e. facebook, twitter)
     function update(data) {
       user = data;
+      notifier.notify(user);
+    }
+
+    function on(fn) {
+      notifier.promise.then(null, null, fn);
     }
 
     function destroy() {
@@ -75,5 +88,6 @@ angular.module('sortinghatApp')
     , read: read
     , update: update
     , destroy: destroy
+    , subscribe: on
     };
   });
