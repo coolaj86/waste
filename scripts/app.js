@@ -15,8 +15,10 @@ angular.module('sortinghatApp', [
     nav = {
       templateUrl: '/views/nav.html'
     , controller: 'NavCtrl as N'
-    , mySession: function (StSession) {
-        return StSession.get();
+    , resolve: {
+        mySession: function (StSession) {
+          return StSession.get();
+        }
       }
     };
 

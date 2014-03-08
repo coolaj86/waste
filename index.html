@@ -18,10 +18,14 @@
     <link rel="stylesheet" href="styles/auth-modal.css">
     <!-- endbuild -->
 
+    <link href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/cerulean/bootstrap.min.css" rel="stylesheet">
+    <!--
+    <link href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/slate/bootstrap.min.css" rel="stylesheet">
+    -->
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 
   </head>
-  <body ng-app="sortinghatApp">
+  <body ng-app="sortinghatApp" style="padding-top: 50px;">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -32,9 +36,9 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div ui-view="nav"></div>
+    <span ui-view="nav" class="st-none"></span>
     <div class="container" ui-view="body"></div>
-    <div ui-view="footer"></div>
+    <span ui-view="footer"></span>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
      <script>
@@ -54,18 +58,6 @@
     <script src="vender/require-kiss.js"></script>
     <script src="bower_components/knuth-shuffle/index.js"></script>
     <script src="bower_components/quizomatic/quizomatic.js"></script>
-    <script src="bower_components/sass-bootstrap/js/affix.js"></script>
-    <script src="bower_components/sass-bootstrap/js/alert.js"></script>
-    <script src="bower_components/sass-bootstrap/js/button.js"></script>
-    <script src="bower_components/sass-bootstrap/js/carousel.js"></script>
-    <script src="bower_components/sass-bootstrap/js/transition.js"></script>
-    <script src="bower_components/sass-bootstrap/js/collapse.js"></script>
-    <script src="bower_components/sass-bootstrap/js/dropdown.js"></script>
-    <script src="bower_components/sass-bootstrap/js/modal.js"></script>
-    <script src="bower_components/sass-bootstrap/js/scrollspy.js"></script>
-    <script src="bower_components/sass-bootstrap/js/tab.js"></script>
-    <script src="bower_components/sass-bootstrap/js/tooltip.js"></script>
-    <script src="bower_components/sass-bootstrap/js/popover.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/modules.js -->
