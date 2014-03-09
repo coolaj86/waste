@@ -16,6 +16,9 @@ npm install
 bower install
 
 grunt build --force
+
+echo '{}' > data/accounts.priv.json
+echo '{}' > data/users.priv.json
 ```
 
 Use
