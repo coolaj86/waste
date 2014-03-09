@@ -17,6 +17,7 @@ angular.module('sortinghatApp')
     // using a shared object, but I think
     // this approach is more familiar to the average programmer
     StSession.subscribe(updateSession);
+    updateSession(mySession);
 
     $scope.tabs = [
       { active: $state.includes('root')
