@@ -12,9 +12,9 @@ module.exports.create = function (opts) {
     ;
 
   try {
-    console.log("Couldn't find users db file. Creating anew...");
     users = require(opts.dbfile);
   } catch(e) {
+    console.log("Couldn't find users db file. Creating anew...");
     users = {};
   }
 

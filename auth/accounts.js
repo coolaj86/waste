@@ -11,9 +11,9 @@ module.exports.create = function (opts) {
     ;
 
   try {
-    console.log("Couldn't find accounts db file. Creating anew...");
     cache = require(opts.dbfile);
   } catch(e) {
+    console.log("Couldn't find accounts db file. Creating anew...");
     cache = {};
   }
 
