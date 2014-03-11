@@ -13,7 +13,8 @@
     "node-uuid": "~1.4.1",
     "oauth": "~0.9.10",
     "foreachasync": "~3.0.0",
-    "pouchdb": "~2.0.1"
+    "pouchdb": "~2.0.1",
+    "passport-tumblr": "~0.1.2"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
