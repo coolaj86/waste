@@ -6,8 +6,8 @@ var Passport = require('passport').Passport
   , twitter = require('./twitter')
   , forEachAsync = require('forEachAsync').forEachAsync
   , path = require('path')
-  , Users = require('./users').create({ dbfile: path.join(__dirname, '..', 'data', 'users.priv.json') })
-  , Accounts = require('./accounts').create({ dbfile: path.join(__dirname, '..', 'data', 'accounts.priv.json')})
+  , Users = require('./users').create({ dbfile: path.join(__dirname, '..', 'priv', 'users.priv.json') })
+  , Accounts = require('./accounts').create({ dbfile: path.join(__dirname, '..', 'priv', 'accounts.priv.json')})
   ;
 
 module.exports.init = function (app, config) {
