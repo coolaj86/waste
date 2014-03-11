@@ -4,6 +4,7 @@ dist
 app/bower_components
 app/angular-ui-bootstrap
 app/views/*.html
+priv/
 
 lib-cov
 *.seed

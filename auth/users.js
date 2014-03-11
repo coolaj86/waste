@@ -6,10 +6,17 @@ var UUID = require('node-uuid')
 
 module.exports.create = function (opts) {
   var Users = {}
-    , users = require(opts.dbfile)
     , dbpath = opts.dbfile
     , mods = {}
+    , users
     ;
+
+  try {
+    console.log("Couldn't find users db file. Creating anew...");
+    users = require(opts.dbfile);
+  } catch(e) {
+    users = {};
+  }
 
   function save() {
     fs.writeFileSync(dbpath, JSON.stringify(users, null, '  '), 'utf8');

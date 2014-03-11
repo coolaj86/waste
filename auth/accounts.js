@@ -6,9 +6,16 @@ var UUID = require('node-uuid')
 
 module.exports.create = function (opts) {
   var Accounts = {}
-    , cache  = require(opts.dbfile)
     , dbpath = opts.dbfile
+    , cache
     ;
+
+  try {
+    console.log("Couldn't find accounts db file. Creating anew...");
+    cache = require(opts.dbfile);
+  } catch(e) {
+    cache = {};
+  }
 
   function save() {
     fs.writeFileSync(dbpath, JSON.stringify(cache, null, '  '), 'utf8');
