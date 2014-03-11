@@ -15,6 +15,9 @@ module.exports = {
 , facebook: {
     // https://developers.facebook.com/apps
     // Client Token 5308ba111a46159e92d74fce76dbe807
+    // Test User Email: hogwarts_ogszoxx_user@tfbnw.net
+    // Test User Password: secret
+    // Test User ID: 100007933814002
     id: '259725070873272'
   , secret: 'd8469a2af25d6b806014be4be272b909'
   }
@@ -26,6 +29,8 @@ module.exports = {
   }
 , ldsconnect: {
     // http://ldsconnect.org
+    // Test User Name: dumbledore
+    // Test User Password: secret
     id: '55c7-test-bd03'
   , secret: '6b2fc4f5-test-8126-64e0-b9aa0ce9a50d'
   }
