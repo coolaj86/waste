@@ -65,7 +65,7 @@ app
   .use(connect.urlencoded())
   .use(connect.compress())
   .use(connect.cookieParser())
-  .use(connect.session({ secret: 'fzzysnthbeeeeaith' }))
+  .use(connect.session({ secret: config.sessionSecret }))
   //.use(express.router)
   ;
   //route(app);
