@@ -78,12 +78,12 @@ module.exports = function (grunt) {
       },
       livereload: {
         options: {
-          open: true,
-          base: [
+          open: 'http://local.ldsconnect.org:' + port
+        , base: [
             '.tmp',
             '<%= yeoman.app %>'
-          ],
-          middleware: function (/*connect*/) {
+          ]
+        , middleware: function (/*connect*/) {
             return [
 
               lrSnippet
