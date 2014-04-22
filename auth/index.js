@@ -4,12 +4,18 @@ var Passport = require('passport').Passport
   , facebook = require('./facebook')
   , ldsconnect = require('./ldsconnect')
   , twitter = require('./twitter')
-  , forEachAsync = require('forEachAsync').forEachAsync
+  , tumblr = require('./tumblr')
+  , forEachAsync = require('foreachasync').forEachAsync
   , path = require('path')
   , Users = require('./users').create({ dbfile: path.join(__dirname, '..', 'priv', 'users.priv.json') })
   , Accounts = require('./accounts').create({ dbfile: path.join(__dirname, '..', 'priv', 'accounts.priv.json')})
+  , strategies = {}
   ;
 
+module.exports.strategies = strategies = {
+  twitter: twitter
+, tumblr: tumblr
+};
 module.exports.init = function (app, config) {
   var passport = new Passport()
     , routes = []
@@ -154,7 +160,10 @@ module.exports.init = function (app, config) {
 
   routes.push(facebook.init(passport, config, { Users: Users }));
   routes.push(twitter.init(passport, config, { Users: Users }));
+  routes.push(tumblr.init(passport, config, { Users: Users }));
   routes.push(ldsconnect.init(passport, config, { Users: Users }));
 
+  routes.routes = routes;
+  routes.strategies = strategies;
   return routes;
 };

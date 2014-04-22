@@ -5,6 +5,13 @@ angular.module('sortinghatApp')
     var $scope = this
       ;
 
+    if (mySession && mySession.profiles) {
+      mySession.profiles.forEach(function (profile) {
+        mySession[profile.provider] = true;
+      });
+    }
+    $scope.session = mySession;
+
     function assignAccount(session) {
       /*
       session.profiles.some(function (login) {
@@ -28,6 +35,13 @@ angular.module('sortinghatApp')
     // Twitter
     //
     StLogin.makeLogin($scope, 'tw', '/authn/twitter', function (session) {
+      assignAccount(session);
+    });
+
+    //
+    // Tumblr
+    //
+    StLogin.makeLogin($scope, 'tumblr', '/auth/tumblr', function (session) {
       assignAccount(session);
     });
 
