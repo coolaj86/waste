@@ -14,7 +14,11 @@
     "oauth": "~0.9.10",
     "foreachasync": "~3.0.0",
     "pouchdb": "~2.0.1",
-    "passport-tumblr": "~0.1.2"
+    "passport-tumblr": "~0.1.2",
+    "request": "~2.34.0",
+    "ssl-root-cas": "~1.0.5",
+    "sqlite3": "~2.2.3",
+    "level": "~0.18.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
