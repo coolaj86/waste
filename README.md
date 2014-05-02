@@ -42,3 +42,73 @@ replace the `XXX`s with your own keys and secrets
 ```bash
 vim config.js
 ```
+
+APIs you get for free
+===
+
+Accounts and Profiles
+---
+
+In this documentation an `account` means an account in your application that the user logs into
+whereas a `profile` (aka login) means a profile from a 3rd party provider (or yourself) that may access such an account.
+
+### Say What!?
+
+Essentially a `profile` is an authentication method that is authorized for one or more `accounts`.
+
+
+For example:
+
+Google Plus allows one Google+ `profile` to control several YouTube `accounts`. You can switch between multiple Google `profiles` (say me@work.com and me@gmail.com) and each may manage the same account (say my work social media page).
+
+Buffer and HootSuite allow you to login with any number of `profiles` to a single `account` which can cantrol multiple `profiles`. However, you manage those same `profiles` to login to a different `account`. When I login through the @coolaj86 profile I always end up in the same acount - no user switching.
+
+### Authentication and Authorization, Unopinionated
+
+We make no assumptions about how you might want to allow or restrict the sharing of account access among profiles. You can build it out as you wish.
+
+* GET `/api/session`
+
+If you don't implement anything to restrict the linking of profiles and accounts you get back an object like this:
+
+```javascript
+{
+    "currentLoginId": "facebook:1234567890",
+    "accounts": [
+        {
+            "uuid": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
+            "loginIds": [
+                "ldsconnect:albusdumbledore"
+            ]
+        }
+    ],
+    "profiles": [
+        {
+            "id": "1234567890",
+            "guest": true,
+            "test": true,
+            "emails": [
+                {
+                    "value": "albus@dumble.dore",
+                }
+            ],
+            "provider": "facebook",
+            "pkey": "facebook:1234567890"
+        }
+    ]
+}
+```
+
+* POST `/api/session`
+
+### Facebook Connect et al
+
+Each of these URLs will redirect to the app authentication and or authorization dialog of the specified provider.
+
+Some providers only require authorization once (facebook) and will self-close every time. Others (tumblr) require authorization every single time. Others (twitter) are weird, but we work around the weirdness as best as we can to provide the simplest experience possible.
+
+* GET `/api/auth/facebook` redirects to facebook connect (login, permission dialog, or self-closes)
+* GET `/api/authn/twitter` redirects to twitter authentication and then to twitter authorization, if needed (login, perms, or close)
+* GET `/api/authz/twitter` redirects to twitter authorization (every time)
+* GET `/api/auth/tumblr` redirects to tumblr authorization (every time)
+* GET `/api/auth/ldsconnect` redirects to ldsconnect (same process as facebook)
