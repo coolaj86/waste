@@ -25,6 +25,7 @@ module.exports.init = function (passport, config, opts) {
   opts.Users.register('ldsconnect', '1.0.0', getId, getIds);
 
   passport.use(new LdsConnectStrategy({
+      profileUrl: '/api/ldsconnect/me',
       clientID: config.ldsconnect.id,
       clientSecret: config.ldsconnect.secret,
       callbackURL: config.protocol + "://" + config.host + "/api/auth/ldsconnect/callback"
