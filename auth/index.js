@@ -5,6 +5,7 @@ var Passport = require('passport').Passport
   , ldsconnect = require('./ldsconnect')
   , twitter = require('./twitter')
   , tumblr = require('./tumblr')
+  , local = require('./local')
   , forEachAsync = require('foreachasync').forEachAsync
   , path = require('path')
   , Users = require('./users').create({ dbfile: path.join(__dirname, '..', 'priv', 'users.priv.json') })
@@ -158,10 +159,64 @@ module.exports.init = function (app, config) {
     .use(passport.session())
     ;
 
-  routes.push(facebook.init(passport, config, { Users: Users }));
-  routes.push(twitter.init(passport, config, { Users: Users }));
-  routes.push(tumblr.init(passport, config, { Users: Users }));
-  routes.push(ldsconnect.init(passport, config, { Users: Users }));
+  /*
+  function handleFailure(req, res, opts) {
+    if (opts.failure) {
+    } else if (opts.failureMessage) {
+    } else if (opts.failureUrl) {
+    } else {
+      res.send({ error: { message: "failed at " + opts.error.toString() } });
+    }
+  }
+  */
+  // The reason this function has been pulled out to
+  // auth/index.js is because it is very common among
+  // the various auth implementations and it does some
+  // currentUser mangling, which may change in the future
+  // and the underlying implementations should not need to be aware of it
+  function handleLogin(req, res, next, opts) {
+    var currentUser
+      ;
+
+    if (opts.error || !opts.user) {
+      if (opts.failure) {
+        opts.failure();
+        return;
+      }
+      req.url = opts.failureUrl;
+      next();
+      return;
+    }
+
+    // this is conditional, there may not be a req.user
+    currentUser = req.user && req.user.currentUser;
+
+    // the object passed here becomes req.user
+    // newUser will become currentUser if it exists
+    // currentUser will become oldUser or stay as currentUser
+    // TODO currentAccount
+    req.logIn({ newUser: opts.user, currentUser: currentUser }, function (err) {
+      if (err) { return next(err); }
+
+      function finish() {
+        req.url = opts.successUrl;
+        next();
+      }
+
+      if (opts.callback) {
+        // TODO is req.user.currentUser === user?
+        opts.callback(req.user.currentUser, finish);
+      } else {
+        finish();
+      }
+    });
+  }
+
+  routes.push(facebook.init(passport, config, { Users: Users, login: handleLogin }));
+  routes.push(twitter.init(passport, config, { Users: Users, login: handleLogin }));
+  routes.push(tumblr.init(passport, config, { Users: Users, login: handleLogin }));
+  routes.push(ldsconnect.init(passport, config, { Users: Users, login: handleLogin }));
+  routes.push(local.init(passport, config, { Users: Users, login: handleLogin }));
 
   routes.routes = routes;
   routes.strategies = strategies;

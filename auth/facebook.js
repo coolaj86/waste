@@ -52,36 +52,23 @@ module.exports.init = function (passport, config, opts) {
   function route(rest) {
     rest.get(
       '/api/auth/facebook/callback'
-      //passport.authenticate('facebook', { successRedirect: '/close.html?accessToken=blar',
-      //                                    failureRedirect: '/close.html?error=foo' }));
     , function (req, res, next) {
-        passport.authenticate('facebook', function (err, data) {
-          var url = '/fb-close.html'
-            , currentUser
-            ;
-
-          if (err || !data) {
-            url = '/fb-error.html';
-            req.url = url;
-            next();
-            return;
-          }
+        passport.authenticate('facebook', function (err, user, info) {
+          console.log('[auth] [facebook]');
 
           // for some reason the very first time the profile comes back it is without emails
-          if (!Array.isArray(data.profile.emails)) {
+          // NOTE: if the email is unverified the array will exist, but be empty
+          if (user && !Array.isArray(user.profile.emails)) {
             res.redirect('/auth/facebook');
             return;
           }
 
-          // this is conditional, there may not be a req.user
-          currentUser = req.user && req.user.currentUser;
-
-          // the object passed here becomes req.user
-          req.logIn({ newUser: data, currentUser: currentUser }, function (err) {
-            if (err) { return next(err); }
-
-            req.url = url;
-            next();
+          opts.login(req, res, next, {
+            error: err
+          , user: user
+          , info: info
+          , successUrl: '/fb-close.html'
+          , failureUrl: '/fb-error.html'
           });
         })(req, res, next);
       }
