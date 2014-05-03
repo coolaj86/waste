@@ -117,29 +117,14 @@ module.exports.init = function (passport, config, opts) {
     rest.get(
       '/auth/tumblr/callback'
     , function (req, res, next) {
-        passport.authenticate('tumblr', function (err, data) {
-          var url = '/tumblr-close.html'
-            , currentUser
-            ;
-
-          if (err || !data) {
-            url = '/tumblr-error.html';
-            req.url = url;
-            next();
-            return;
-          }
-
-          // this is conditional, there may not be a req.user
-          currentUser = req.user && req.user.currentUser;
-
-          // the object passed here becomes req.user
-          // TODO currentAccount
-          console.log('tumblr auth n');
-          req.logIn({ newUser: data, currentUser: currentUser }, function (err) {
-            if (err) { return next(err); }
-
-            req.url = url;
-            next();
+        passport.authenticate('tumblr', function (err, user, info) {
+          console.log('[auth] tumblr auth n');
+          opts.login(req, res, next, {
+            error: err
+          , user: user
+          , info: info
+          , successUrl: '/tumblr-close.html'
+          , failureUrl: '/tumblr-error.html'
           });
         })(req, res, next);
       }

@@ -125,35 +125,22 @@ module.exports.init = function (passport, config, opts) {
     rest.get(
       '/authn/twitter/callback'
     , function (req, res, next) {
-        passport.authenticate('twitterAuthn', function (err, data) {
-          var url = '/tw-close.html'
-            , currentUser
-            ;
-
-          if (err || !data) {
-            url = '/tw-error.html';
-            req.url = url;
-            next();
-            return;
-          }
-
-          // this is conditional, there may not be a req.user
-          currentUser = req.user && req.user.currentUser;
-
-          // the object passed here becomes req.user
-          // TODO currentAccount
-          console.log('tw auth n');
-          req.logIn({ newUser: data, currentUser: currentUser }, function (err) {
-            if (err) { return next(err); }
-
-            // If we don't have authorization, get it
-            if (!req.user.currentUser.authorized) {
-              res.redirect('/authz/twitter');
-              return;
+        passport.authenticate('twitterAuthn', function (err, user, info) {
+          console.log('[auth] twitter auth n');
+          opts.login(req, res, next, {
+            error: err
+          , user: user
+          , info: info
+          , successUrl: '/tw-close.html'
+          , failureUrl: '/tw-error.html'
+          , callback: function (user2, next2) {
+              // If we don't have authorization, get it
+              if (!user2.authorized) {
+                res.redirect('/authz/twitter');
+                return;
+              }
+              next2();
             }
-
-            req.url = url;
-            next();
           });
         })(req, res, next);
       }
@@ -168,27 +155,14 @@ module.exports.init = function (passport, config, opts) {
     rest.get(
       '/authz/twitter/callback'
     , function (req, res, next) {
-        passport.authenticate('twitterAuthz', function (err, data) {
-          var url = '/tw-close.html'
-            , currentUser
-            ;
-
-          if (err || !data) {
-            url = '/tw-error.html';
-            req.url = url;
-            next();
-            return;
-          }
-
-          currentUser = req.user && req.user.currentUser;
-
-          // the object passed here becomes req.user
-          console.log('tw auth z');
-          req.logIn({ newUser: data, currentUser: currentUser }, function (err) {
-            if (err) { return next(err); }
-
-            req.url = url;
-            next();
+        passport.authenticate('twitterAuthz', function (err, user, info) {
+          console.log('[auth] twitter auth z');
+          opts.login(req, res, next, {
+            error: err
+          , user: user
+          , info: info
+          , successUrl: '/tw-close.html'
+          , failureUrl: '/tw-error.html'
           });
         })(req, res, next);
       }

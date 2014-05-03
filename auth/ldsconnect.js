@@ -25,7 +25,6 @@ module.exports.init = function (passport, config, opts) {
   opts.Users.register('ldsconnect', '1.0.0', getId, getIds);
 
   passport.use(new LdsConnectStrategy({
-      profileUrl: '/api/ldsconnect/me',
       clientID: config.ldsconnect.id,
       clientSecret: config.ldsconnect.secret,
       callbackURL: config.protocol + "://" + config.host + "/api/auth/ldsconnect/callback"
@@ -48,40 +47,17 @@ module.exports.init = function (passport, config, opts) {
   function route(rest) {
     rest.get(
       '/api/auth/ldsconnect/callback'
-      //passport.authenticate('ldsconnect', { successRedirect: '/close.html?accessToken=blar',
-      //                                    failureRedirect: '/close.html?error=foo' }));
     , function (req, res, next) {
-        passport.authenticate('ldsconnect', function (err, data) {
-          var url = '/lds-close.html#allow'
-            , currentUser
-            ;
-
+        passport.authenticate('ldsconnect', function (err, user, info) {
+          opts.login(req, res, next, {
+            error: err
+          , user: user
+          , info: info
           // NOTE this does not issue a Location redirect.
           // Instead, the file is read and surved with the current URL.
           // The hash/anchors are being used as reminder placeholders
-          if (err || !data) {
-            console.log(err || 'no data');
-            // the url
-            if (err) {
-              url = '/lds-close.html#error';
-            }
-            if (!data) {
-              url = '/lds-close.html#deny';
-            }
-            req.url = url;
-            next();
-            return;
-          }
-
-          // this is conditional, there may not be a req.user
-          currentUser = req.user && req.user.currentUser;
-
-          // the object passed here becomes req.user
-          req.logIn({ newUser: data, currentUser: currentUser }, function (err) {
-            if (err) { return next(err); }
-
-            req.url = url;
-            next();
+          , successUrl: '/lds-close.html' // TODO #allow
+          , failureUrl: '/lds-error.html' // TODO #error || #deny
           });
         })(req, res, next);
       }
