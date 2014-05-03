@@ -5,8 +5,9 @@ Install
 ===
 
 ```bash
-git clone https://github.com/coolaj86/angular-project-template.git
-pushd angular-project-template/
+git clone https://github.com/coolaj86/angular-project-template.git my-project-name
+pushd my-project-name/
+git remote rename origin upstream
 
 npm install -g yo
 npm install -g generator-angular
@@ -41,6 +42,8 @@ replace the `XXX`s with your own keys and secrets
 
 ```bash
 vim config.js
+mv angular-project.conf /etc/init/my-project-name.conf
+vim /etc/init/my-project-name.conf
 ```
 
 APIs you get for free
@@ -99,7 +102,34 @@ If you don't implement anything to restrict the linking of profiles and accounts
 }
 ```
 
-* POST `/api/session`
+#### `POST /api/session/local`
+
+```bash
+curl http://localhost/api/session/local \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  -d '{ "id": "john.doe", "secret": "my secret" }'
+```
+
+returns the same as `GET /api/session`
+
+#### `POST /api/session/basic`
+
+```bash
+curl http://localhost/api/session/basic \
+  -X POST \
+  -H 'Authorization: Basic am9obi5kb2U6c2VjcmV0'
+```
+
+returns the same as `GET /api/session`
+
+#### `POST /api/session/bearer`
+
+curl http://localhost/api/session/basic \
+  -X POST \
+  -H 'Authorization: Bearer xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+
+returns the same as `GET /api/session`
 
 ### Facebook Connect et al
 
