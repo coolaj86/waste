@@ -1,10 +1,10 @@
 'use strict';
 
 var Passport = require('passport').Passport
-  , facebook = require('./facebook')
-  , ldsconnect = require('./ldsconnect')
-  , twitter = require('./twitter')
-  , tumblr = require('./tumblr')
+  , facebook = require('./providers/facebook')
+  , ldsconnect = require('./providers/ldsconnect')
+  , twitter = require('./providers/twitter')
+  , tumblr = require('./providers/tumblr')
   , local = require('./local')
   , forEachAsync = require('foreachasync').forEachAsync
   , path = require('path')
