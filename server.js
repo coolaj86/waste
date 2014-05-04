@@ -5,6 +5,8 @@ var connect = require('connect')
   , app = connect()
   , auth = require('./auth')
   , config = require('./config')
+  , ws = require('./lib/ws')
+  , wsport = process.argv[3] || 8080
   , routes
   ;
 
@@ -12,23 +14,29 @@ if (!connect.router) {
   connect.router = require('connect_router');
 }
 
+// Generic API routes
 function route(rest) {
   function getPublic(reqUser) {
     if (!reqUser) {
       return null;
     }
     return {
+      // TODO current account
       currentLoginId: reqUser.currentUser.id
     , accounts: reqUser.accounts
     , profiles: reqUser.profiles.map(function (authN) { authN.profile.pkey = authN.id; return authN.profile; })
     };
   }
 
+  rest.get('/api/session', function (req, res) {
+    res.send(getPublic(req.user) || { role: 'guest', as: 'get' });
+  });
+  // this is the fallthrough from the POST '/api' catchall
   rest.post('/api/session', function (req, res) {
     res.send(getPublic(req.user) || { role: 'guest', as: 'post' });
   });
-  rest.get('/api/session', function (req, res) {
-    res.send(getPublic(req.user) || { role: 'guest', as: 'get' });
+  rest.post('/api/session/:type', function (req, res) {
+    res.send(getPublic(req.user) || { role: 'guest', as: 'post', type: req.params.type });
   });
   rest.delete('/api/session', function (req, res) {
     req.logout();
@@ -70,11 +78,22 @@ app
   ;
   //route(app);
 
+//
+// Generic Template Auth
+//
 routes = auth.init(app, config);
 routes.forEach(function (fn) {
   app.use(connect.router(fn));
 });
 
+//
+// App-Specific WebSocket Server
+//
+app.use(connect.router(ws.create(app, wsport, [])));
+
+//
+// Generic Template API
+//
 app
   .use(connect.router(route))
   .use(connect.static(path.join(__dirname, 'data')))
@@ -82,6 +101,11 @@ app
   //.use(connect.static(path.join(__dirname, '.tmp', 'concat')))
   .use(connect.static(path.join(__dirname, 'app')))
   .use(connect.static(path.join(__dirname, '.tmp')))
+  .use(function (req, res, next) {
+    console.info("Actual req.url:");
+    console.info(req.url);
+    next();
+  })
   ;
 
 
@@ -91,7 +115,7 @@ function run() {
     ;
 
   server = app.listen(port, function () {
-    console.log('Listening on http://' + server.address().address + ':' + server.address().port + '/#/');
+    console.info('Listening on http://' + server.address().address + ':' + server.address().port + '/#/');
   });
 }
 
