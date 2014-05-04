@@ -13,91 +13,142 @@ var Passport = require('passport').Passport
   , strategies = {}
   ;
 
-module.exports.strategies = strategies = {
-  twitter: twitter
-, tumblr: tumblr
-};
-module.exports.init = function (app, config) {
-  var passport = new Passport()
-    , routes = []
+function getProfiles(accounts, done) {
+  var profiles = []
+    , profileMap = {}
     ;
 
-  function getProfiles(accounts, done) {
-    var profiles = []
-      , profileMap = {}
+  accounts.forEach(function (account) {
+    account.loginIds.forEach(function (loginId) {
+      profileMap[loginId] = true;
+    });
+  });
+
+  forEachAsync(Object.keys(profileMap), function (next, loginId) {
+    Users.findById(loginId, function (profile) {
+      if (profile) {
+        profiles.push(profile);
+      }
+      next();
+    });
+  }).then(function () {
+    done(null, profiles);
+  });
+}
+
+function getAccounts(_authN, loginIds, done) {
+  Users.read(_authN, function (authN) {
+    var accountIdMap = {}
+      , accounts = []
+      , _ids
       ;
 
-    accounts.forEach(function (account) {
-      account.loginIds.forEach(function (loginId) {
-        profileMap[loginId] = true;
-      });
+    _ids = Users.scrapeIds(authN);
+    if (0 === _ids.length) {
+      // TODO bad user account
+      done(new Error("unrecognized account type"));
+      return;
+    }
+    _ids.forEach(function (id) {
+      loginIds.push(id);
     });
 
-    forEachAsync(Object.keys(profileMap), function (next, loginId) {
-      Users.findById(loginId, function (profile) {
-        if (profile) {
-          profiles.push(profile);
-        }
+    forEachAsync(loginIds, function (next, id) {
+      Users.findById(id, function (user) {
+        user.accounts.forEach(function (accountId) {
+          accountIdMap[accountId] = true;
+        });
         next();
       });
     }).then(function () {
-      done(null, profiles);
-    });
-  }
+      Object.keys(accountIdMap).forEach(function (accountId) {
+        var account = Accounts.find(accountId)
+          ;
 
-  function getAccounts(_authN, loginIds, done) {
-    Users.read(_authN, function (authN) {
-      var accountIdMap = {}
-        , accounts = []
-        , _ids
-        ;
-
-      _ids = Users.scrapeIds(authN);
-      if (0 === _ids.length) {
-        // TODO bad user account
-        done(new Error("unrecognized account type"));
-        return;
-      }
-      _ids.forEach(function (id) {
-        loginIds.push(id);
-      });
-
-      forEachAsync(loginIds, function (next, id) {
-        Users.findById(id, function (user) {
-          user.accounts.forEach(function (accountId) {
-            accountIdMap[accountId] = true;
-          });
-          next();
-        });
-      }).then(function () {
-        Object.keys(accountIdMap).forEach(function (accountId) {
-          var account = Accounts.find(accountId)
-            ;
-
-          if (!account) {
-            console.error('No Account', accountId);
-          } else {
-            accounts.push(Accounts.find(accountId));
-          }
-        });
-
-        if (0 === accounts.length) {
-          accounts.push(Accounts.create(loginIds, {}));
+        if (!account) {
+          console.error('No Account', accountId);
+        } else {
+          accounts.push(Accounts.find(accountId));
         }
-
-        loginIds.forEach(function (id) {
-          accounts.forEach(function (account) {
-            Users.link(id, account.uuid);
-            Accounts.addLoginId(account.uuid, id);
-          });
-        });
-
-        done(null, accounts);
-
       });
 
+      if (0 === accounts.length) {
+        accounts.push(Accounts.create(loginIds, {}));
+      }
+
+      loginIds.forEach(function (id) {
+        accounts.forEach(function (account) {
+          Users.link(id, account.uuid);
+          Accounts.addLoginId(account.uuid, id);
+        });
+      });
+
+      done(null, accounts);
     });
+  });
+}
+
+// The reason this function has been pulled out to
+// auth/index.js is because it is very common among
+// the various auth implementations and it does some
+// currentUser mangling, which may change in the future
+// and the underlying implementations should not need to be aware of it
+function handleLogin(req, res, next, opts) {
+  var currentUser
+    ;
+
+  if (opts.error || !opts.user) {
+    if (opts.failure) {
+      opts.failure();
+      return;
+    }
+    req.url = opts.failureUrl || req.url;
+    next();
+    //res.redirect(opts.failureUrl);
+    return;
   }
+
+  // this is conditional, there may not be a req.user
+  currentUser = req.user && req.user.currentUser;
+
+  // the object passed here becomes req.user
+  // newUser will become currentUser if it exists
+  // currentUser will become oldUser or stay as currentUser
+  // TODO currentAccount
+  req.logIn({ newUser: opts.user, currentUser: currentUser }, function (err) {
+    if (err) { return next(err); }
+
+    function finish() {
+      req.url = opts.successUrl || req.url;
+      next();
+      //res.redirect(opts.successUrl);
+    }
+
+    if (opts.callback) {
+      // TODO is req.user.currentUser === user?
+      opts.callback(req.user.currentUser, finish);
+    } else {
+      finish();
+    }
+  });
+}
+
+module.exports.strategies = strategies = {
+  twitter: twitter
+, tumblr: tumblr
+, facebook: facebook
+, ldsconnect: ldsconnect
+, local: local
+};
+
+module.exports.init = function (app, config) {
+  var passport = new Passport()
+    , routes = []
+    , localRoute
+    , opts = { Users: Users, login: handleLogin }
+    ;
+
+  localRoute = local.init(passport, config, opts);
 
   // Passport session setup.
   //   To support persistent login sessions, Passport needs to be able to
@@ -130,8 +181,11 @@ module.exports.init = function (app, config) {
 
     Users.create(currentUser, function () {
       getAccounts(currentUser, loginIds, function (err, accounts) {
-        getProfiles(accounts, function (/*err, profiles*/) {
+        getProfiles(accounts, function (err, profiles) {
           Users.getId(currentUser, function (err, id) {
+            // This object should look just like it will once its deserialized
+            reqSessionUser.accounts = reqSessionUser.accounts || accounts;
+            reqSessionUser.profiles = reqSessionUser.profiles || profiles;
             done(null, id);
           });
         });
@@ -145,7 +199,7 @@ module.exports.init = function (app, config) {
       getAccounts(authN, [], function (err, accounts) {
         getProfiles(accounts, function (err, authNs) {
           // Note: these profiles have access tokens and such
-          var data = { currentUser: authN, accounts: accounts, profiles: authNs }
+          var data = { currentUser: authN, accounts: accounts || 'error 64', profiles: authNs || 'error 512' }
             ;
 
           done(null, data);
@@ -154,69 +208,49 @@ module.exports.init = function (app, config) {
     });
   });
 
+  // This Provider
+  // On init this provides the 'bearer' strategy
+  // passport.use(localRoute.bearerStrategy);
+  routes.push(localRoute);
+
+  // 3rd Party Providers
+  routes.push(facebook.init(passport, config, opts));
+  routes.push(twitter.init(passport, config, opts));
+  routes.push(tumblr.init(passport, config, opts));
+  routes.push(ldsconnect.init(passport, config, opts));
+  
   app
     .use(passport.initialize())
     .use(passport.session())
+    // when using access_token / bearer without a session
+    .use('/api', function (req, res, next) {
+        if (req.user) {
+          next();
+          return;
+        }
+
+        //passport.authenticate('bearer', { session: false }),
+        passport.authenticate('bearer', function (err, user, info) {
+          if (err || (!user && !/^\/(login|session)$/.test(req.url))) {
+            res.send({ error: {
+              message: "Unauthorized access to /api"
+            , code: 401
+            , class: "INVALID-TOKEN"
+            , superclasses: []
+            } });
+            return;
+          }
+
+          // This creates a session via req.logIn(),
+          // which is not strictly required
+          opts.login(req, res, next, {
+            error: err
+          , user: user
+          , info: info
+          });
+        })(req, res, next);
+      })
     ;
-
-  /*
-  function handleFailure(req, res, opts) {
-    if (opts.failure) {
-    } else if (opts.failureMessage) {
-    } else if (opts.failureUrl) {
-    } else {
-      res.send({ error: { message: "failed at " + opts.error.toString() } });
-    }
-  }
-  */
-  // The reason this function has been pulled out to
-  // auth/index.js is because it is very common among
-  // the various auth implementations and it does some
-  // currentUser mangling, which may change in the future
-  // and the underlying implementations should not need to be aware of it
-  function handleLogin(req, res, next, opts) {
-    var currentUser
-      ;
-
-    if (opts.error || !opts.user) {
-      if (opts.failure) {
-        opts.failure();
-        return;
-      }
-      req.url = opts.failureUrl;
-      next();
-      return;
-    }
-
-    // this is conditional, there may not be a req.user
-    currentUser = req.user && req.user.currentUser;
-
-    // the object passed here becomes req.user
-    // newUser will become currentUser if it exists
-    // currentUser will become oldUser or stay as currentUser
-    // TODO currentAccount
-    req.logIn({ newUser: opts.user, currentUser: currentUser }, function (err) {
-      if (err) { return next(err); }
-
-      function finish() {
-        req.url = opts.successUrl;
-        next();
-      }
-
-      if (opts.callback) {
-        // TODO is req.user.currentUser === user?
-        opts.callback(req.user.currentUser, finish);
-      } else {
-        finish();
-      }
-    });
-  }
-
-  routes.push(facebook.init(passport, config, { Users: Users, login: handleLogin }));
-  routes.push(twitter.init(passport, config, { Users: Users, login: handleLogin }));
-  routes.push(tumblr.init(passport, config, { Users: Users, login: handleLogin }));
-  routes.push(ldsconnect.init(passport, config, { Users: Users, login: handleLogin }));
-  routes.push(local.init(passport, config, { Users: Users, login: handleLogin }));
 
   routes.routes = routes;
   routes.strategies = strategies;

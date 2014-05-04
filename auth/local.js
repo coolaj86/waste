@@ -4,8 +4,15 @@
 var LocalStrategy = require('passport-local').Strategy
     // looks for an HTTP Authorization Basic header
   , BasicStrategy = require('passport-http').BasicStrategy
-    // looks for an HTTP Authorization Bearer header
+    // looks for
+      // HTTP Authorization Bearer header
+      // `access_token` in form field
+      // `access_token` URL query param
   , BearerStrategy = require('passport-http-bearer').Strategy
+  , bearerStrategy
+  , request = require('request')
+  , fakeProfileUrl = 'http://api.randomuser.me/'
+  , users = {}
   ;
 
 function getId(profile, cb) {
@@ -22,25 +29,75 @@ function getIds(profile) {
     ;
 
   ids.push({ type: 'local', value: profile.id });
-  profile.emails.forEach(function (emailObj) {
-    // TODO should confirm e-mail address before allowing access, as facebook sometimes makes mistakes
-    // see http://stackoverflow.com/questions/14280535/is-it-possible-to-check-if-an-email-is-confirmed-on-facebook
-    ids.push({ type: 'email', value: emailObj.value });
-  });
 
   return ids;
 }
 
-function basicLookup(clientId, clientSecret, done) {
-  console.log('basicLookup not implemented');
-  done(null, null);
+
+function formatProfile(token, profile) {
+  return {
+    type: 'local'
+  , fkey: profile.id
+  , profile: profile
+  , accessToken: token
+  //, refreshToken: refreshToken
+  };
 }
 
 function tokenLookup(token, done) {
-  console.log('tokenLookup not implemented');
-  done(null, null);
+  if (users[token]) {
+    done(null, formatProfile(token, users[token]));
+    return;
+  }
+
+  request.get(fakeProfileUrl, function (err, xreq, data) {
+    var profile = JSON.parse(data).results[0]
+      , user = profile.user
+      ;
+
+    user.name = profile.user.name.first + ' ' + profile.user.name.last[0];
+    user.id = profile.seed;
+    user.test = true;
+
+    if (/test-.*(admin)/i.test(token)) {
+      // can read and write privileged things
+      user.test = true;
+      user.role = 'admin';
+    } else if (/test-.*(president)/i.test(token)) {
+      // can read privileged things, but no write access
+      user.test = true;
+      user.role = 'president';
+    } else if (/test-.*(user)/i.test(token)) {
+      // can read and write
+      user.test = true;
+      user.role = 'user';
+    } else if (/test-.*(guest)/i.test(token)) {
+      // can read public stuff
+      user.test = true;
+      user.role = 'guest';
+    }
+
+    users[user.id] = user;
+    users[token] = user;
+    // TODO users[id+':'+'secret] = user;
+    
+    done(null, formatProfile(token, user));
+  });
 }
 
+function basicLookup(clientId, clientSecret, done) {
+  console.error('basicLookup not implemented');
+  done(new Error('basicLookup not implemented'), null);
+}
+
+//bearerStrategy = new BearerStrategy(tokenLookup);
+bearerStrategy = new BearerStrategy(function (token, done) {
+  tokenLookup(token, function (err, user) {
+    done(err, user);
+  });
+});
+
+module.exports.bearerStrategy = bearerStrategy;
 module.exports.init = function (passport, config, opts) {
   opts.Users.register('local', '1.0.0', getId, getIds);
   var passphraseStrategy
@@ -64,8 +121,7 @@ module.exports.init = function (passport, config, opts) {
   passport.use(new BasicStrategy(basicLookup));
 
   // and a token is a token
-  passport.use(new BearerStrategy(tokenLookup));
-
+  passport.use(bearerStrategy);
 
   // Yes, custom callbacks have a lot of layers...
   // http://passportjs.org/guide/authenticate/#custom-callback
@@ -84,9 +140,6 @@ module.exports.init = function (passport, config, opts) {
   function handleLogin(type) {
     return function (req, res, next) {
       function handleSuccessOrFailure(err, user, info) {
-        console.log('info? what is this?');
-        console.log(info);
-
         if (err) {
           res.send({ error: {
             message: "login failed: " + err.toString()
@@ -96,12 +149,12 @@ module.exports.init = function (passport, config, opts) {
           return;
         }
 
-        console.log('local|basic|token authn');
         opts.login(req, res, next, {
           error: err
         , user: user
         , info: info
-        , successUrl: '/api/users/me'
+        //, successUrl: '/api/users/me'
+        //, successUrl: '/api/session'
         });
       }
       passport.authenticate(type, handleSuccessOrFailure)(req, res, next);
@@ -111,8 +164,11 @@ module.exports.init = function (passport, config, opts) {
   function route(rest) {
     rest.post('/api/session/bearer', handleLogin('bearer'));
     rest.post('/api/session/local', handleLogin('local'));
+    rest.post('/api/session/local', handleLogin('local.passphrase'));
+    rest.post('/api/session/local', handleLogin('local.secret'));
     rest.post('/api/session/basic', handleLogin('basic'));
   }
 
+  route.bearerStrategy = bearerStrategy;
   return route;
 };
