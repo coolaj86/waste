@@ -1,14 +1,20 @@
-.auth-modal
+//- modal-dialog & model-content are containers for this template
+.auth-modal(ng-init="L.authType = 'social'; L.showSecret = true;")
   .modal-header
     button.close(type="button", ng-click="L.cancel()") &times;
     h4.modal-title Please Sign In
+    .alert(ng-if="L.alertMessage", ng-class="{{L.alertType}}")
+      span(ng-bind="L.alertMessage")
     ul.nav.nav-tabs
-      li.active
-        a(href="#") Social
-      //-li
-        a(href="#") Account
+      //- TODO make RESTful
+      li(ng-class="{ active: 'social' == L.authType }")
+        a(href="#", ng-click="L.authType = 'social'") Social
+      li(ng-class="{ active: 'basic' == L.authType }")
+        a(href="#", ng-click="L.authType = 'basic'") Account
+      li(ng-class="{ active: 'token' == L.authType }")
+        a(href="#", ng-click="L.authType = 'token'") Developer
   .modal-body
-    .signin-options
+    .social.signin-option(ng-if="'social' === L.authType")
       .row
         .col-md-6
           .option
@@ -36,3 +42,39 @@
             button.btn.btn-block.btn-social.btn-lg.btn-envelope(type="button", ng-click="L.loginWithEmail()")
               i.fa.fa-envelope
               span.signin Sign In with Email
+              //- TODO open self oauth popup
+    .account.signin-option(ng-if="'basic' === L.authType")
+      .row
+        form(ng-submit="L.loginWithBasicAuth()")
+          .col-md-6
+            .form-group
+              //- or user or app id
+              //- TODO forgot username
+              label(for='username') Username | Email | Phone
+              input.form-control(ng-model="L.authId", type='text', placeholder="aj@the.dj")
+          .col-md-6
+            .form-group
+              //- or user or app secret
+              //- TODO forgot passphrase
+              label(for='password') Passphrase
+              span &nbsp;&nbsp;&nbsp;
+              label.checkbox-inline
+                input.checkbox(type="checkbox", ng-model="L.showSecret", ng-click="L.showSecret = !L.showSecret")
+                span Show
+              input.form-control(ng-if="!L.showSecret", ng-model="L.authSecret", type='password', placeholder="************")
+              input.form-control(ng-if="L.showSecret", ng-model="L.authSecret", type='text', placeholder="my secret phrase")
+          .col-md-12
+            .form-group
+              input.btn.btn-primary(type='submit', value='Sign In')
+              a.btn.btn-default.pull-right(href='#') Help
+    .developer.signin-option(ng-if="'token' === L.authType")
+      .row
+        form(ng-submit="L.loginWithToken()")
+          .col-md-12
+            .form-group
+              label(for='token') Bearer Token (Client Access App Code)
+              input.form-control(ng-model="L.loginToken", type='text', placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+          .col-md-12
+            .form-group
+              input.btn.btn-primary(type='submit', value='Sign In')
+              a.btn.btn-default.pull-right(href='#') Help
