@@ -16,9 +16,14 @@
     "pouchdb": "~2.0.1",
     "passport-tumblr": "~0.1.2",
     "request": "~2.34.0",
-    "ssl-root-cas": "~1.0.5",
-    "sqlite3": "~2.2.3",
-    "level": "~0.18.0"
+    "ssl-root-cas": "^1.0.6",
+    "sqlite3": "^2.2.3",
+    "level": "^0.18.0",
+    "passport-local": "^1.0.0",
+    "passport-http-bearer": "^1.0.1",
+    "passport-http": "^0.2.2",
+    "useragent": "^2.0.8",
+    "ws": "^0.4.31"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
