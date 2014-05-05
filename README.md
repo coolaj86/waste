@@ -68,7 +68,8 @@ Buffer and HootSuite allow you to login with any number of `profiles` to a singl
 
 ### Authentication and Authorization, Unopinionated
 
-We make no assumptions about how you might want to allow or restrict the sharing of account access among profiles. You can build it out as you wish.
+We make no assumptions about how you might want to allow or restrict the sharing of account access among profiles.
+You can build it out as you wish.
 
 * GET `/api/session`
 
@@ -76,7 +77,10 @@ If you don't implement anything to restrict the linking of profiles and accounts
 
 ```javascript
 {
+    "currentAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx", // TODO
     "currentLoginId": "facebook:1234567890",
+    // TODO maybe rename login -> profile
+    "currentProfileId": "facebook:1234567890",
     "accounts": [
         {
             "uuid": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
@@ -85,6 +89,7 @@ If you don't implement anything to restrict the linking of profiles and accounts
             ]
         }
     ],
+    // TODO or maybe rename profiles -> logins
     "profiles": [
         {
             "id": "1234567890",
