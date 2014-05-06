@@ -74,6 +74,16 @@
             .form-group
               label(for='token') Bearer Token (Client Access App Code)
               input.form-control(ng-model="L.loginToken", type='text', placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+          .col-md-12(ng-if="L.demoProfiles.length")
+            h4 Test Profiles
+            ul.list-group
+              li.list-group-item(ng-repeat="profile in L.demoProfiles")
+                .row
+                  .col-sm-2
+                    strong(ng-bind="profile.role")
+                  .col-sm-10
+                    .btn.btn-link(ng-bind="profile.token", ng-click="L.loginToken = profile.token")
+
           .col-md-12
             .form-group
               input.btn.btn-primary(type='submit', value='Sign In')

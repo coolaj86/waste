@@ -108,5 +108,16 @@ angular.module('sortinghatApp')
     return {
       show: show
     , makeLogin: makeLogin
+    , testProfiles: [
+        { "role": "admin"
+        , "token": "xxxxxxxx-test-xxxx-xxxx-admin-xxxxxx"
+        }
+      , { "role": "user"
+        , "token": "xxxxxxxx-test-xxxx-xxxx-user-xxxxxxx"
+        }
+      , { "role": "guest"
+        , "token": "xxxxxxxx-test-xxxx-xxxx-guest-xxxxxx"
+        }
+      ]
     };
   });
