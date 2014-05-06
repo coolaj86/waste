@@ -147,3 +147,13 @@ Some providers only require authorization once (facebook) and will self-close ev
 * GET `/api/authz/twitter` redirects to twitter authorization (every time)
 * GET `/api/auth/tumblr` redirects to tumblr authorization (every time)
 * GET `/api/auth/ldsconnect` redirects to ldsconnect (same process as facebook)
+
+Extending
+===
+
+New resource
+```bash
+rsync -avhHP app/views/about.jade /app/views/foo.jade
+yo angular:controller foo
+yo angular:service foo
+```
