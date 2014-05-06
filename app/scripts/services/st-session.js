@@ -9,6 +9,21 @@ angular.module('sortinghatApp')
       , notifier = $q.defer()
       ;
 
+    // TODO handle this on server side
+    function mangle(data) {
+      if (!data || data.error) {
+        return data;
+      }
+
+      data.profile = data.profile || data.currentProfile || data.currentLogin || data.profiles[0];
+      data.account = data.account || data.currentAccount || data.accounts[0];
+      data.account.role = data.account.role || data.profile.role || 'guest';
+
+      console.log('[mangled]');
+      console.log(data);
+      return data;
+    }
+
     function read(opts) {
       opts = opts || noopts;
       var d = $q.defer()
@@ -31,7 +46,7 @@ angular.module('sortinghatApp')
       console.log('called read');
       if (user) {
         $timeout(function () {
-          d.resolve(user);
+          d.resolve(mangle(user));
         }, 0);
         console.log('returning resolved promise');
         return gettingSession;
@@ -41,7 +56,7 @@ angular.module('sortinghatApp')
         console.log('resolve');
         user = _user;
         user.touchedAt = Date.now();
-        d.resolve(user);
+        d.resolve(mangle(user));
       });
 
       return gettingSession;
@@ -55,7 +70,7 @@ angular.module('sortinghatApp')
         email: email
       , password: passphrase
       }).success(function (data) {
-        d.resolve(data);
+        d.resolve(mangle(data));
       });
 
       return d.promise;
@@ -64,7 +79,7 @@ angular.module('sortinghatApp')
     // external auth (i.e. facebook, twitter)
     function update(data) {
       user = data;
-      notifier.notify(user);
+      notifier.notify(mangle(user));
     }
 
     function on(fn) {

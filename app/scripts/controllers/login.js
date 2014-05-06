@@ -62,6 +62,7 @@ angular.module('sortinghatApp')
         }
       });
     };
+    scope.demoProfiles = StLogin.testProfiles;
     scope.loginToken = "";
     scope.loginWithToken = function () {
       var auth = { 'Authorization': 'Bearer ' + scope.loginToken }

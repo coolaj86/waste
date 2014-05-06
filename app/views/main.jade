@@ -1,19 +1,20 @@
-html
-  body
-    //-.jumbotron
-      h1 &apos;Allo&comma; &apos;Allo&excl;
-      p.lead
-        img(src='images/yeoman.png', alt='I"m Yeoman')
-        br
-        | Always a pleasure scaffolding your apps&period;
-      p
-        a.btn.btn-lg.btn-success(ng-href='#') Splendid&excl;
+.container
+  .row
+    .col-sm-12
+      h2 You gotsta know your house!
+  //-.jumbotron
+    h1 &apos;Allo&comma; &apos;Allo&excl;
+    p.lead
+      img(src='images/yeoman.png', alt='I"m Yeoman')
+      br
+      | Always a pleasure scaffolding your apps&period;
+    p
+      a.btn.btn-lg.btn-success(ng-href='#') Splendid&excl;
 
-    .row.marketing
+  .row.marketing
+    .col-sm-12
       div(ng-if="!M.current && !M.results") 
         button.btn.btn-primary(ng-click="M.startQuiz()", type="button") Find Your House
-        p.
-          You gotsta know your house!
 
       div(ng-if="M.current")
         span {{ M.current.total - M.current.remaining }} of {{ M.current.total }}

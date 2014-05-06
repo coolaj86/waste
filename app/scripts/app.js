@@ -61,10 +61,42 @@ angular.module('sortinghatApp', [
             templateUrl: 'views/main.html'
           , controller: 'MainCtrl as M'
           , resolve: {
-              data: function (Data) {
+              mySession: function (StSession) {
+                return StSession.get();
+              }
+            , data: function (Data) {
                 return Data.get();
               }
-            , mySession: function (StSession) {
+            }
+          }
+        , footer: footer
+        }
+      })
+      .state('user', {
+        url: '/user/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/user.html'
+          , controller: 'UserCtrl as U'
+          , resolve: {
+              mySession: function (StSession) {
+                return StSession.get();
+              }
+            }
+          }
+        , footer: footer
+        }
+      })
+      .state('admin', {
+        url: '/admin/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/admin.html'
+          , controller: 'AdminCtrl as A'
+          , resolve: {
+              mySession: function (StSession) {
                 return StSession.get();
               }
             }
@@ -99,5 +131,4 @@ angular.module('sortinghatApp', [
         }
       })
       ;
-
   });
