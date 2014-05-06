@@ -6,7 +6,7 @@ angular.module('sortinghatApp')
       ;
 
     function updateSession(session) {
-      if (session && 'guest' !== session.role) {
+      if (session && !session.error && 'guest' !== session.role) {
         $scope.session = mySession;
       } else {
         $scope.session = null;
