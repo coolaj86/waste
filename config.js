@@ -1,3 +1,4 @@
+'use strict';
 // All of these keys are valid working keys registered to
 // "Hogwarts Test Application" at http://local.ldsconnect.org,
 // which points to 127.0.0.1 for your testing pleasure.
@@ -10,7 +11,22 @@
 //
 module.exports = {
   protocol: 'http'
-, host: 'local.ldsconnect.org:9003'
+, hostname: 'local.ldsconnect.org'
+, port: 9003
+, get host() {
+    if (
+        'http' === this.protocol && '80' === this.port.toString()
+      ||'https' === this.protocol && '443' === this.port.toString()
+    ) {
+      return this.hostname;
+    }
+
+    return this.hostname + ':' + this.port;
+  }
+, get href() {
+    return this.protocol + '://' + this.host;
+  }
+, wsport: 4242
 , sessionSecret: 'my session secret'
 , facebook: {
     // https://developers.facebook.com/apps

@@ -1,13 +1,17 @@
 'use strict';
 
-var http = require('http')
+var config = require('./config')
+  , http = require('http')
   , server
   ;
 
-server = http.createServer(require('./server')).listen(3000, function () {
-  console.log('Listening on http://' + server.address().address + ':' + server.address().port);
-  console.log('Listening on http://127.0.0.1:' + server.address().port);
-  console.log('Listening on http://local.ldsconnect.org:' + server.address().port);
+config.port = process.argv[2] || config.port;
+config.wsport = process.argv[3] || config.wsport;
+
+server = http.createServer(require('./server')).listen(config.port, function () {
+  console.log('Listening on ' + config.protocol + '://127.0.0.1:' + server.address().port);
+  console.log('Listening on ' + config.protocol + '://' + server.address().address + ':' + server.address().port);
+  console.log('Listening on ' + config.href);
 });
 
 /*
@@ -28,9 +32,9 @@ options = {
   cert: fs.readFileSync(path.join(__dirname, 'ssl', '03-ldsconnect.pem'))
 };
 
-server = https.createServer(options, require('./server')).listen(443, function () {
-  console.log('Listening on https://' + server.address().address + ':' + server.address().port);
-  console.log('Listening on https://127.0.0.1:' + server.address().port);
-  console.log('Listening on https://local.ldsconnect.org');
+server = https.createServer(options, require('./server')).listen(config.port, function () {
+  console.log('Listening on ' + config.protocol + '://127.0.0.1:' + server.address().port);
+  console.log('Listening on ' + config.protocol + '://' + server.address().address + ':' + server.address().port);
+  console.log('Listening on ' + config.href);
 });
 */
