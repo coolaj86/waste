@@ -24,7 +24,7 @@ angular.module('sortinghatApp')
         ;
 
       function update(data) {
-        if (data && 'guest' !== data.role) {
+        if (data && !data.error && 'guest' !== data.role) {
           StSession.update(data);
         }
         d.resolve(data);
@@ -35,7 +35,7 @@ angular.module('sortinghatApp')
       }
 
       StSession.get().then(function (data) {
-        if (data && 'guest' !== data.role) {
+        if (data && !data.error && 'guest' !== data.role) {
           d.resolve(data);
         } else {
           doShow();
