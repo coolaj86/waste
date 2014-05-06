@@ -2,7 +2,8 @@
 'use strict';
 
 var server = require('./server')
-  , port = 9003
+  , config = require('./config')
+  , port = config.port
   , lrPort = 37926
   , lrSnippet = require('connect-livereload')({ port: lrPort })
   ;
@@ -78,7 +79,7 @@ module.exports = function (grunt) {
       },
       livereload: {
         options: {
-          open: 'http://local.ldsconnect.org:' + port
+          open: config.href
         , base: [
             '.tmp',
             '<%= yeoman.app %>'

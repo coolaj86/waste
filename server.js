@@ -6,7 +6,7 @@ var connect = require('connect')
   , auth = require('./auth')
   , config = require('./config')
   , ws = require('./lib/ws')
-  , wsport = process.argv[3] || 8080
+  , wsport = config.wsport || 8282
   , routes
   ;
 
@@ -107,21 +107,5 @@ app
     next();
   })
   ;
-
-
-function run() {
-  var port = process.argv[2] || 3000
-    , server
-    ;
-
-  server = app.listen(port, function () {
-    console.info('Listening on http://' + server.address().address + ':' + server.address().port + '/#/');
-  });
-}
-
-if (require.main === module) {
-  run();
-  return;
-}
 
 module.exports = app;
