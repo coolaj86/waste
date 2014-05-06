@@ -12,13 +12,17 @@ angular.module('sortinghatApp', [
       , footer
       ;
 
+    // IMPORTANT: (Issue #4)
+    // These funny arrays (in resolve) are neccessary because ui.router
+    // doesn't get properly mangled by ng-min
+    // See https://github.com/yeoman/generator-angular#minification-safe
     nav = {
       templateUrl: '/views/nav.html'
     , controller: 'NavCtrl as N'
     , resolve: {
-        mySession: function (StSession) {
+        mySession: ['StSession', function (StSession) {
           return StSession.get();
-        }
+        }]
       }
     };
 
@@ -61,12 +65,12 @@ angular.module('sortinghatApp', [
             templateUrl: 'views/main.html'
           , controller: 'MainCtrl as M'
           , resolve: {
-              mySession: function (StSession) {
+              mySession: ['StSession', function (StSession) {
                 return StSession.get();
-              }
-            , data: function (Data) {
+              }]
+            , data: ['Data', function (Data) {
                 return Data.get();
-              }
+              }]
             }
           }
         , footer: footer
@@ -80,9 +84,9 @@ angular.module('sortinghatApp', [
             templateUrl: 'views/user.html'
           , controller: 'UserCtrl as U'
           , resolve: {
-              mySession: function (StSession) {
+              mySession: ['StSession', function (StSession) {
                 return StSession.get();
-              }
+              }]
             }
           }
         , footer: footer
@@ -96,9 +100,9 @@ angular.module('sortinghatApp', [
             templateUrl: 'views/admin.html'
           , controller: 'AdminCtrl as A'
           , resolve: {
-              mySession: function (StSession) {
+              mySession: ['StSession', function (StSession) {
                 return StSession.get();
-              }
+              }]
             }
           }
         , footer: footer
@@ -112,9 +116,9 @@ angular.module('sortinghatApp', [
             templateUrl: 'views/account.html'
           , controller: "AccountCtrl as A"
           , resolve: {
-              mySession: function (StSession) {
+              mySession: ['StSession', function (StSession) {
                 return StSession.get();
-              }
+              }]
             }
           }
         , footer: footer
