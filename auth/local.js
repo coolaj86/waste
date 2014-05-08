@@ -11,6 +11,8 @@ var LocalStrategy = require('passport-local').Strategy
   , BearerStrategy = require('passport-http-bearer').Strategy
   , bearerStrategy
   , request = require('request')
+  , serverConfig = require('../config')
+  , secretUtils = require('./utils')
   , fakeProfileUrl = 'http://api.randomuser.me/'
   , users = {}
   ;
@@ -143,8 +145,7 @@ module.exports.init = function (passport, config, opts) {
         if (err) {
           res.send({ error: {
             message: "login failed: " + err.toString()
-          , class: "AUTHENTICATION"
-          , superclasses: []
+          , code: "INVALID_AUTH"
           } });
           return;
         }
