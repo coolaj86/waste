@@ -12,7 +12,7 @@
 module.exports = {
   protocol: 'http'
 , hostname: 'local.ldsconnect.org'
-, port: 9003
+, port: 4004
 , get host() {
     if (
         'http' === this.protocol && '80' === this.port.toString()
@@ -26,8 +26,16 @@ module.exports = {
 , get href() {
     return this.protocol + '://' + this.host;
   }
-, wsport: 4242
-, sessionSecret: 'my session secret'
+, wsport: 4204
+  // the default secret is 'super secret',
+  // run `node ./generate-root-secret` to create a new one
+, rootUser: {
+    id: 'root'
+  , salt: "UdVsog0lLYCV1x2mMAGZa6x+7W41xqtTyR4PLZpE8Pc="
+  , secret: "7e0e7d6fbb948279f204a8a85f1bee10"
+  , type: "md5"
+  }
+, sessionSecret: 'a super secret for ITS, nothing better'
 , facebook: {
     // https://developers.facebook.com/apps
     // Client Token 5308ba111a46159e92d74fce76dbe807

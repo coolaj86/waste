@@ -6,6 +6,7 @@ var Passport = require('passport').Passport
   , twitter = require('./providers/twitter')
   , tumblr = require('./providers/tumblr')
   , local = require('./local')
+  , rootUser = require('./root-user')
   , forEachAsync = require('foreachasync').forEachAsync
   , path = require('path')
   , Users = require('./users').create({ dbfile: path.join(__dirname, '..', 'priv', 'users.priv.json') })
