@@ -8,7 +8,14 @@ var connect = require('connect')
   , ws = require('./lib/ws')
   , wsport = config.wsport || 8282
   , routes
+  , ru = config.rootUser
+    // Authn
+  , Users = require('./auth/users').create({ dbfile: path.join(__dirname, 'priv', 'users.priv.json') })
+    // Authz
+  , Accounts = require('./auth/accounts').create({ dbfile: path.join(__dirname, 'priv', 'accounts.priv.json')})
   ;
+
+require('./auth/root-user').init(ru, Users, Accounts);
 
 if (!connect.router) {
   connect.router = require('connect_router');
@@ -45,7 +52,7 @@ function route(rest) {
 }
 
 app
-  .use(connect.logger())
+  //.use(connect.logger())
   .use(connect.errorHandler({ dumpExceptions: true, showStack: true }))
   .use(connect.query())
   .use(connect.json())
@@ -62,7 +69,7 @@ app
 //
 // Generic Template Auth
 //
-routes = auth.init(app, config);
+routes = auth.init(app, config, Users, Accounts);
 routes.forEach(function (fn) {
   app.use(connect.router(fn));
 });
@@ -77,7 +84,7 @@ app.use(connect.router(ws.create(app, wsport, [])));
 //
 app
   .use(connect.router(route))
-  .use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
+  //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
   .use(connect.static(path.join(__dirname, 'data')))
   //.use(connect.static(path.join(__dirname, 'dist')))
   //.use(connect.static(path.join(__dirname, '.tmp', 'concat')))
