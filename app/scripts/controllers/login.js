@@ -67,7 +67,7 @@ angular.module('sortinghatApp')
           scope.authToken = "";
           $modalInstance.close(resp.data);
         } else {
-          scope.alertMessage = "Invalid Access Token";
+          scope.alertMessage = "Invalid Username & Passphrase";
           scope.alertType = 'alert-danger';
         }
       });
