@@ -1,46 +1,14 @@
-{
-  "title": "Welcome to Harry Potter Sorting Hat Quiz"
-, "key": "sorting-quiz"
-, "groups": {
-    "G": "gryffindor"
-  , "H": "hufflepuff"
-  , "S": "slytherin"
-  , "R": "ravenclaw"
+[
+  { "title": "Google"
+  , "key": "goog"
+  , "value": "https://www.google.com"
   }
-, "questions": [
-    {
-      "number": 1
-    , "G": "I'm probably in Gryffindor"
-    , "H": "I'm probably in Hufflepuff"
-    }
-  , {
-      "number": 2
-    , "S": "I'm probably in Slytherin"
-    , "R": "I'm probably in Ravenclaw"
-    }
-  , {
-      "number": 3
-    , "G": "I'm probably in Gryffindor"
-    , "S": "I'm probably in Slytherin"
-    }
-  , {
-      "number": 4
-    , "H": "I'm probably in Hufflepuff"
-    , "R": "I'm probably in Ravenclaw"
-    }
-  ]
-, "outcomes": [
-    { "name": "slytherin"
-    , "message": "Congratulations! It appears that you are most likely a member of Slytherin. Dirtbag!"
-    }
-  , { "name": "gryffindor"
-    , "message": "Congratulations! It appears that you are most likely a member of Gryffindor. 10 points to Gryffindor!"
-    }
-  , { "name": "hufflepuff"
-    , "message": "Congratulations! It appears that you are most likely a member of Hufflepuff. Pansy!"
-    }
-  , { "name": "ravenclaw"
-    , "message": "Congratulations! It appears that you are most likely a member of Ravenclaw. Genius!"
-    }
-  ]
-}
+, { "title": "Yahoo"
+  , "key": "yhoo"
+  , "value": "http://www.yahoo.com"
+  }
+, { "title": "Facebook"
+  , "key": "fb"
+  , "value": "https://www.facebook.com"
+  }
+]
