@@ -19,7 +19,8 @@ angular.module('sortinghatApp')
       //return d.promise;
     }
 
-    function show() {
+    function show(opts) {
+      opts = opts || {};
       var d = $q.defer()
         ;
 
@@ -35,7 +36,7 @@ angular.module('sortinghatApp')
       }
 
       StSession.get().then(function (data) {
-        if (data && !data.error && 'guest' !== data.role) {
+        if (!opts.force && data && !data.error && 'guest' !== data.role) {
           d.resolve(data);
         } else {
           doShow();

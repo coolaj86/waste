@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('sortinghatApp')
-  .controller('AccountCtrl', function (StLogin, mySession) {
-    var $scope = this
+  .controller('AccountCtrl', function ($scope, StLogin, mySession) {
+    var A = this
       ;
 
     if (mySession && mySession.profiles) {
@@ -10,47 +10,51 @@ angular.module('sortinghatApp')
         mySession[profile.provider] = true;
       });
     }
-    $scope.session = mySession;
+    A.session = mySession;
 
-    function assignAccount(session) {
+    function assignAccount(err, session) {
       /*
       session.profiles.some(function (login) {
         if (session.currentLoginId.replace(/^[^:]+:/, '') === login.id) {
-          $scope.profile = login;
+          A.profile = login;
           return true;
         }
       });
       */
-      $scope.profile = session;
+      A.profile = session;
     }
+
+    A.login = function () {
+      StLogin.show({ force: true }).then(function (data) {
+        console.log('hello');
+        console.log(data);
+        assignAccount(null, data);
+      }, function (err) {
+        console.error("Couldn't show login window???");
+        console.error(err);
+        // nada
+      });
+    };
 
     //
     // Facebook
     //
-    StLogin.makeLogin($scope, 'fb', '/auth/facebook', function (session) {
-      assignAccount(session);
-    });
+    StLogin.makeLogin(A, 'fb', '/auth/facebook', assignAccount);
 
     //
     // Twitter
     //
-    StLogin.makeLogin($scope, 'tw', '/authn/twitter', function (session) {
-      assignAccount(session);
-    });
+    StLogin.makeLogin(A, 'tw', '/authn/twitter', assignAccount);
 
     //
     // Tumblr
     //
-    StLogin.makeLogin($scope, 'tumblr', '/auth/tumblr', function (session) {
-      assignAccount(session);
-    });
+    StLogin.makeLogin(A, 'tumblr', '/auth/tumblr', assignAccount);
 
     //
     // LDS.org
     //
-    StLogin.makeLogin($scope, 'lds', '/auth/ldsconnect', function (session) {
-      assignAccount(session);
-    });
+    StLogin.makeLogin(A, 'lds', '/auth/ldsconnect', assignAccount);
 
-    assignAccount(mySession);
+    assignAccount(null, mySession);
   });
