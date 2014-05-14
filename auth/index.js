@@ -229,13 +229,14 @@ module.exports.init = function (app, config, Users, Accounts) {
           return;
         }
 
+        // everything except for bearer relies on a session
         //passport.authenticate('bearer', { session: false }),
         passport.authenticate('bearer', function (err, user, info) {
-          if (err || (!user && !/^\/(((login|session)$)|auth[nz]?\/)/.test(req.url))) {
+          if (err || (!user && !/^\/(login$|session($|\/)|auth[nz]?\/)/.test(req.url))) {
             res.send({ error: {
               message: "Unauthorized access to /api"
             , code: 401
-            , class: "INVALID-TOKEN"
+            , class: "INVALID-BEARER-TOKEN"
             , superclasses: []
             } });
             return;
