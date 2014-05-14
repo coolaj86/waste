@@ -1,93 +1,15 @@
 'use strict';
 
 var Passport = require('passport').Passport
+  , local = require('./local')
   , facebook = require('./providers/facebook')
   , ldsconnect = require('./providers/ldsconnect')
   , twitter = require('./providers/twitter')
   , tumblr = require('./providers/tumblr')
-  , local = require('./local')
-  , rootUser = require('./root-user')
   , forEachAsync = require('foreachasync').forEachAsync
   , path = require('path')
-  , Users = require('./users').create({ dbfile: path.join(__dirname, '..', 'priv', 'users.priv.json') })
-  , Accounts = require('./accounts').create({ dbfile: path.join(__dirname, '..', 'priv', 'accounts.priv.json')})
   , strategies = {}
   ;
-
-function getProfiles(accounts, done) {
-  var profiles = []
-    , profileMap = {}
-    ;
-
-  accounts.forEach(function (account) {
-    account.loginIds.forEach(function (loginId) {
-      profileMap[loginId] = true;
-    });
-  });
-
-  forEachAsync(Object.keys(profileMap), function (next, loginId) {
-    Users.findById(loginId, function (profile) {
-      if (profile) {
-        profiles.push(profile);
-      }
-      next();
-    });
-  }).then(function () {
-    done(null, profiles);
-  });
-}
-
-function getAccounts(_authN, loginIds, done) {
-  Users.read(_authN, function (authN) {
-    var accountIdMap = {}
-      , accounts = []
-      , _ids
-      ;
-
-    _ids = Users.scrapeIds(authN);
-    if (0 === _ids.length) {
-      // TODO bad user account
-      done(new Error("unrecognized account type"));
-      return;
-    }
-    _ids.forEach(function (id) {
-      loginIds.push(id);
-    });
-
-    forEachAsync(loginIds, function (next, id) {
-      Users.findById(id, function (user) {
-        user.accounts.forEach(function (accountId) {
-          accountIdMap[accountId] = true;
-        });
-        next();
-      });
-    }).then(function () {
-      Object.keys(accountIdMap).forEach(function (accountId) {
-        var account = Accounts.find(accountId)
-          ;
-
-        if (!account) {
-          console.error('No Account', accountId);
-        } else {
-          accounts.push(Accounts.find(accountId));
-        }
-      });
-
-      if (0 === accounts.length) {
-        accounts.push(Accounts.create(loginIds, {}));
-      }
-
-      loginIds.forEach(function (id) {
-        accounts.forEach(function (account) {
-          Users.link(id, account.uuid);
-          Accounts.addLoginId(account.uuid, id);
-        });
-      });
-
-      done(null, accounts);
-    });
-  });
-}
 
 // The reason this function has been pulled out to
 // auth/index.js is because it is very common among
@@ -142,12 +64,88 @@ module.exports.strategies = strategies = {
 , local: local
 };
 
-module.exports.init = function (app, config) {
+module.exports.init = function (app, config, Users, Accounts) {
   var passport = new Passport()
     , routes = []
     , localRoute
     , opts = { Users: Users, login: handleLogin }
     ;
+
+
+  function getProfiles(accounts, done) {
+    var profiles = []
+      , profileMap = {}
+      ;
+
+    accounts.forEach(function (account) {
+      account.loginIds.forEach(function (loginId) {
+        profileMap[loginId] = true;
+      });
+    });
+
+    forEachAsync(Object.keys(profileMap), function (next, loginId) {
+      Users.findById(loginId, function (profile) {
+        if (profile) {
+          profiles.push(profile);
+        }
+        next();
+      });
+    }).then(function () {
+      done(null, profiles);
+    });
+  }
+
+  function getAccounts(_authN, loginIds, done) {
+    Users.read(_authN, function (authN) {
+      var accountIdMap = {}
+        , accounts = []
+        , _ids
+        ;
+
+      _ids = Users.scrapeIds(authN);
+      if (0 === _ids.length) {
+        // TODO bad user account
+        done(new Error("unrecognized account type"));
+        return;
+      }
+      _ids.forEach(function (id) {
+        loginIds.push(id);
+      });
+
+      forEachAsync(loginIds, function (next, id) {
+        Users.findById(id, function (user) {
+          user.accounts.forEach(function (accountId) {
+            accountIdMap[accountId] = true;
+          });
+          next();
+        });
+      }).then(function () {
+        Object.keys(accountIdMap).forEach(function (accountId) {
+          var account = Accounts.find(accountId)
+            ;
+
+          if (!account) {
+            console.error('No Account', accountId);
+          } else {
+            accounts.push(Accounts.find(accountId));
+          }
+        });
+
+        if (0 === accounts.length) {
+          accounts.push(Accounts.create(loginIds, {}));
+        }
+
+        loginIds.forEach(function (id) {
+          accounts.forEach(function (account) {
+            Users.link(id, account.uuid);
+            Accounts.addLoginId(account.uuid, id);
+          });
+        });
+
+        done(null, accounts);
+      });
+    });
+  }
 
   localRoute = local.init(passport, config, opts);
 
@@ -209,6 +207,7 @@ module.exports.init = function (app, config) {
     });
   });
 
+  //routes.push(rootUser.init(passport, config, opts));
   // This Provider
   // On init this provides the 'bearer' strategy
   // passport.use(localRoute.bearerStrategy);
@@ -232,7 +231,7 @@ module.exports.init = function (app, config) {
 
         //passport.authenticate('bearer', { session: false }),
         passport.authenticate('bearer', function (err, user, info) {
-          if (err || (!user && !/^\/(login|session)$/.test(req.url))) {
+          if (err || (!user && !/^\/(((login|session)$)|auth[nz]?\/)/.test(req.url))) {
             res.send({ error: {
               message: "Unauthorized access to /api"
             , code: 401

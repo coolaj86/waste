@@ -4,77 +4,87 @@ var UUID = require('node-uuid')
   , fs = require('fs')
   ;
 
-module.exports.create = function (opts) {
+module.exports.Users = {};
+module.exports.Users.create = function (opts) {
   var Users = {}
-    , dbpath = opts.dbfile
-    , mods = {}
     , users
+    , dbpath = opts.dbfile
     ;
 
   try {
     users = require(opts.dbfile);
   } catch(e) {
-    console.log("Couldn't find users db file. Creating anew...");
+    console.log("Couldn't find users db file '" + opts.dbfile + "'. Creating anew...");
     users = {};
   }
 
-  function save() {
+  Users.save = function () {
+    // TODO check log and reduce number of saves
+    //console.log('saving users db file', dbpath);
     fs.writeFileSync(dbpath, JSON.stringify(users, null, '  '), 'utf8');
-  }
-
-  Users.all = users;
-
-  Users.register = function (type, ver, getId, getIds) {
-    mods[type] = {};
-    mods[type].getId = getId;
-    mods[type].getIds = getIds;
   };
 
-  Users._readByIdSync = function (loginId) {
+  Users.readByIdSync = function (loginId) {
     return users[loginId];
   };
-  Users._createByIdSync = function (loginId) {
-    if (users[loginId]) {
-      return users[loginId];
+  Users.createByIdSync = function (loginId) {
+    var user
+      ;
+
+    user = users[loginId];
+
+    if (user) {
+      return user;
     }
 
-    users[loginId] = {
+    user = {
       uuid: UUID.v4()
     , accounts: []
     , type: loginId.split(':')[0]
     , id: loginId
     , fkey: loginId.split(':').slice(1).join(':')
     , profile: {}
+    , created: Date.now()
+    //TODO, updated: Date.now()
     };
+    users[loginId] = user;
+    //TODO users[user.uuid] = user;
 
     return users[loginId];
   };
 
-  Users.link = function (loginId, accountId, cb) {
-    var user = Users._readByIdSync(loginId)
-      ;
-
-    if (!user) {
-      user = Users._createByIdSync(loginId);
-    }
-
-    if (-1 === user.accounts.indexOf(accountId)) {
-      user.accounts.push(accountId);
-    }
-
-    save();
-    if (cb) { cb(); }
-  };
-
-  Users._get = function (loginId, cb) {
+  Users.get = function (loginId, cb) {
     if (!users[loginId]) {
-      Users._createByIdSync(loginId);
+      Users.createByIdSync(loginId);
     }
     cb(users[loginId]);
   };
-  Users.findById = Users._get;
 
-  Users._getIds = function (data) {
+  Users.set = function (providerType, id, user, cb) {
+    users[providerType + ':' + id] = user;
+
+    Users.save();
+    if (cb) { cb(); }
+  };
+
+  //Users.all = users;
+  return Users;
+};
+
+module.exports.create = function (opts) {
+  var UsersWrapper = {}
+    , mods = {}
+    , Users = module.exports.Users.create(opts)
+    ;
+
+
+  UsersWrapper.register = function (type, ver, getId, getIds) {
+    mods[type] = {};
+    mods[type].getId = getId;
+    mods[type].getIds = getIds;
+  };
+
+  Users.getIds = function (data) {
     var mod = mods[data.type]
       , ids = []
       ;
@@ -87,21 +97,35 @@ module.exports.create = function (opts) {
       if ('email' === id.type) {
         id.value = id.value.toLowerCase();
       }
+
       ids.push(id.type + ':' + id.value);
     });
 
     return ids;
   };
-  Users.scrapeIds = Users._getIds;
 
-  Users._set = function (id, user, cb) {
-    users[id] = user;
 
-    save();
+
+  UsersWrapper.link = function (loginId, accountId, cb) {
+    var user = Users.readByIdSync(loginId)
+      ;
+
+    if (!user) {
+      user = Users.createByIdSync(loginId);
+    }
+
+    if (-1 === user.accounts.indexOf(accountId)) {
+      user.accounts.push(accountId);
+    }
+
+    Users.save();
     if (cb) { cb(); }
   };
 
-  Users.create = function (data, cb) {
+  UsersWrapper.createByIdSync = Users.createByIdSync;
+  UsersWrapper.findById = Users.get;
+  UsersWrapper.scrapeIds = Users.getIds;
+  UsersWrapper.create = function (data, cb) {
     var mod = mods[data.type]
       ;
 
@@ -110,11 +134,11 @@ module.exports.create = function (opts) {
       return;
     }
 
-    Users._create(mod.getId, data.type + ':', data, cb);
+    Users.create(mod.getId, data.type, data, cb);
   };
-  Users._create = function (getId, prefix, data, cb) {
+  Users.create = function (getId, providerType, data, cb) {
     getId(data.profile, function (err, fkey) {
-      Users._get(prefix + fkey, function (loginProfile) {
+      Users.get(providerType + ':' + fkey, function (loginProfile) {
 
         if (loginProfile) {
           // uuid, accounts, id
@@ -135,14 +159,14 @@ module.exports.create = function (opts) {
           loginProfile.accounts = [];
         }
 
-        Users._set(prefix + fkey, loginProfile, function () {
+        Users.set(providerType, fkey, loginProfile, function () {
           cb(loginProfile);
         });
       });
     });
   };
 
-  Users.getId = function (obj, cb) {
+  UsersWrapper.getId = function (obj, cb) {
     var mod = mods[obj.type]
       ;
 
@@ -156,7 +180,7 @@ module.exports.create = function (opts) {
     });
   };
 
-  Users.read = function (obj, cb) {
+  UsersWrapper.read = function (obj, cb) {
     var mod = mods[obj.type]
       ;
 
@@ -164,14 +188,15 @@ module.exports.create = function (opts) {
       cb(null);
     }
 
-    Users._read(mod.getId, obj.type + ':', obj, cb);
+    //Users.read(mod.getId, obj.type + ':', obj, cb);
+    Users.read(mod.getId, obj.type, obj, cb);
   };
-  Users.find = Users.read;
-  Users._read = function (getId, prefix, data, cb) {
+  UsersWrapper.find = UsersWrapper.read;
+  Users.read = function (getId, providerType, data, cb) {
     getId(data.profile, function (err, fkey) {
-      Users._get(prefix + fkey, cb);
+      Users.get(providerType + ':' + fkey, cb);
     });
   };
 
-  return Users;
+  return UsersWrapper;
 };

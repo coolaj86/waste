@@ -13,16 +13,18 @@ module.exports.create = function (opts) {
   try {
     cache = require(opts.dbfile);
   } catch(e) {
-    console.log("Couldn't find accounts db file. Creating anew...");
+    console.log("Couldn't find accounts db file '" + opts.dbfile + "'. Creating anew...");
     cache = {};
   }
 
   function save() {
+    // TODO check log and reduce number of saves
+    // console.log("saving accounts db file", dbpath);
     fs.writeFileSync(dbpath, JSON.stringify(cache, null, '  '), 'utf8');
   }
 
 
-  Accounts.create = function (loginIds, meta) {
+  Accounts.create = function (loginIds, meta, cb) {
     var uuid = UUID.v4()
       ;
 
@@ -35,10 +37,14 @@ module.exports.create = function (opts) {
     });
 
     save();
+
+    if (cb) {
+      cb(cache[uuid]);
+    }
     return cache[uuid];
   };
 
-  Accounts.addLoginId = function (accountId, loginId) {
+  Accounts.link = Accounts.addLoginId = function (accountId, loginId, cb) {
     var account = cache[accountId]
       ;
       
@@ -47,6 +53,10 @@ module.exports.create = function (opts) {
     }
 
     save();
+
+    if (cb) {
+      cb();
+    }
   };
 
   Accounts.read = function (uuid) {
