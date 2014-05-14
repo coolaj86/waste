@@ -8,6 +8,9 @@ div
     li [[ http://example.com/bar ]] [unassociate and delete] (no other sign-ins are linked)
 
 div
+  button.btn.btn-link(ng-click="A.login()") Link another account
+
+div
   button.btn.btn-ldsconnect(type="button", ng-click="A.loginWithLds()")
     i.fa
       img(src="/images/moroni.png", style="position: relative; left: -3px; height: 16px;")

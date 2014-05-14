@@ -28,6 +28,13 @@ angular.module('sortinghatApp')
       $modalInstance.close(session);
     });
 
+    //
+    // Tumblr
+    //
+    StLogin.makeLogin(scope, 'tumblr', '/auth/tumblr', function (err, session) {
+      $modalInstance.close(session);
+    });
+
 
     //
     // Modal
@@ -40,10 +47,13 @@ angular.module('sortinghatApp')
       scope.emailShown = true;
     };
 
-    scope.loginId = "";
-    scope.loginSecret = "";
+    //
+    // ID & Secret (User & Pass)
+    //
+    scope.authId = "";
+    scope.authSecret = "";
     scope.loginWithBasicAuth = function () {
-      var auth = { 'Authorization': 'Basic ' + btoa(scope.loginId + ':' + scope.loginSecret) }
+      var auth = { 'Authorization': 'Basic ' + btoa(scope.authId + ':' + scope.authSecret) }
         ;
 
       // TODO UI needs spinner
@@ -54,7 +64,7 @@ angular.module('sortinghatApp')
         if (resp.data && resp.data.currentLoginId) {
           scope.alertType = "";
           scope.alertMessage = "";
-          scope.loginToken = "";
+          scope.authToken = "";
           $modalInstance.close(resp.data);
         } else {
           scope.alertMessage = "Invalid Access Token";
@@ -62,10 +72,14 @@ angular.module('sortinghatApp')
         }
       });
     };
+
+    //
+    // Access Token
+    //
     scope.demoProfiles = StLogin.testProfiles;
-    scope.loginToken = "";
+    scope.authToken = "";
     scope.loginWithToken = function () {
-      var auth = { 'Authorization': 'Bearer ' + scope.loginToken }
+      var auth = { 'Authorization': 'Bearer ' + scope.authToken }
         ;
 
       scope.alertType = 'alert-info';
@@ -81,7 +95,7 @@ angular.module('sortinghatApp')
         if (resp.data && resp.data.currentLoginId) {
           scope.alertType = "";
           scope.alertMessage = "";
-          scope.loginToken = "";
+          scope.authToken = "";
           $modalInstance.close(resp.data);
         } else {
           scope.alertMessage = "Invalid Access Token";
