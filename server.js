@@ -42,7 +42,10 @@ function route(rest) {
   rest.post('/api/session', function (req, res) {
     res.send(getPublic(req.user) || { role: 'guest', as: 'post' });
   });
+  // TODO have separate error / guest and valid user fallthrough
   rest.post('/api/session/:type', function (req, res) {
+    console.log('Fell through to /api/session/:type');
+    console.log('This currently happens on success and failure');
     res.send(getPublic(req.user) || { role: 'guest', as: 'post', type: req.params.type });
   });
   rest.delete('/api/session', function (req, res) {
@@ -74,16 +77,24 @@ routes.forEach(function (fn) {
   app.use(connect.router(fn));
 });
 
+// 
+// Generic App Routes
+//
+app
+  .use(connect.router(route))
+  ;
+
 //
 // App-Specific WebSocket Server
 //
-app.use(connect.router(ws.create(app, wsport, [])));
+app
+  .use(connect.router(ws.create(app, wsport, [])))
+  ;
 
 //
 // Generic Template API
 //
 app
-  .use(connect.router(route))
   //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
   .use(connect.static(path.join(__dirname, 'data')))
   //.use(connect.static(path.join(__dirname, 'dist')))

@@ -2,6 +2,8 @@
 
 var UUID = require('node-uuid')
   , fs = require('fs')
+  //, serverConfig = require('../config')
+  , secretUtils = require('./utils')
   ;
 
 module.exports.Users = {};
@@ -22,6 +24,23 @@ module.exports.Users.create = function (opts) {
     // TODO check log and reduce number of saves
     //console.log('saving users db file', dbpath);
     fs.writeFileSync(dbpath, JSON.stringify(users, null, '  '), 'utf8');
+  };
+
+  Users.readByIdAndSecret = function (type, loginId, secret, cb) {
+    var user = users[type + ':' + loginId]
+      ;
+
+    if (!user) {
+      cb(null, null);
+      return;
+    }
+
+    if (!secretUtils.testSecretHash(user.profile.salt, secret, user.profile.secret, user.profile.hashtype)) {
+      cb(null, null);
+      return;
+    }
+
+    cb(null, user);
   };
 
   Users.readByIdSync = function (loginId) {
@@ -104,8 +123,6 @@ module.exports.create = function (opts) {
     return ids;
   };
 
-
-
   UsersWrapper.link = function (loginId, accountId, cb) {
     var user = Users.readByIdSync(loginId)
       ;
@@ -122,6 +139,7 @@ module.exports.create = function (opts) {
     if (cb) { cb(); }
   };
 
+  UsersWrapper.readByIdAndSecret = Users.readByIdAndSecret;
   UsersWrapper.createByIdSync = Users.createByIdSync;
   UsersWrapper.findById = Users.get;
   UsersWrapper.scrapeIds = Users.getIds;
