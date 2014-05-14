@@ -45,35 +45,16 @@ function route(rest) {
 }
 
 app
-  .use(function (req, res, next) {
-      res.redirect = function (code, href) {
-        if (!href) {
-          href = code;
-          code = 302;
-        }
-
-        res.statusCode = code;
-        res.setHeader('Location', href);
-        res.end();
-      };
-      res.send = function (data) {
-        if (data) {
-          res.setHeader('Content-Type', 'application/json');
-          data = JSON.stringify(data, null, '  ');
-        } else {
-          data = undefined;
-        }
-
-        res.end(data);
-      };
-      next();
-    })
+  .use(connect.logger())
+  .use(connect.errorHandler({ dumpExceptions: true, showStack: true }))
   .use(connect.query())
   .use(connect.json())
   .use(connect.urlencoded())
   .use(connect.compress())
   .use(connect.cookieParser())
   .use(connect.session({ secret: config.sessionSecret }))
+  .use(require('./connect-shims/redirect'))
+  .use(require('./connect-shims/send'))
   //.use(express.router)
   ;
   //route(app);
@@ -96,6 +77,7 @@ app.use(connect.router(ws.create(app, wsport, [])));
 //
 app
   .use(connect.router(route))
+  .use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
   .use(connect.static(path.join(__dirname, 'data')))
   //.use(connect.static(path.join(__dirname, 'dist')))
   //.use(connect.static(path.join(__dirname, '.tmp', 'concat')))
