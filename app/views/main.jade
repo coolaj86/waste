@@ -2,20 +2,18 @@
   .row
     .col-sm-12
       h3 Behold, Message
-      {{ message }}
+      p {{ message }}
   .row
     .col-sm-12
       h3 Behold, M
-      {{ M.message }}
+      p {{ M.message }}
   .row
     .col-sm-12
       h3 Behold, Data
       pre
-        code
-          {{ M.data | json }}
+        code {{ M.data | json }}
   .row
     .col-sm-12
       h3 Behold, Session
       pre
-        code
-          {{ M.session | json }}
+        code {{ M.session | json }}
