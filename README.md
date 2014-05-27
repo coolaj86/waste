@@ -38,13 +38,36 @@ Configure
 ===
 
 For social integration you'll need to edit `config.js` and
-replace the `XXX`s with your own keys and secrets
+replace the demo keys (which only work for `local.ldsconnect.org`) with your own keys and secrets
 
 ```bash
 vim config.js
 mv angular-project.conf /etc/init/my-project-name.conf
 vim /etc/init/my-project-name.conf
 ```
+
+## iOS & Android icons
+
+You can hire a designer to create your icon at the largest size,
+paste it into these templates,
+and then have it in every important size.
+
+* iOS Touch Icon Templates
+  * <http://appicontemplate.com/ios7>
+  * <http://ios.robs.im/>
+* iOS Startup Icon Templates
+  * <https://github.com/elistone/ios-splashscreen-template-v2>
+* rename script
+  * `./rename-app-icons.sh`
+
+How to do:
+
+  * download and open these templates
+  * double-click the *edit and save* **icon**
+  * paste your image in the *psb*
+  * save and close the *psb*
+  * select *save for web and devices* in the *psd*
+  * tada!
 
 APIs you get for free
 ===
