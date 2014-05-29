@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sortinghatApp')
+angular.module('yololiumApp')
   .service('StSession', function StSession($http, $q, $timeout) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     var user

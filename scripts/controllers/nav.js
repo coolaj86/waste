@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sortinghatApp')
+angular.module('yololiumApp')
   .controller('NavCtrl', function ($state, StLogin, StSession, mySession) {
     var $scope = this
       , allTabs

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sortinghatApp')
+angular.module('yololiumApp')
   .service('Data', function Wards($http, $q, $timeout) {
     var shared = { data: {} }
       ;
