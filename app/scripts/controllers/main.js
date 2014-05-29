@@ -1,9 +1,15 @@
 'use strict';
 
 angular.module('sortinghatApp')
-  .controller('MainCtrl', function ($scope, $timeout, data, mySession) {
+  .controller('MainCtrl', function ($scope, $state, $timeout, data, mySession) {
     var M = this
       ;
+
+    if ('guest' === mySession.role) {
+      console.log('redirect to splash');
+      $state.go('splash');
+      return;
+    }
 
     M.message = "This is bound scope, accessed as 'M.message' in templates and 'message' will not leak between scopes";
     $scope.message = "This is unbound scope, accessed as 'message' in this and child scopes";
