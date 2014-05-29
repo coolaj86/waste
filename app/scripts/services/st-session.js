@@ -41,6 +41,14 @@ angular.module('yololiumApp')
       }
 
       gettingSession = d.promise;
+
+      if (user) {
+        $timeout(function () {
+          d.resolve(user);
+        }, 0);
+        return gettingSession;
+      }
+
       $http.get('/api/session').success(function (_user) {
         console.log('[P][1] http resolve');
         user = _user;
@@ -67,7 +75,9 @@ angular.module('yololiumApp')
 
     // external auth (i.e. facebook, twitter)
     function update(data) {
+      gettingSession = null;
       user = data;
+      userTouchedAt = Date.now();
       notifier.notify(mangle(user));
     }
 
