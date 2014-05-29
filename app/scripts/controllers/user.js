@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sortinghatApp')
+angular.module('yololiumApp')
   .controller('UserCtrl', function ($scope, mySession) {
     var scope = this
       ;
