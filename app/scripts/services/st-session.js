@@ -4,12 +4,13 @@ angular.module('sortinghatApp')
   .service('StSession', function StSession($http, $q, $timeout) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     var user
-      , gettingSession
+      , gettingSession = null
+      , userTouchedAt = 0
       , noopts = {}
       , notifier = $q.defer()
       ;
 
-    // TODO handle this on server side
+    // TODO move this to server (and make it real)
     function mangle(data) {
       if (!data || data.error || 'guest' === data.role) {
         return data;
@@ -19,43 +20,31 @@ angular.module('sortinghatApp')
       data.account = data.account || data.currentAccount || data.accounts[0];
       data.account.role = data.account.role || data.profile.role || 'guest';
 
-      console.log('[mangled]');
-      console.log(data);
       return data;
     }
 
     function read(opts) {
+      console.log('called read');
+
       opts = opts || noopts;
       var d = $q.defer()
+        , staletime = 5 * 60 * 60 * 1000
         ;
+
+      if (opts.expire || (Date.now() - userTouchedAt > staletime)) { // also try Date.now() - user.touchedAt
+        gettingSession = null;
+        user = null;
+      }
 
       if (gettingSession) {
         return gettingSession;
       }
+
       gettingSession = d.promise;
-
-      if (opts.expire) { // also try Date.now() - user.touchedAt
-        user = null;
-      }
-
-      gettingSession.then(function () {
-        gettingSession = null;
-        console.log('resolved by StSession');
-      });
-
-      console.log('called read');
-      if (user) {
-        $timeout(function () {
-          d.resolve(mangle(user));
-        }, 0);
-        console.log('returning resolved promise');
-        return gettingSession;
-      }
-
       $http.get('/api/session').success(function (_user) {
-        console.log('resolve');
+        console.log('[P][1] http resolve');
         user = _user;
-        user.touchedAt = Date.now();
+        userTouchedAt = Date.now();
         d.resolve(mangle(user));
       });
 
