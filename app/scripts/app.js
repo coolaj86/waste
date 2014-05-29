@@ -76,6 +76,7 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+      // This is the root state for not-logged-in users
       .state('splash', {
         url: '/splash/'
       , views: {
