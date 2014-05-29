@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sortinghatApp')
+angular.module('yololiumApp')
   .controller('LoginCtrl', function ($http, $modalInstance, StLogin) {
     var scope = this
       ;

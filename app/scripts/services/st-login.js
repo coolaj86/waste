@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sortinghatApp')
+angular.module('yololiumApp')
   .service('StLogin', function StLogin($q, $modal, StSession) {
     function showLoginModal() {
       //var d = $q.defer()
