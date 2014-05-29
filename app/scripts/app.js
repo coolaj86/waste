@@ -76,6 +76,22 @@ angular.module('sortinghatApp', [
         , footer: footer
         }
       })
+      .state('splash', {
+        url: '/splash/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/splash.html'
+          , controller: 'SplashCtrl as S'
+          , resolve: {
+              mySession: ['StSession', function (StSession) {
+                return StSession.get();
+              }]
+            }
+          }
+        , footer: footer
+        }
+      })
       .state('user', {
         url: '/user/'
       , views: {
