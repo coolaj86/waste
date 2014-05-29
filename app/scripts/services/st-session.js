@@ -11,7 +11,7 @@ angular.module('sortinghatApp')
 
     // TODO handle this on server side
     function mangle(data) {
-      if (!data || data.error) {
+      if (!data || data.error || 'guest' === data.role) {
         return data;
       }
 
