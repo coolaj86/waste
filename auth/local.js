@@ -165,11 +165,11 @@ module.exports.init = function (passport, config, opts) {
   }
 
   function route(rest) {
-    rest.post('/api/session/bearer', handleLogin('bearer'));
-    rest.post('/api/session/local', handleLogin('local'));
-    rest.post('/api/session/local', handleLogin('local.passphrase'));
-    rest.post('/api/session/local', handleLogin('local.secret'));
-    rest.post('/api/session/basic', handleLogin('basic'));
+    rest.post(config.apiPrefix + '/session/bearer', handleLogin('bearer'));
+    rest.post(config.apiPrefix + '/session/local', handleLogin('local'));
+    rest.post(config.apiPrefix + '/session/local', handleLogin('local.passphrase'));
+    rest.post(config.apiPrefix + '/session/local', handleLogin('local.secret'));
+    rest.post(config.apiPrefix + '/session/basic', handleLogin('basic'));
   }
 
   route.bearerStrategy = bearerStrategy;

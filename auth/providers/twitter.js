@@ -51,7 +51,7 @@ module.exports.init = function (passport, config, opts) {
     , twConfig.consumerKey
     , twConfig.consumerSecret
     , "1.0A"
-    , "http://" + config.host + "/authz/twitter/callback"
+    , "http://" + config.host + config.oauthPrefix + "/twitter/authz/callback"
     , "HMAC-SHA1"
     );
   }
@@ -62,7 +62,8 @@ module.exports.init = function (passport, config, opts) {
   twitterAuthn = new TwitterStrategy({
       consumerKey: twConfig.consumerKey
     , consumerSecret: twConfig.consumerSecret
-    , callbackURL: "http://" + config.host + "/authn/twitter/callback"
+    , callbackURL: "http://" + config.host
+      + config.oauthPrefix + "/twitter/authn/callback"
     },
     function(token, tokenSecret, profile, done) {
       console.log('[load:twN]');
@@ -83,7 +84,8 @@ module.exports.init = function (passport, config, opts) {
   twitterAuthz = new TwitterStrategy({
       consumerKey: twConfig.consumerKey
     , consumerSecret: twConfig.consumerSecret
-    , callbackURL: "http://" + config.host + "/authz/twitter/callback"
+    , callbackURL: "http://" + config.host
+      + config.oauthPrefix + "/twitter/authz/callback"
     , userAuthorizationURL: 'https://api.twitter.com/oauth/authorize'
     },
     function(token, tokenSecret, profile, done) {
@@ -118,12 +120,12 @@ module.exports.init = function (passport, config, opts) {
     // Twitter AuthN
     // Handle the case that the user clicks "Sign In with Twitter" on our own app
     rest.get(
-      '/authn/twitter'
+      config.oauthPrefix + '/twitter/authn/connect'
     , passport.authenticate('twitterAuthn')
     );
     // Handle the oauth callback from twitter
     rest.get(
-      '/authn/twitter/callback'
+      config.oauthPrefix + '/twitter/authn/callback'
     , function (req, res, next) {
         passport.authenticate('twitterAuthn', function (err, user, info) {
           console.log('[auth] twitter auth n');
@@ -131,12 +133,12 @@ module.exports.init = function (passport, config, opts) {
             error: err
           , user: user
           , info: info
-          , successUrl: '/tw-close.html'
-          , failureUrl: '/tw-error.html'
+          , successUrl: '/twitter-close.html'
+          , failureUrl: '/twitter-error.html'
           , callback: function (user2, next2) {
               // If we don't have authorization, get it
               if (!user2.authorized) {
-                res.redirect('/authz/twitter');
+                res.redirect(config.oauthPrefix + '/twitter/authz/connect');
                 return;
               }
               next2();
@@ -149,11 +151,11 @@ module.exports.init = function (passport, config, opts) {
     // Twitter AuthZ
     // Handle the case that the user wants to use a direct message, but hasn't authorized yet
     rest.get(
-      '/authz/twitter'
+      config.oauthPrefix + '/twitter/authz/connect'
     , passport.authenticate('twitterAuthz')
     );
     rest.get(
-      '/authz/twitter/callback'
+      config.oauthPrefix + '/twitter/authz/callback'
     , function (req, res, next) {
         passport.authenticate('twitterAuthz', function (err, user, info) {
           console.log('[auth] twitter auth z');
@@ -161,8 +163,8 @@ module.exports.init = function (passport, config, opts) {
             error: err
           , user: user
           , info: info
-          , successUrl: '/tw-close.html'
-          , failureUrl: '/tw-error.html'
+          , successUrl: '/twitter-close.html'
+          , failureUrl: '/twitter-error.html'
           });
         })(req, res, next);
       }

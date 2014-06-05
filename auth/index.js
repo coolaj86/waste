@@ -69,6 +69,9 @@ module.exports.init = function (app, config, Users, Accounts) {
     , routes = []
     , localRoute
     , opts = { Users: Users, login: handleLogin }
+      // TODO test that publicApi actually falls under apiPrefix
+    , publicApiRe = new RegExp('^' + config.publicApi
+        .replace(new RegExp('^' + config.apiPrefix), ''))
     ;
 
 
@@ -223,8 +226,8 @@ module.exports.init = function (app, config, Users, Accounts) {
     .use(passport.initialize())
     .use(passport.session())
     // when using access_token / bearer without a session
-    .use('/api', function (req, res, next) {
-        if (req.user) {
+    .use(config.apiPrefix, function (req, res, next) {
+        if (req.user || publicApiRe.test(req.url)) {
           next();
           return;
         }
@@ -232,23 +235,36 @@ module.exports.init = function (app, config, Users, Accounts) {
         // everything except for bearer relies on a session
         //passport.authenticate('bearer', { session: false }),
         passport.authenticate('bearer', function (err, user, info) {
-          if (err || (!user && !/^\/(login$|session($|\/)|auth[nz]?\/)/.test(req.url))) {
-            res.send({ error: {
-              message: "Unauthorized access to /api"
-            , code: 401
-            , class: "INVALID-BEARER-TOKEN"
-            , superclasses: []
-            } });
+          function continueLogin() {
+            // This creates a session via req.logIn(),
+            // which is not strictly required
+            opts.login(req, res, next, {
+              error: err
+            , user: user
+            , info: info
+            });
+          }
+
+          function doesntNeedAuth() {
+            return (
+                req.skipAuthn
+              || publicApiRe.test(req.url)
+                // TODO ues session prefix
+              || !/^\/session($|\/)/.test(req.url)
+            );
+          }
+
+          if (!err && (user || doesntNeedAuth())) {
+            continueLogin();
             return;
           }
 
-          // This creates a session via req.logIn(),
-          // which is not strictly required
-          opts.login(req, res, next, {
-            error: err
-          , user: user
-          , info: info
-          });
+          res.send({ error: {
+            message: "Unauthorized access to " + config.apiPrefix
+          , code: 401
+          , class: "INVALID-BEARER-TOKEN"
+          , superclasses: []
+          } });
         })(req, res, next);
       })
     ;

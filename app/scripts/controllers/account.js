@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('AccountCtrl', function ($scope, StLogin, mySession) {
+  .controller('AccountCtrl', function ($scope, StLogin, StSession, mySession) {
     var A = this
+      , oauthPrefix = StSession.oauthPrefix
       ;
 
     if (mySession && mySession.profiles) {
@@ -39,22 +40,22 @@ angular.module('yololiumApp')
     //
     // Facebook
     //
-    StLogin.makeLogin(A, 'fb', '/auth/facebook', assignAccount);
+    StLogin.makeLogin(A, 'facebook', oauthPrefix + '/facebook/connect', assignAccount);
 
     //
     // Twitter
     //
-    StLogin.makeLogin(A, 'tw', '/authn/twitter', assignAccount);
+    StLogin.makeLogin(A, 'twitter', oauthPrefix + '/twitter/authn/connect', assignAccount);
 
     //
     // Tumblr
     //
-    StLogin.makeLogin(A, 'tumblr', '/auth/tumblr', assignAccount);
+    StLogin.makeLogin(A, 'tumblr', oauthPrefix + '/tumblr/connect', assignAccount);
 
     //
     // LDS.org
     //
-    StLogin.makeLogin(A, 'lds', '/auth/ldsconnect', assignAccount);
+    StLogin.makeLogin(A, 'ldsconnect', oauthPrefix + '/ldsconnect/connect', assignAccount);
 
     assignAccount(null, mySession);
   });

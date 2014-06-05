@@ -35,7 +35,14 @@ module.exports = {
   , secret: "7e0e7d6fbb948279f204a8a85f1bee10"
   , type: "md5"
   }
-, sessionSecret: 'a super secret for ITS, nothing better'
+, oauthPrefix: '/oauth'
+, sessionPrefix: '/session'
+, apiPrefix: '/api'
+, superUserApi: '/api/superuser'
+, adminApi: '/api/admin'
+, userApi: '/api/user'
+, publicApi: '/api/public'
+, sessionSecret: 'a super secret, nothing better'
 , facebook: {
     // https://developers.facebook.com/apps
     // Client Token 5308ba111a46159e92d74fce76dbe807
