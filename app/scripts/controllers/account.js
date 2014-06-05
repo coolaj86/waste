@@ -14,15 +14,18 @@ angular.module('yololiumApp')
     A.session = mySession;
 
     function assignAccount(err, session) {
-      /*
-      session.profiles.some(function (login) {
-        if (session.currentLoginId.replace(/^[^:]+:/, '') === login.id) {
+      session.logins.some(function (login) {
+        if (session.selectedLoginId === login.id) {
           A.profile = login;
           return true;
         }
       });
-      */
-      A.profile = session;
+      session.accounts.some(function (account) {
+        if (session.selectedAccountId === account.id) {
+          A.account = account;
+          return true;
+        }
+      });
     }
 
     A.login = function () {
