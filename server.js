@@ -13,7 +13,7 @@ var connect = require('connect')
   , Users = require('./lib/loginlogic/users').create({ dbfile: path.join(__dirname, 'priv', 'users.priv.json') })
     // Authz
   , Accounts = require('./lib/loginlogic/accounts').create({ dbfile: path.join(__dirname, 'priv', 'accounts.priv.json')})
-  , Auth = require('./lib/loginlogic/auth').create(config, Users, Accounts)
+  , Auth = require('./lib/loginlogic').create(config, Users, Accounts)
   ;
 
 config.apiPrefix = config.apiPrefix || '/api';
@@ -30,11 +30,19 @@ function route(rest) {
     if (!reqUser) {
       return null;
     }
+
     return {
-      // TODO current account
-      currentLoginId: reqUser.currentUser.id
+      selectedLoginId: reqUser.login.id
+    , selectedAccountId: reqUser.account && reqUser.account.id
+    , logins: reqUser.logins.map(function (authN) {
+        authN.profile.uid = authN.profile.id;
+        authN.profile.type = authN.type;
+        authN.profile.pkey = authN.id;
+        authN.profile.typedUid = authN.id;
+        authN.profile.id = authN.id;
+        return authN.profile;
+      })
     , accounts: reqUser.accounts
-    , profiles: reqUser.profiles.map(function (authN) { authN.profile.pkey = authN.id; return authN.profile; })
     };
   }
 
