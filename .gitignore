@@ -1,3 +1,5 @@
+.*.sw*
+
 dist
 .tmp
 .sass-cache
