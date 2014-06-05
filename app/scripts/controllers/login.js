@@ -1,8 +1,11 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('LoginCtrl', function ($http, $modalInstance, StLogin) {
+  .controller('LoginCtrl', function ($http, $modalInstance, StLogin, StSession) {
     var scope = this
+        // TODO put in a config file that makes it into the browser
+      , oauthPrefix = StSession.oauthPrefix
+      , apiPrefix = '/api'
       ;
 
     // Crazy window open/close hacks and mobile chrome on iOS workarounds
@@ -10,28 +13,28 @@ angular.module('yololiumApp')
     //
     // LDS.org
     //
-    StLogin.makeLogin(scope, 'lds', '/auth/ldsconnect', function (err, session) {
+    StLogin.makeLogin(scope, 'ldsconnect', oauthPrefix + '/ldsconnect/connect', function (err, session) {
       $modalInstance.close(session);
     });
 
     //
     // Facebook
     //
-    StLogin.makeLogin(scope, 'fb', '/auth/facebook', function (err, session) {
+    StLogin.makeLogin(scope, 'facebook', oauthPrefix + '/facebook/connect', function (err, session) {
       $modalInstance.close(session);
     });
 
     //
     // Twitter
     //
-    StLogin.makeLogin(scope, 'tw', '/authn/twitter', function (err, session) {
+    StLogin.makeLogin(scope, 'twitter', oauthPrefix + '/twitter/authn/connect', function (err, session) {
       $modalInstance.close(session);
     });
 
     //
     // Tumblr
     //
-    StLogin.makeLogin(scope, 'tumblr', '/auth/tumblr', function (err, session) {
+    StLogin.makeLogin(scope, 'tumblr', oauthPrefix + '/tumblr/connect', function (err, session) {
       $modalInstance.close(session);
     });
 
@@ -57,7 +60,7 @@ angular.module('yololiumApp')
         ;
 
       // TODO UI needs spinner
-      $http.post('/api/session/basic', null, { headers: auth }).then(function (resp) {
+      $http.post(apiPrefix + '/session/basic', null, { headers: auth }).then(function (resp) {
         console.log('[Basic Auth] resp.data');
         console.log(resp.data);
 
@@ -88,7 +91,7 @@ angular.module('yololiumApp')
       // TODO allow use of token in place of session cookies
       // TODO XSRF-TOKEN in cookie and X-XSRF-TOKEN in header
       // $http.defaults.headers.common.Authorization = 'Bearer xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
-      $http.post('/api/session/bearer', null, { headers: auth }).then(function (resp) {
+      $http.post(apiPrefix + '/session/bearer', null, { headers: auth }).then(function (resp) {
         console.log('[Bearer Auth] resp.data');
         console.log(resp.data);
 

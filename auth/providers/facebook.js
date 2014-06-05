@@ -32,7 +32,8 @@ module.exports.init = function (passport, config, opts) {
   passport.use(new FacebookStrategy({
       clientID: config.facebook.id,
       clientSecret: config.facebook.secret,
-      callbackURL: config.protocol + "://" + config.host + "/api/auth/facebook/callback"
+      callbackURL: config.protocol + "://" + config.host
+        + config.oauthPrefix + "/facebook/callback"
     },
     function(accessToken, refreshToken, profile, done) {
       // this object is attached as or merged to req.session.passport.user
@@ -51,7 +52,7 @@ module.exports.init = function (passport, config, opts) {
 
   function route(rest) {
     rest.get(
-      '/api/auth/facebook/callback'
+      config.oauthPrefix + '/facebook/callback'
     , function (req, res, next) {
         passport.authenticate('facebook', function (err, user, info) {
           console.log('[auth] [facebook]');
@@ -59,7 +60,7 @@ module.exports.init = function (passport, config, opts) {
           // for some reason the very first time the profile comes back it is without emails
           // NOTE: if the email is unverified the array will exist, but be empty
           if (user && !Array.isArray(user.profile.emails)) {
-            res.redirect('/auth/facebook');
+            res.redirect(config.oauthPrefix + '/facebook/connect');
             return;
           }
 
@@ -67,16 +68,16 @@ module.exports.init = function (passport, config, opts) {
             error: err
           , user: user
           , info: info
-          , successUrl: '/fb-close.html'
-          , failureUrl: '/fb-error.html'
+          , successUrl: '/facebook-close.html'
+          , failureUrl: '/facebook-error.html'
           });
         })(req, res, next);
       }
     );
     // Redirect the user to Facebook for authentication.  When complete,
     // Facebook will redirect the user back to the application at
-    //   /auth/facebook/callback
-    rest.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+    //   /facebook/callback
+    rest.get(config.oauthPrefix + '/facebook/connect', passport.authenticate('facebook', { scope: ['email'] }));
   }
 
   return route;

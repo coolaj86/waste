@@ -15,6 +15,8 @@ var connect = require('connect')
   , Accounts = require('./auth/accounts').create({ dbfile: path.join(__dirname, 'priv', 'accounts.priv.json')})
   ;
 
+config.apiPrefix = config.apiPrefix || '/api';
+
 require('./auth/root-user').init(ru, Users, Accounts);
 
 if (!connect.router) {
@@ -35,24 +37,40 @@ function route(rest) {
     };
   }
 
-  rest.get('/api/session', function (req, res) {
+  rest.get('/session', function (req, res) {
+    /*
+      { login: {}
+      , logins: []
+      , account: {}
+      , accounts: []
+      }
+    */
     res.send(getPublic(req.user) || { role: 'guest', as: 'get' });
   });
   // this is the fallthrough from the POST '/api' catchall
-  rest.post('/api/session', function (req, res) {
+  rest.post('/session', function (req, res) {
     res.send(getPublic(req.user) || { role: 'guest', as: 'post' });
   });
   // TODO have separate error / guest and valid user fallthrough
-  rest.post('/api/session/:type', function (req, res) {
+  rest.post('/session/:type', function (req, res) {
     console.log('Fell through to /api/session/:type');
     console.log('This currently happens on success and failure');
     res.send(getPublic(req.user) || { role: 'guest', as: 'post', type: req.params.type });
   });
-  rest.delete('/api/session', function (req, res) {
+  rest.delete('/session', function (req, res) {
     req.logout();
     res.send({ role: 'guest', as: 'delete' });
   });
 }
+
+app.api = function (path, fn) {
+  if (!fn) {
+    fn = path;
+    path = "";
+  }
+
+  app.use(config.apiPrefix + path, fn);
+};
 
 app
   //.use(connect.logger())
@@ -69,11 +87,27 @@ app
   ;
   //route(app);
 
+app
+  .use(config.oauthPrefix, function (req, res, next) {
+      req.skipAuthn = true;
+      next();
+    })
+  /*
+  .use(config.sessionPrefix, function (req, res, next) {
+      req.skipAuthn = true;
+      next();
+    })
+  */
+  ;
+
 //
 // Generic Template Auth
 //
 routes = auth.init(app, config, Users, Accounts);
 routes.forEach(function (fn) {
+  // Since the API prefix is sometimes necessary,
+  // it's probably better to always require the
+  // auth providers to use it manually
   app.use(connect.router(fn));
 });
 
@@ -81,14 +115,14 @@ routes.forEach(function (fn) {
 // Generic App Routes
 //
 app
-  .use(connect.router(route))
+  .api(connect.router(route))
   ;
 
 //
 // App-Specific WebSocket Server
 //
 app
-  .use(connect.router(ws.create(app, wsport, [])))
+  .use(connect.router(ws.create(app, config, wsport, [])))
   ;
 
 //

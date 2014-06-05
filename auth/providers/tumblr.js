@@ -49,7 +49,7 @@ module.exports.init = function (passport, config, opts) {
     var url = "http://api.tumblr.com/v2/blog/" + params.blog + "/posts"
       + "?notes_info=true"
       + "&offset=" + (params.offset || 0)
-      + "&api_key=" + require('../config').tumblr.consumerKey
+      + "&api_key=" + tumblrConfig.consumerKey
       ;
 
     console.log(url);
@@ -75,7 +75,7 @@ module.exports.init = function (passport, config, opts) {
     , tumblrConfig.consumerKey
     , tumblrConfig.consumerSecret
     , "1.0A"
-    , "http://" + config.host + "/authz/tumblr/callback"
+    , "http://" + config.host + config.oauthPrefix + "/tumblr/callback"
     , "HMAC-SHA1"
     );
     module.exports.oa = oa;
@@ -87,7 +87,7 @@ module.exports.init = function (passport, config, opts) {
   tumblrAuth = new TumblrStrategy({
       consumerKey: tumblrConfig.consumerKey
     , consumerSecret: tumblrConfig.consumerSecret
-    , callbackURL: "http://" + config.host + "/auth/tumblr/callback"
+    , callbackURL: "http://" + config.host + config.oauthPrefix + "/tumblr/callback"
     },
     function(token, tokenSecret, profile, done) {
       console.log('[load:tumblrN]');
@@ -110,12 +110,12 @@ module.exports.init = function (passport, config, opts) {
     // Tumblr AuthN
     // Handle the case that the user clicks "Sign In with Tumblr" on our own app
     rest.get(
-      '/auth/tumblr'
+      config.oauthPrefix + '/tumblr/connect'
     , passport.authenticate('tumblr')
     );
     // Handle the oauth callback from tumblr
     rest.get(
-      '/auth/tumblr/callback'
+      config.oauthPrefix + '/tumblr/callback'
     , function (req, res, next) {
         passport.authenticate('tumblr', function (err, user, info) {
           console.log('[auth] tumblr auth n');

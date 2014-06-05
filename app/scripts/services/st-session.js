@@ -8,6 +8,7 @@ angular.module('yololiumApp')
       , userTouchedAt = 0
       , noopts = {}
       , notifier = $q.defer()
+      , apiPrefix = '/api'
       ;
 
     // TODO move this to server (and make it real)
@@ -49,7 +50,7 @@ angular.module('yololiumApp')
         return gettingSession;
       }
 
-      $http.get('/api/session').success(function (_user) {
+      $http.get(apiPrefix + '/session').success(function (_user) {
         console.log('[P][1] http resolve');
         user = _user;
         userTouchedAt = Date.now();
@@ -63,7 +64,7 @@ angular.module('yololiumApp')
       var d = $q.defer()
         ;
 
-      $http.post('/api/session', {
+      $http.post(apiPrefix + '/session', {
         email: email
       , password: passphrase
       }).success(function (data) {
@@ -90,7 +91,7 @@ angular.module('yololiumApp')
         ;
 
       user = null;
-      $http.delete('/api/session').success(function () {
+      $http.delete(apiPrefix + '/session').success(function () {
         d.resolve();
       });
       return d.promise;
@@ -103,5 +104,6 @@ angular.module('yololiumApp')
     , update: update
     , destroy: destroy
     , subscribe: on
+    , oauthPrefix: '/oauth'
     };
   });

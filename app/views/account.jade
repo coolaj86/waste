@@ -11,7 +11,7 @@ div
   button.btn.btn-link(ng-click="A.login()") Link another account
 
 div
-  button.btn.btn-ldsconnect(type="button", ng-click="A.loginWithLds()")
+  button.btn.btn-ldsconnect(type="button", ng-click="A.loginWithLdsconnect()")
     i.fa
       img(src="/images/moroni.png", style="position: relative; left: -3px; height: 16px;")
     span.signin | Connect with LDS.org
@@ -19,7 +19,7 @@ div
     span (you must sign out to associate an additional account)
 
 div
-  button.btn.btn-facebook(type="button", ng-click="A.loginWithFb()")
+  button.btn.btn-facebook(type="button", ng-click="A.loginWithFacebook()")
     i.fa.fa-facebook-square
     span  | Connect with Facebook
   p
@@ -35,7 +35,7 @@ div
     span (you must sign out to associate an additional account)
 
 div
-  button.btn.btn-twitter(type="button", ng-click="A.loginWithTw()")
+  button.btn.btn-twitter(type="button", ng-click="A.loginWithTwitter()")
     i.fa.fa-twitter-square
     span  | Sign in with Twitter
   strong(ng-if="A.session.twitter", style="color: green;") &#32;Connected

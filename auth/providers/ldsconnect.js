@@ -27,7 +27,8 @@ module.exports.init = function (passport, config, opts) {
   passport.use(new LdsConnectStrategy({
       clientID: config.ldsconnect.id,
       clientSecret: config.ldsconnect.secret,
-      callbackURL: config.protocol + "://" + config.host + "/api/auth/ldsconnect/callback"
+      callbackURL: config.protocol + "://" + config.host
+        + config.oauthPrefix + "/ldsconnect/callback"
     },
     function(accessToken, refreshToken, profile, done) {
       // this object is attached as or merged to req.session.passport.user
@@ -46,7 +47,7 @@ module.exports.init = function (passport, config, opts) {
 
   function route(rest) {
     rest.get(
-      '/api/auth/ldsconnect/callback'
+      config.oauthPrefix + '/ldsconnect/callback'
     , function (req, res, next) {
         passport.authenticate('ldsconnect', function (err, user, info) {
           opts.login(req, res, next, {
@@ -56,8 +57,8 @@ module.exports.init = function (passport, config, opts) {
           // NOTE this does not issue a Location redirect.
           // Instead, the file is read and surved with the current URL.
           // The hash/anchors are being used as reminder placeholders
-          , successUrl: '/lds-close.html' // TODO #allow
-          , failureUrl: '/lds-error.html' // TODO #error || #deny
+          , successUrl: '/ldsconnect-close.html' // TODO #allow
+          , failureUrl: '/ldsconnect-error.html' // TODO #error || #deny
           });
         })(req, res, next);
       }
@@ -66,7 +67,10 @@ module.exports.init = function (passport, config, opts) {
     // Redirect the user to LdsConnect for authentication.  When complete,
     // LdsConnect will redirect the user back to the application at
     //   /auth/ldsconnect/callback
-    rest.get('/auth/ldsconnect', passport.authenticate('ldsconnect', { scope: ['email'] }));
+    rest.get(
+      config.oauthPrefix + '/ldsconnect/connect'
+    , passport.authenticate('ldsconnect', { scope: ['email'] })
+    );
   }
 
   return route;
