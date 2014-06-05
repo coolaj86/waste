@@ -64,7 +64,7 @@ angular.module('yololiumApp')
         console.log('[Basic Auth] resp.data');
         console.log(resp.data);
 
-        if (resp.data && resp.data.currentLoginId) {
+        if (resp.data && resp.data.selectedLoginId) {
           scope.alertType = "";
           scope.alertMessage = "";
           scope.authToken = "";
@@ -95,7 +95,7 @@ angular.module('yololiumApp')
         console.log('[Bearer Auth] resp.data');
         console.log(resp.data);
 
-        if (resp.data && resp.data.currentLoginId) {
+        if (resp.data && resp.data.selectedLoginId) {
           scope.alertType = "";
           scope.alertMessage = "";
           scope.authToken = "";

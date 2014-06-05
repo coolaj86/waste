@@ -17,9 +17,26 @@ angular.module('yololiumApp')
         return data;
       }
 
-      data.profile = data.profile || data.currentProfile || data.currentLogin || data.profiles[0];
-      data.account = data.account || data.currentAccount || data.accounts[0];
+      data.logins.some(function (l) {
+        if (l.id === data.selectedLoginId) {
+          data.login = l;
+          return true;
+        }
+      });
+
+      data.accounts.some(function (a) {
+        if (a.id === data.selectedAccountId) {
+          data.account = a;
+          return true;
+        }
+      });
+
+      data.profile = data.login || {};
+      data.account = data.account || {};
       data.account.role = data.account.role || data.profile.role || 'guest';
+      if (data.selectedAccountId && 'guest' === data.role) {
+        data.account.role = 'user';
+      }
 
       return data;
     }
