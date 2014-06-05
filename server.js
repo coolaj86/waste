@@ -3,21 +3,22 @@
 var connect = require('connect')
   , path = require('path')
   , app = connect()
-  , auth = require('./auth')
+  , auth = require('./lib/sessionlogic')
   , config = require('./config')
   , ws = require('./lib/ws')
   , wsport = config.wsport || 8282
   , routes
   , ru = config.rootUser
     // Authn
-  , Users = require('./auth/users').create({ dbfile: path.join(__dirname, 'priv', 'users.priv.json') })
+  , Users = require('./lib/loginlogic/users').create({ dbfile: path.join(__dirname, 'priv', 'users.priv.json') })
     // Authz
-  , Accounts = require('./auth/accounts').create({ dbfile: path.join(__dirname, 'priv', 'accounts.priv.json')})
+  , Accounts = require('./lib/loginlogic/accounts').create({ dbfile: path.join(__dirname, 'priv', 'accounts.priv.json')})
+  , Auth = require('./lib/loginlogic/auth').create(config, Users, Accounts)
   ;
 
 config.apiPrefix = config.apiPrefix || '/api';
 
-require('./auth/root-user').init(ru, Users, Accounts);
+require('./lib/sessionlogic/root-user').init(ru, Auth);
 
 if (!connect.router) {
   connect.router = require('connect_router');
@@ -103,7 +104,7 @@ app
 //
 // Generic Template Auth
 //
-routes = auth.init(app, config, Users, Accounts);
+routes = auth.init(app, config, Auth);
 routes.forEach(function (fn) {
   // Since the API prefix is sometimes necessary,
   // it's probably better to always require the
