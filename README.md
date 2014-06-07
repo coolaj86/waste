@@ -100,8 +100,9 @@ If you don't implement anything to restrict the linking of logins and accounts y
 
 ```javascript
 {
-    "selectedAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx", // TODO
+    "selectedAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
     "selectedLoginId": "facebook:1234567890",
+    "currentLoginId": "facebook:1234567890", // TODO instead of selected
     "accounts": [
         {
             "uuid": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
@@ -120,6 +121,7 @@ If you don't implement anything to restrict the linking of logins and accounts y
             "type": "facebook",
             //"provider": "facebook",
             "uid": "1234567890",
+            "primaryAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
             "accoundIds": ["xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx"],
             "guest": true,
             "test": true,
