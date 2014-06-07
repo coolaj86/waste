@@ -139,7 +139,7 @@ app
 //
 app
   //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
-  .use(connect.static(path.join(__dirname, 'data')))
+  .use(connect.static(path.join(__dirname, 'priv', 'public')))
   //.use(connect.static(path.join(__dirname, 'dist')))
   //.use(connect.static(path.join(__dirname, '.tmp', 'concat')))
   .use(connect.static(path.join(__dirname, 'app')))
