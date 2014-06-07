@@ -72,7 +72,7 @@ How to do:
 APIs you get for free
 ===
 
-Accounts and Profiles
+Logins and Accounts
 ---
 
 In this documentation an `account` means an account in your application that the user logs into
