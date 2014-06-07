@@ -46,6 +46,14 @@ mv angular-project.conf /etc/init/my-project-name.conf
 vim /etc/init/my-project-name.conf
 ```
 
+## App Name
+
+Edit `./bin/change-app-name.sh` and then run it from the root of the project directory
+
+## SuperUser Secret
+
+Run `./bin/generate-root-secret.js`, then update `config.js` with the output.
+
 ## iOS & Android icons
 
 You can hire a designer to create your icon at the largest size,
@@ -58,7 +66,7 @@ and then have it in every important size.
 * iOS Startup Icon Templates
   * <https://github.com/elistone/ios-splashscreen-template-v2>
 * rename script
-  * `./rename-app-icons.sh`
+  * `./bin/rename-app-icons.sh`
 
 How to do:
 
@@ -189,4 +197,10 @@ New resource
 rsync -avhHP app/views/about.jade /app/views/foo.jade
 yo angular:controller foo
 yo angular:service foo
+```
+
+New Migration
+```bash
+./bin/new-migration.sh add-field-xyz
+vim migrations/2014-05-25_12-00-41_add-field-xyz.js
 ```
