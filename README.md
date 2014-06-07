@@ -76,59 +76,67 @@ Accounts and Profiles
 ---
 
 In this documentation an `account` means an account in your application that the user logs into
-whereas a `profile` (aka login) means a profile from a 3rd party provider (or yourself) that may access such an account.
+whereas a `login` means a login from a 3rd party provider (or yourself) that may access such an account.
 
 ### Say What!?
 
-Essentially a `profile` is an authentication method that is authorized for one or more `accounts`.
+Essentially a `login` is an authentication method that is authorized for one or more `accounts`.
 
 
 For example:
 
-Google Plus allows one Google+ `profile` to control several YouTube `accounts`. You can switch between multiple Google `profiles` (say me@work.com and me@gmail.com) and each may manage the same account (say my work social media page).
+Google Plus allows one Google+ `login` to control several YouTube `accounts`. You can switch between multiple Google `logins` (say me@work.com and me@gmail.com) and each may manage the same account (say my work social media page).
 
-Buffer and HootSuite allow you to login with any number of `profiles` to a single `account` which can cantrol multiple `profiles`. However, you manage those same `profiles` to login to a different `account`. When I login through the @coolaj86 profile I always end up in the same acount - no user switching.
+Buffer and HootSuite allow you to login with any number of `logins` to a single `account` which can cantrol multiple `logins`. However, you manage those same `logins` to login to a different `account`. When I login through the @coolaj86 login I always end up in the same acount - no user switching.
 
 ### Authentication and Authorization, Unopinionated
 
-We make no assumptions about how you might want to allow or restrict the sharing of account access among profiles.
+We make no assumptions about how you might want to allow or restrict the sharing of account access among logins.
 You can build it out as you wish.
 
 * GET `/api/session`
 
-If you don't implement anything to restrict the linking of profiles and accounts you get back an object like this:
+If you don't implement anything to restrict the linking of logins and accounts you get back an object like this:
 
 ```javascript
 {
-    "currentAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx", // TODO
-    "currentLoginId": "facebook:1234567890",
-    // TODO maybe rename login -> profile
-    "currentProfileId": "facebook:1234567890",
+    "selectedAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx", // TODO
+    "selectedLoginId": "facebook:1234567890",
     "accounts": [
         {
             "uuid": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
+            "role": "user",
             "loginIds": [
                 "ldsconnect:albusdumbledore"
             ]
         }
     ],
-    // TODO or maybe rename profiles -> logins
-    "profiles": [
+    "logins": [
+        // TODO finalize keynames as uid, type, typedUid?
         {
-            "id": "1234567890",
+            "id": "facebook:1234567890",
+            "typedUid": "facebook:1234567890",
+            //"pkey": "facebook:1234567890",
+            "type": "facebook",
+            //"provider": "facebook",
+            "uid": "1234567890",
+            "accoundIds": ["xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx"],
             "guest": true,
             "test": true,
             "emails": [
                 {
                     "value": "albus@dumble.dore",
                 }
-            ],
-            "provider": "facebook",
-            "pkey": "facebook:1234567890"
+            ]
         }
     ]
 }
 ```
+
+Stripe Payments
+---------------
+
+Coming (soon-ish?)
 
 #### `POST /api/session/local`
 
@@ -165,11 +173,11 @@ Each of these URLs will redirect to the app authentication and or authorization 
 
 Some providers only require authorization once (facebook) and will self-close every time. Others (tumblr) require authorization every single time. Others (twitter) are weird, but we work around the weirdness as best as we can to provide the simplest experience possible.
 
-* GET `/api/auth/facebook` redirects to facebook connect (login, permission dialog, or self-closes)
-* GET `/api/authn/twitter` redirects to twitter authentication and then to twitter authorization, if needed (login, perms, or close)
-* GET `/api/authz/twitter` redirects to twitter authorization (every time)
-* GET `/api/auth/tumblr` redirects to tumblr authorization (every time)
-* GET `/api/auth/ldsconnect` redirects to ldsconnect (same process as facebook)
+* GET `/oauth/facebook/connect` redirects to facebook connect (login, permission dialog, or self-closes)
+* GET `/oauth/twitter/authn/connect` redirects to twitter authentication and then to twitter authorization, if needed (login, perms, or close)
+* GET `/oauth/twitter/authz/connect` redirects to twitter authorization (every time)
+* GET `/oauth/tumblr/connect` redirects to tumblr authorization (every time)
+* GET `/oauth/ldsconnect/connect` redirects to ldsconnect (same process as facebook)
 
 Extending
 ===
