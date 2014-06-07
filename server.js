@@ -90,8 +90,8 @@ app
   .use(connect.compress())
   .use(connect.cookieParser())
   .use(connect.session({ secret: config.sessionSecret }))
-  .use(require('./connect-shims/redirect'))
-  .use(require('./connect-shims/send'))
+  .use(require('./lib/connect-shims/redirect'))
+  .use(require('./lib/connect-shims/send'))
   //.use(express.router)
   ;
   //route(app);

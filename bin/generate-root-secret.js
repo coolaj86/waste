@@ -1,7 +1,8 @@
+#!/usr/bin/env node
 'use strict';
 
 var util = require('util')
-  , secretUtils = require('./auth/utils')
+  , secretUtils = require('../lib/sessionlogic/utils')
   ;
 
 util.puts("You shouldn't store your user id and secret in a config file.");

@@ -1,6 +1,6 @@
 'use strict';
 
-var AM = require('./lib/bookshelf-models')
+var AM = require('../lib/bookshelf-models')
   , UUID = require('node-uuid')
   , mocks = {}
   ;
