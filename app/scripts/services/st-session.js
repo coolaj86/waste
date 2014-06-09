@@ -18,7 +18,7 @@ angular.module('yololiumApp')
       }
 
       data.logins.some(function (l) {
-        if (l.id === data.selectedLoginId) {
+        if (l.id === data.mostRecentLoginId) {
           data.login = l;
           return true;
         }

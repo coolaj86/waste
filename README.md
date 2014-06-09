@@ -109,8 +109,7 @@ If you don't implement anything to restrict the linking of logins and accounts y
 ```javascript
 {
     "selectedAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
-    "selectedLoginId": "facebook:1234567890",
-    "currentLoginId": "facebook:1234567890", // TODO instead of selected
+    "mostRecentLoginId": "facebook:1234567890",
     "accounts": [
         {
             "uuid": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",

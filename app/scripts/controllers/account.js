@@ -15,7 +15,7 @@ angular.module('yololiumApp')
 
     function assignAccount(err, session) {
       session.logins.some(function (login) {
-        if (session.selectedLoginId === login.id) {
+        if (session.mostRecentLoginId === login.id) {
           A.profile = login;
           return true;
         }
