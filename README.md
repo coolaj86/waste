@@ -41,9 +41,15 @@ For social integration you'll need to edit `config.js` and
 replace the demo keys (which only work for `local.ldsconnect.org`) with your own keys and secrets
 
 ```bash
-vim config.js
+# System Startup
 mv angular-project.conf /etc/init/my-project-name.conf
 vim /etc/init/my-project-name.conf
+
+# Server Config
+vim config.js
+
+# Browser Config
+vim app/scripts/services/st-api.js
 ```
 
 ## App Name

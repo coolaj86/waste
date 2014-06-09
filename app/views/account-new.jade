@@ -1,0 +1,79 @@
+//- modal-dialog & model-content are containers for this template
+.auth-modal(ng-init="A.showSecret = true;")
+  .modal-header
+    h4.modal-title Welcome
+    .alert(ng-if="A.alertMessage", ng-class="{{A.alertType}}")
+      span(ng-bind="A.alertMessage")
+
+    ul.nav.nav-tabs
+      //- TODO make RESTful (in url bar)
+      li(ng-if="A.account.id", ng-class="{ active: 'update' == A.accountAction }")
+        a(ng-click="A.accountAction = 'update'") Update Account
+      li(ng-if="!A.account.id", ng-class="{ active: 'create' == A.accountAction }")
+        a(ng-click="A.accountAction = 'create'") Create Account
+      li(ng-if="!A.account.id", ng-class="{ active: 'link' == A.accountAction }")
+        a(ng-click="A.accountAction = 'link'") Link with Existing Account
+
+  .modal-body
+    //- Update account means show only new and required fields
+      //- NOTE: upgrading from one role to another may prompt this modal to show
+    //- Create account means show all required fields (same as update)
+    //- Link account means show only login fields, this may go back to update account
+    form(ng-submit="A.updateAccount()", ng-if="'update' == A.accountAction || 'create' == A.accountAction")
+      .modal-body
+        .row
+          .col-xs-12
+            p(ng-if="'create' == A.accountAction") Since this is your first time logging in we just need a few details from you.
+            p(ng-if="'update' == A.accountAction") We're missing a few pieces of information necessary to continue using your account.
+
+            .form-group(ng-if="!A.account.authId")
+              label(for="username") Username
+              input.form-control(ng-model="A.delta.authId", type='text', placeholder="ex: johndoe")
+
+            .form-group(ng-if="!A.account.email")
+              label(for="email") Email
+              input.form-control(type="email", placeholder="ex: john.doe@gmail.com", ng-model="A.delta.email")
+
+            .form-group(ng-if="!A.account.authId")
+              label(for="password") Passphrase
+              span &nbsp;&nbsp;&nbsp;
+              label.checkbox-inline
+                input.checkbox(type="checkbox", ng-model="A.showSecret", ng-click="A.showSecret = !A.showSecret")
+                span Show
+              input.form-control(ng-if="!A.showSecret", ng-model="A.delta.authSecret", type='password', placeholder="ex: ************")
+              input.form-control(ng-if="A.showSecret", ng-model="A.delta.authSecret", type='text', placeholder="ex: my secret phrase")
+
+      .modal-footer
+        .row
+          .col-xs-12
+            .form-group
+              input.btn.btn-primary(ng-if="'update' == A.accountAction" type='submit' value="Update Account")
+              input.btn.btn-primary(ng-if="'create' == A.accountAction" type='submit' value="Create Account")
+              a.btn.btn-default.pull-right(href='#') Help
+
+    form(ng-submit="A.updateAccount()", ng-if="'link' === A.accountAction")
+      .modal-body
+        .row
+          .col-xs-12
+            p Link your Existing Account
+
+            .form-group(ng-if="!A.account.authId")
+              label(for="username") Username | Email | Phone
+              input.form-control(ng-model="A.delta.authId", type='text', placeholder="ex: john.doe@gmail.com")
+
+            .form-group(ng-if="!A.account.authId")
+              label(for="password") Passphrase
+              span &nbsp;&nbsp;&nbsp;
+              label.checkbox-inline
+                input.checkbox(type="checkbox", ng-model="A.showSecret", ng-click="A.showSecret = !A.showSecret")
+                span Show
+              input.form-control(ng-if="!A.showSecret", ng-model="A.delta.authSecret", type='password', placeholder="ex: ************")
+              input.form-control(ng-if="A.showSecret", ng-model="A.delta.authSecret", type='text', placeholder="ex: my secret phrase")
+
+
+      .modal-footer
+        .row
+          .col-xs-12
+            .form-group
+              input.btn.btn-primary(type="submit", value="Link Account")
+              a.btn.btn-default.pull-right(href='#') Help
