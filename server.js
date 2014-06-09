@@ -32,7 +32,7 @@ function route(rest) {
     }
 
     return {
-      selectedLoginId: reqUser.login.id
+      mostRecentLoginId: reqUser.login.id
     , selectedAccountId: reqUser.account && reqUser.account.id
     , logins: reqUser.logins.map(function (authN) {
         authN.profile.uid = authN.profile.id;
@@ -54,21 +54,22 @@ function route(rest) {
       , accounts: []
       }
     */
-    res.send(getPublic(req.user) || { role: 'guest', as: 'get' });
+    res.send(getPublic(req.user) || { logins: [], accounts: [], role: 'guest', as: 'get' });
   });
   // this is the fallthrough from the POST '/api' catchall
   rest.post('/session', function (req, res) {
-    res.send(getPublic(req.user) || { role: 'guest', as: 'post' });
+    res.send(getPublic(req.user) || { logins: [], accounts: [], role: 'guest', as: 'post' });
   });
   // TODO have separate error / guest and valid user fallthrough
   rest.post('/session/:type', function (req, res) {
     console.log('Fell through to /api/session/:type');
     console.log('This currently happens on success and failure');
-    res.send(getPublic(req.user) || { role: 'guest', as: 'post', type: req.params.type });
+    res.send(getPublic(req.user)
+        || { logins: [], accounts: [], role: 'guest', as: 'post', type: req.params.type });
   });
   rest.delete('/session', function (req, res) {
     req.logout();
-    res.send({ role: 'guest', as: 'delete' });
+    res.send({ logins: [], accounts: [], role: 'guest', as: 'delete' });
   });
 }
 
