@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('LoginCtrl', function ($http, $modalInstance, StLogin, StSession) {
+  .controller('LoginCtrl', function ($http, $modalInstance, StLogin, StSession, StApi) {
     var scope = this
-        // TODO put in a config file that makes it into the browser
-      , oauthPrefix = StSession.oauthPrefix
-      , apiPrefix = '/api'
+      , oauthPrefix = StApi.oauthPrefix
+      // TODO this is a code smell $http and apiPrefix should move to a service
+      , apiPrefix = StApi.apiPrefix
       ;
 
     // Crazy window open/close hacks and mobile chrome on iOS workarounds

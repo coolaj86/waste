@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .service('StLogin', function StLogin($q, $modal, StSession) {
+  .service('StLogin', function StLogin($q, $modal, StSession, StApi) {
     function showLoginModal() {
       //var d = $q.defer()
       //  ;
@@ -15,7 +15,18 @@ angular.module('yololiumApp')
             return StSession.get();
           }
         }
-      }).result;
+      }).result.then(function () {
+        return $modal.open({
+          templateUrl: '/views/account-new.html'
+        , controller: 'AccountNewCtrl as A'
+        , backdrop: 'static'
+        , resolve: {
+            mySession: function (StSession) {
+              return StSession.get();
+            }
+          }
+        }).result;
+      });
       //return d.promise;
     }
 
@@ -109,16 +120,6 @@ angular.module('yololiumApp')
     return {
       show: show
     , makeLogin: makeLogin
-    , testProfiles: [
-        { "role": "admin"
-        , "token": "xxxxxxxx-test-xxxx-xxxx-admin-xxxxxx"
-        }
-      , { "role": "user"
-        , "token": "xxxxxxxx-test-xxxx-xxxx-user-xxxxxxx"
-        }
-      , { "role": "guest"
-        , "token": "xxxxxxxx-test-xxxx-xxxx-guest-xxxxxx"
-        }
-      ]
+    , testProfiles: StApi.testProfiles
     };
   });

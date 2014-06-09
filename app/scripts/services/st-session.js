@@ -1,14 +1,14 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .service('StSession', function StSession($http, $q, $timeout) {
+  .service('StSession', function StSession($http, $q, $timeout, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     var user
       , gettingSession = null
       , userTouchedAt = 0
       , noopts = {}
       , notifier = $q.defer()
-      , apiPrefix = '/api'
+      , apiPrefix = StApi.apiPrefix
       ;
 
     // TODO move this to server (and make it real)
@@ -17,6 +17,8 @@ angular.module('yololiumApp')
         return data;
       }
 
+      console.log('pre-mangle');
+      console.log(data);
       data.logins.some(function (l) {
         if (l.id === data.mostRecentLoginId) {
           data.login = l;
@@ -121,6 +123,6 @@ angular.module('yololiumApp')
     , update: update
     , destroy: destroy
     , subscribe: on
-    , oauthPrefix: '/oauth'
+    , oauthPrefix: StApi.oauthPrefix
     };
   });

@@ -80,6 +80,7 @@ app.api = function (path, fn) {
   }
 
   app.use(config.apiPrefix + path, fn);
+  return app;
 };
 
 app
@@ -126,6 +127,7 @@ routes.forEach(function (fn) {
 //
 app
   .api(connect.router(route))
+  .api(connect.router(require('./lib/accounts').create(app, config, Auth).route))
   ;
 
 //
