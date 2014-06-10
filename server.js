@@ -24,55 +24,6 @@ if (!connect.router) {
   connect.router = require('connect_router');
 }
 
-// Generic API routes
-function route(rest) {
-  function getPublic(reqUser) {
-    if (!reqUser) {
-      return null;
-    }
-
-    return {
-      mostRecentLoginId: reqUser.login.id
-    , selectedAccountId: reqUser.account && reqUser.account.id
-    , logins: reqUser.logins.map(function (authN) {
-        authN.profile.uid = authN.profile.id;
-        authN.profile.type = authN.type;
-        authN.profile.pkey = authN.id;
-        authN.profile.typedUid = authN.id;
-        authN.profile.id = authN.id;
-        return authN.profile;
-      })
-    , accounts: reqUser.accounts
-    };
-  }
-
-  rest.get('/session', function (req, res) {
-    /*
-      { login: {}
-      , logins: []
-      , account: {}
-      , accounts: []
-      }
-    */
-    res.send(getPublic(req.user) || { logins: [], accounts: [], role: 'guest', as: 'get' });
-  });
-  // this is the fallthrough from the POST '/api' catchall
-  rest.post('/session', function (req, res) {
-    res.send(getPublic(req.user) || { logins: [], accounts: [], role: 'guest', as: 'post' });
-  });
-  // TODO have separate error / guest and valid user fallthrough
-  rest.post('/session/:type', function (req, res) {
-    console.log('Fell through to /api/session/:type');
-    console.log('This currently happens on success and failure');
-    res.send(getPublic(req.user)
-        || { logins: [], accounts: [], role: 'guest', as: 'post', type: req.params.type });
-  });
-  rest.delete('/session', function (req, res) {
-    req.logout();
-    res.send({ logins: [], accounts: [], role: 'guest', as: 'delete' });
-  });
-}
-
 app.api = function (path, fn) {
   if (!fn) {
     fn = path;
@@ -126,7 +77,7 @@ routes.forEach(function (fn) {
 // Generic App Routes
 //
 app
-  .api(connect.router(route))
+  .api(connect.router(require('./lib/session').create(app, config, Auth).route))
   .api(connect.router(require('./lib/accounts').create(app, config, Auth).route))
   ;
 
