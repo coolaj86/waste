@@ -8,11 +8,11 @@
     ul.nav.nav-tabs
       //- TODO make RESTful
       li(ng-class="{ active: 'social' == L.authType }")
-        a(href="#", ng-click="L.authType = 'social'") Social
+        a(ng-click="L.authType = 'social'") Social
       li(ng-class="{ active: 'basic' == L.authType }")
-        a(href="#", ng-click="L.authType = 'basic'") Account
+        a(ng-click="L.authType = 'basic'") Account
       li(ng-class="{ active: 'token' == L.authType }")
-        a(href="#", ng-click="L.authType = 'token'") Developer
+        a(ng-click="L.authType = 'token'") Developer
   .modal-body
     .social.signin-option(ng-if="'social' === L.authType")
       .row
@@ -66,7 +66,7 @@
           .col-md-12
             .form-group
               input.btn.btn-primary(type='submit', value='Sign In')
-              a.btn.btn-default.pull-right(href='#') Help
+              a.btn.btn-default.pull-right(ng-click="L.noop()") Help
     .developer.signin-option(ng-if="'token' === L.authType")
       .row
         form(ng-submit="L.loginWithToken()")
@@ -87,4 +87,4 @@
           .col-md-12
             .form-group
               input.btn.btn-primary(type='submit', value='Sign In')
-              a.btn.btn-default.pull-right(href='#') Help
+              a.btn.btn-default.pull-right(ng-click="L.noop()") Help

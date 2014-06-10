@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('NavCtrl', function ($state, StLogin, StSession, mySession) {
-    var $scope = this
+  .controller('NavCtrl', function ($scope, $state, StLogin, StSession, mySession) {
+    var scope = this
       , allTabs
       ;
 
@@ -28,37 +28,32 @@ angular.module('yololiumApp')
     ];
 
     function updateSession(session) {
-      console.log('[session] UPDATE');
-      console.log(session);
-
-      if (!session || session.error || 'guest' === session.role) {
+      if (!session || !session.account || session.guest || 'guest' === session.account.role) {
         session = null;
       }
 
-      $scope.session = session;
-      $scope.account = session && session.account;
-      $scope.tabs = allTabs.filter(function (tab) {
+      scope.session = session;
+      scope.account = session && session.account;
+      scope.tabs = allTabs.filter(function (tab) {
         if (!tab.roles || !tab.roles.length) { return true; }
-        if (!$scope.session) { return false; }
-        return -1 !== tab.roles.indexOf($scope.account.role);
+        if (!scope.session) { return false; }
+        return -1 !== tab.roles.indexOf(scope.account.role);
       });
     }
 
-    // XXX this could also be done via dirty checking
-    // using a shared object, but I think
-    // this approach is more familiar to the average programmer
-    StSession.subscribe(updateSession);
+    StSession.subscribe(updateSession, $scope);
     updateSession(mySession);
 
-    $scope.login = function () {
-      StLogin.show().then(function (data) {
-        updateSession(data);
+    scope.showLoginModal = function () {
+      StLogin.show().then(function (session) {
+        console.log('SESSION', session);
+        updateSession(session);
       }, function () {
         // nada
       });
     };
 
-    $scope.logout = function () {
+    scope.logout = function () {
       StSession.destroy().then(function () {
         updateSession(null);
       }, function () {

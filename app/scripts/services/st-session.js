@@ -3,9 +3,8 @@
 angular.module('yololiumApp')
   .service('StSession', function StSession($http, $q, $timeout, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
-    var user
+    var shared = { session: null, touchedAt: 0 }
       , gettingSession = null
-      , userTouchedAt = 0
       , noopts = {}
       , notifier = $q.defer()
       , apiPrefix = StApi.apiPrefix
@@ -13,30 +12,57 @@ angular.module('yololiumApp')
 
     // TODO move this to server (and make it real)
     function mangle(data) {
-      if (!data || data.error || 'guest' === data.role) {
+      if (!data || data.error) {
         return data;
       }
 
-      console.log('pre-mangle');
-      console.log(data);
+      data.loginsMap = {};
+      data.logins.forEach(function (l) {
+        data.loginsMap[l.id] = l;
+      });
+      data.login = data.loginsMap[data.mostRecentLoginId];
+      /*
       data.logins.some(function (l) {
         if (l.id === data.mostRecentLoginId) {
           data.login = l;
           return true;
         }
       });
+      */
 
+      data.accountsMap = {};
+      data.accounts.forEach(function (a) {
+        data.accountsMap[a.id] = a;
+      });
+      data.account = data.accountsMap[data.selectedAccountId];
+      /*
       data.accounts.some(function (a) {
         if (a.id === data.selectedAccountId) {
           data.account = a;
           return true;
         }
       });
+      */
 
-      data.profile = data.login || {};
       data.account = data.account || {};
-      data.account.role = data.account.role || data.profile.role || 'guest';
-      if (data.selectedAccountId && 'guest' === data.role) {
+      data.account.role = data.account.role || 'guest';
+      data.connected = {};
+      data.account.loginIds = data.account.loginIds || [];
+      data.account.loginIds.forEach(function (typedUid) {
+        var parts = typedUid.split(':')
+          , type = parts.shift()
+          , uid = parts.join(':')
+          ;
+
+        // TODO carry more info about logins in account
+        data.connected[type] = data.connected[type] || {};
+        data.connected[type][uid] = data.loginsMap[typedUid] || {
+          type: type
+        , uid: uid
+        };
+      });
+
+      if (data.selectedAccountId && 'guest' === data.account.role) {
         data.account.role = 'user';
       }
 
@@ -44,16 +70,14 @@ angular.module('yololiumApp')
     }
 
     function read(opts) {
-      console.log('called read');
-
       opts = opts || noopts;
       var d = $q.defer()
         , staletime = 5 * 60 * 60 * 1000
         ;
 
-      if (opts.expire || (Date.now() - userTouchedAt > staletime)) { // also try Date.now() - user.touchedAt
+      if (opts.expire || (Date.now() - shared.touchedAt > staletime)) { // also try Date.now() - shared.session.touchedAt
         gettingSession = null;
-        user = null;
+        shared.session = null;
       }
 
       if (gettingSession) {
@@ -62,18 +86,18 @@ angular.module('yololiumApp')
 
       gettingSession = d.promise;
 
-      if (user) {
+      if (shared.session) {
         $timeout(function () {
-          d.resolve(user);
+          d.resolve(shared.session);
         }, 0);
         return gettingSession;
       }
 
-      $http.get(apiPrefix + '/session').success(function (_user) {
-        console.log('[P][1] http resolve');
-        user = _user;
-        userTouchedAt = Date.now();
-        d.resolve(mangle(user));
+      $http.get(apiPrefix + '/session').success(function (_userSession) {
+        console.log('_userSession', _userSession);
+        shared.session = mangle(_userSession);
+        shared.touchedAt = Date.now();
+        d.resolve(shared.session);
       });
 
       return gettingSession;
@@ -94,24 +118,36 @@ angular.module('yololiumApp')
     }
 
     // external auth (i.e. facebook, twitter)
-    function update(data) {
+    function update(session) {
       gettingSession = null;
-      user = data;
-      userTouchedAt = Date.now();
-      notifier.notify(mangle(user));
+      shared.touchedAt = Date.now();
+      shared.session = mangle(session);
+      notifier.notify(shared.session);
+      return shared.session;
     }
 
-    function on(fn) {
-      notifier.promise.then(null, null, fn);
+    function subscribe(fn, scope) {
+      if (!scope) {
+        // services and such
+        notifier.notify(shared.session);
+        return;
+      }
+
+      // This is better than using a promise.notify
+      // because the watches will unwatch when the controller is destroyed
+      scope.__stsessionshared__ = shared;
+      scope.$watch('__stsessionshared__.session', function () {
+        fn(shared.session);
+      }, true);
     }
 
     function destroy() {
       var d = $q.defer()
         ;
 
-      user = null;
+      shared.session = null;
       $http.delete(apiPrefix + '/session').success(function () {
-        d.resolve();
+        d.resolve({ accounts: [], logins: [], account: { role: 'guest' } });
       });
       return d.promise;
     }
@@ -122,7 +158,7 @@ angular.module('yololiumApp')
     , read: read
     , update: update
     , destroy: destroy
-    , subscribe: on
+    , subscribe: subscribe
     , oauthPrefix: StApi.oauthPrefix
     };
   });

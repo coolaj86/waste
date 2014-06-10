@@ -7,7 +7,7 @@ var connect = require('connect')
   , config = require('./config')
   , ws = require('./lib/ws')
   , wsport = config.wsport || 8282
-  , routes
+  , authstuff
   , ru = config.rootUser
     // Authn
   , Users = require('./lib/loginlogic/users').create({ dbfile: path.join(__dirname, 'priv', 'users.priv.json') })
@@ -65,8 +65,8 @@ app
 //
 // Generic Template Auth
 //
-routes = auth.init(app, config, Auth);
-routes.forEach(function (fn) {
+authstuff = auth.init(app, config, Auth);
+authstuff.routes.forEach(function (fn) {
   // Since the API prefix is sometimes necessary,
   // it's probably better to always require the
   // auth providers to use it manually
@@ -77,8 +77,8 @@ routes.forEach(function (fn) {
 // Generic App Routes
 //
 app
-  .api(connect.router(require('./lib/session').create(app, config, Auth).route))
-  .api(connect.router(require('./lib/accounts').create(app, config, Auth).route))
+  .api(connect.router(require('./lib/session').create().route))
+  .api(connect.router(require('./lib/accounts').create(app, config, Auth, authstuff.manualLogin).route))
   ;
 
 //
@@ -98,11 +98,6 @@ app
   //.use(connect.static(path.join(__dirname, '.tmp', 'concat')))
   .use(connect.static(path.join(__dirname, 'app')))
   .use(connect.static(path.join(__dirname, '.tmp')))
-  .use(function (req, res, next) {
-    console.info("Actual req.url:");
-    console.info(req.url);
-    next();
-  })
   ;
 
 module.exports = app;

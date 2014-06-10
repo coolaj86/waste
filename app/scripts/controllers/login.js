@@ -10,33 +10,29 @@ angular.module('yololiumApp')
 
     // Crazy window open/close hacks and mobile chrome on iOS workarounds
 
+    function closeWithSession(err, session) {
+      $modalInstance.close(session);
+    }
+
     //
     // LDS.org
     //
-    StLogin.makeLogin(scope, 'ldsconnect', oauthPrefix + '/ldsconnect/connect', function (err, session) {
-      $modalInstance.close(session);
-    });
+    StLogin.makeLogin(scope, 'ldsconnect', oauthPrefix + '/ldsconnect/connect', closeWithSession);
 
     //
     // Facebook
     //
-    StLogin.makeLogin(scope, 'facebook', oauthPrefix + '/facebook/connect', function (err, session) {
-      $modalInstance.close(session);
-    });
+    StLogin.makeLogin(scope, 'facebook', oauthPrefix + '/facebook/connect', closeWithSession);
 
     //
     // Twitter
     //
-    StLogin.makeLogin(scope, 'twitter', oauthPrefix + '/twitter/authn/connect', function (err, session) {
-      $modalInstance.close(session);
-    });
+    StLogin.makeLogin(scope, 'twitter', oauthPrefix + '/twitter/authn/connect', closeWithSession);
 
     //
     // Tumblr
     //
-    StLogin.makeLogin(scope, 'tumblr', oauthPrefix + '/tumblr/connect', function (err, session) {
-      $modalInstance.close(session);
-    });
+    StLogin.makeLogin(scope, 'tumblr', oauthPrefix + '/tumblr/connect', closeWithSession);
 
 
     //
