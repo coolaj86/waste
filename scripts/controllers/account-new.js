@@ -1,53 +1,69 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('AccountNewCtrl', function ($http, $modalInstance, StAccount, mySession) {
+  .controller('AccountNewCtrl', function ($scope, $http, $timeout, $modalInstance, StAccount, StSession, mySession) {
     var scope = this
       , required = ['localLoginId']
       , account = { loginIds: [] }
       ;
 
-    scope.accountAction = scope.accountAction || 'create';
-    scope.account = {};
-    scope.delta = {};
+    function init(session) {
+      mySession = session;
+      scope.accountAction = scope.accountAction || 'create';
+      scope.account = {};
+      scope.delta = {};
 
-    /*
-    if ('guest' === mySession.account.role) {
-      $modalInstance.close(mySession);
-    }
-    */
-
-    mySession.accounts.some(function (a) {
-      if (a.id === mySession.selectedAccountId) {
-        account =  a;
+      /*
+      if ('guest' === session.account.role) {
+        $modalInstance.close(session);
       }
-    });
+      */
 
-    if (mySession.login.emails) {
-      scope.delta.email = mySession.login.emails[0] || {};
-      scope.delta.email = scope.delta.email.value;
-    }
+      session.accounts.some(function (a) {
+        if (a.id === session.selectedAccountId) {
+          account =  a;
+        }
+      });
 
-    account.loginIds.some(function (l) {
-      // TODO send more detailed info about logins with each account
-      if (/^local:/.test(l)) {
-        account.localLoginId = l;
+      if (session.login.emails) {
+        scope.delta.email = session.login.emails[0] || {};
+        scope.delta.email = scope.delta.email.value;
       }
-    });
 
-    function hasField(field) {
-      scope.account[field] = mySession.account[field];
-      return mySession.account[field];
-    }
+      account.loginIds.some(function (loginId) {
+        // TODO send more detailed info about logins with each account
+        if (/^local:/.test(loginId)) {
+          account.localLoginId = loginId;
+        }
+      });
 
-    if (required.every(hasField)) {
-      $modalInstance.close(mySession);
+      // TODO move this logic to StAccount
+      function hasField(field) {
+        scope.account[field] = session.account[field];
+        return session.account[field];
+      }
+
+      if (required.every(hasField)) {
+        // timeout hack
+        console.log('UpdateSession close modal');
+        $timeout(function () {
+          $modalInstance.close(session);
+        }, 10);
+      }
     }
+    init(mySession);
+    StSession.subscribe(init, $scope);
 
     scope.updateAccount = function () {
       console.log('update account');
       console.log(scope.delta);
-      StAccount.update(mySession.selectedAccountId, scope.delta).then(function (account) {
+      StAccount.update(mySession.selectedAccountId, scope.delta).then(function (session) {
+        console.log('UPDATE');
+        console.log(session);
+        /*
+        var account = session && session.account
+          ;
+
         if (!account || !account.id || account.error) {
           console.error('ERROR updating account');
           console.error(account);
@@ -61,14 +77,10 @@ angular.module('yololiumApp')
           mySession.accounts.push(account);
         }
         mySession.selectedAccountId = account.id;
-        $modalInstance.close(mySession);
-      });
-    };
+        */
 
-    //
-    // Modal
-    //
-    scope.cancel = function () {
-      $modalInstance.dismiss();
+        //init(StSession.update(session));
+        StSession.update(session);
+      });
     };
   });

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .service('StLogin', function StLogin($q, $modal, StSession, StApi) {
+  .service('StLogin', function StLogin($timeout, $q, $modal, StSession, StApi) {
     function showLoginModal() {
       //var d = $q.defer()
       //  ;
@@ -16,16 +16,19 @@ angular.module('yololiumApp')
           }
         }
       }).result.then(function () {
-        return $modal.open({
-          templateUrl: '/views/account-new.html'
-        , controller: 'AccountNewCtrl as A'
-        , backdrop: 'static'
-        , resolve: {
-            mySession: function (StSession) {
-              return StSession.get();
+        return $timeout(function () {
+          console.log('opening the account update');
+          return $modal.open({
+            templateUrl: '/views/account-new.html'
+          , controller: 'AccountNewCtrl as A'
+          , backdrop: 'static'
+          , resolve: {
+              mySession: function (StSession) {
+                return StSession.get();
+              }
             }
-          }
-        }).result;
+          }).result;
+        }, 10);
       });
       //return d.promise;
     }
@@ -35,26 +38,42 @@ angular.module('yololiumApp')
       var d = $q.defer()
         ;
 
-      function update(data) {
-        if (data && !data.error && 'guest' !== data.role) {
-          StSession.update(data);
+      function update(session) {
+        if (session && !session.error && 'guest' !== session.account.role) {
+          StSession.update(session);
         }
-        d.resolve(data);
+        d.resolve(session);
       }
 
       function doShow() {
         showLoginModal().then(update, d.reject);
       }
 
-      StSession.get().then(function (data) {
-        if (!opts.force && data && !data.error && 'guest' !== data.role) {
-          d.resolve(data);
+      StSession.get().then(function (session) {
+        if (!opts.force && session && !session.error && 'guest' !== session.account.role) {
+          d.resolve(session);
         } else {
           doShow();
         }
       }, doShow);
 
       return d.promise;
+    }
+
+    function makeLogins(scope, cb) {
+      var providers
+        ;
+
+      providers = {
+        facebook: '/facebook/connect'
+      , twitter: '/twitter/authn/connect'
+      , tumblr: '/tumblr/connect'
+      , ldsconnect: '/ldsconnect/connect'
+      };
+
+      Object.keys(providers).forEach(function (key) {
+        makeLogin(scope, key, StApi.oauthPrefix + providers[key], cb);
+      });
     }
 
     function makeLogin(scope, abbr, authUrl, cb) {
@@ -120,6 +139,7 @@ angular.module('yololiumApp')
     return {
       show: show
     , makeLogin: makeLogin
+    , makeLogins: makeLogins
     , testProfiles: StApi.testProfiles
     };
   });

@@ -22,7 +22,7 @@ angular.module('yololiumApp')
       return $http.post(StApi.apiPrefix + '/accounts' + id, updates).then(function (resp) {
         console.log('UPDATE account');
         console.log(resp);
-        return resp;
+        return resp.data;
       });
     }
 
@@ -34,7 +34,7 @@ angular.module('yololiumApp')
       return $http.post(StApi.apiPrefix + '/accounts', updates).then(function (resp) {
         console.log('CREATE account');
         console.log(resp);
-        return resp;
+        return resp.data;
       });
     }
 

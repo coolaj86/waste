@@ -5,7 +5,7 @@ angular.module('yololiumApp')
     var M = this
       ;
 
-    if ('guest' === mySession.role) {
+    if (!mySession || 'guest' === mySession.account.role) {
       console.log('redirect to splash');
       $state.go('splash');
       return;

@@ -1,46 +1,41 @@
 h3 Account Settings
-div
-  p You are currently signed in through {{ A.profile.type }} as {{ A.profile.profile.username }}
-  p Your primary account for that login is [[ http://example.com/username ]]
-  p You also have access to these other accounts
-  ul
-    li [[ http://example.com/foo ]] [unassociate]
-    li [[ http://example.com/bar ]] [unassociate and delete] (no other sign-ins are linked)
 
 div
-  button.btn.btn-link(ng-click="A.login()") Link another account
+  button.btn.btn-link(ng-click="A.showLoginModal()") Link another account
 
-div
+div(ng-if="!A.providers.ldsconnect")
   button.btn.btn-ldsconnect(type="button", ng-click="A.loginWithLdsconnect()")
     i.fa
       img(src="/images/moroni.png", style="position: relative; left: -3px; height: 16px;")
-    span.signin | Connect with LDS.org
-  p
-    span (you must sign out to associate an additional account)
+    span.signin &#32;| Connect with LDS.org
+div(ng-if="A.providers.ldsconnect")
+  button.btn.btn-ldsconnect(type="button", ng-click="A.noop()")
+    i.fa.fa-ldsconnect-square
+  button.btn.btn-sm.btn-danger(ng-if="A.providers.ldsconnect", ng-click="A.unlink(A.providers.ldsconnect)") &#32;Unlink
 
-div
+div(ng-if="!A.providers.facebook")
   button.btn.btn-facebook(type="button", ng-click="A.loginWithFacebook()")
     i.fa.fa-facebook-square
-    span  | Connect with Facebook
-  p
-    span (you must sign out to associate an additional account)
+    span &#32;| Connect with Facebook
+div(ng-if="A.providers.facebook")
+  button.btn.btn-facebook(type="button", ng-click="A.noop()")
+    i.fa.fa-facebook-square
+  button.btn.btn-sm.btn-danger(ng-if="A.providers.facebook", ng-click="A.unlink(A.providers.facebook)") &#32;Unlink
 
-div
-  button.btn.btn-tumblr(type="button", ng-click="A.loginWithTumblr()")
-    i.fa.fa-tumblr-square
-    span  | Sign in with Tumblr
-  strong(ng-if="A.session.tumblr", style="color: green;") &#32;Connected
-  strong(ng-if="!A.session.tumblr", style="color: red;") &#32;Not Connected
-  p
-    span (you must sign out to associate an additional account)
-
-div
+div(ng-if="!A.providers.twitter")
   button.btn.btn-twitter(type="button", ng-click="A.loginWithTwitter()")
     i.fa.fa-twitter-square
-    span  | Sign in with Twitter
-  strong(ng-if="A.session.twitter", style="color: green;") &#32;Connected
-  strong(ng-if="!A.session.twitter", style="color: red;") &#32;Not Connected
-  p
-    span (you must sign out to associate an additional account)
+    span &#32;| Connect with Twitter
+div(ng-if="A.providers.twitter")
+  button.btn.btn-twitter(type="button", ng-click="A.noop()")
+    i.fa.fa-twitter-square
+  button.btn.btn-sm.btn-danger(ng-if="A.providers.twitter", ng-click="A.unlink(A.providers.twitter)") &#32;Unlink
 
-pre {{ A.profile | json}}
+div(ng-if="!A.providers.tumblr")
+  button.btn.btn-tumblr(type="button", ng-click="A.loginWithTumblr()")
+    i.fa.fa-tumblr-square
+    span &#32;| Connect with Tumblr
+div(ng-if="A.providers.tumblr")
+  button.btn.btn-tumblr(type="button", ng-click="A.noop()")
+    i.fa.fa-tumblr-square
+  button.btn.btn-sm.btn-danger(ng-if="A.providers.tumblr", ng-click="A.unlink(A.providers.tumblr)") &#32;Unlink
