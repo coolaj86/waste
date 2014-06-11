@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('AccountCtrl', function ($scope, StLogin, StSession, mySession) {
+  .controller('AccountCtrl', function ($scope, $http, StLogin, StSession, mySession, StApi) {
     var A = this
       ;
 
@@ -17,6 +17,8 @@ angular.module('yololiumApp')
 
       Object.keys(session.connected).forEach(function (type) {
         Object.keys(session.connected[type]).some(function (uid) {
+          // first
+          //A.providers[type] = session.connected[type][uid];
           A.providers[type] = session.connected[type][uid];
           return true;
         });
@@ -26,6 +28,9 @@ angular.module('yololiumApp')
       A.account = session.account;
     }
     init(null, mySession);
+    StSession.subscribe(function (session) {
+      init(null, session);
+    });
 
     A.showLoginModal = function () {
       StLogin.show({ force: true }).then(function (data) {
@@ -36,6 +41,16 @@ angular.module('yololiumApp')
         console.error("Couldn't show login window???");
         console.error(err);
         // nada
+      });
+    };
+
+    A.unlinkLogin = function (login) {
+      $http.delete(StApi.apiPrefix + '/me/account/logins/' + login.id).then(function (resp) {
+        StSession.update(resp.data);
+        init(null, resp.data);
+
+        console.log('resp.data');
+        console.log(resp.data);
       });
     };
 
