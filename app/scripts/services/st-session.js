@@ -59,6 +59,8 @@ angular.module('yololiumApp')
         data.connected[type][uid] = data.loginsMap[typedUid] || {
           type: type
         , uid: uid
+        , typedUid: typedUid
+        , id: typedUid
         };
       });
 
