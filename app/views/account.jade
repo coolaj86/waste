@@ -7,7 +7,7 @@ div(ng-if="!A.providers.ldsconnect")
   button.btn.btn-ldsconnect(type="button", ng-click="A.loginWithLdsconnect()")
     i.fa
       img(src="/images/moroni.png", style="position: relative; left: -3px; height: 16px;")
-    span.signin &#32;| Connect with LDS.org
+    span.signin | Connect with LDS.org
 div(ng-if="A.providers.ldsconnect")
   button.btn.btn-ldsconnect(type="button", ng-click="A.noop()")
     i.fa.fa-ldsconnect-square
