@@ -90,15 +90,17 @@ angular.module('yololiumApp')
 
       if (shared.session) {
         $timeout(function () {
+          // premangled
           d.resolve(shared.session);
         }, 0);
         return gettingSession;
       }
 
       $http.get(apiPrefix + '/session').success(function (_userSession) {
-        console.log('_userSession', _userSession);
-        shared.session = mangle(_userSession);
-        shared.touchedAt = Date.now();
+        //console.log('_userSession', _userSession);
+        update(_userSession);
+        //shared.session = mangle(_userSession);
+        //shared.touchedAt = Date.now();
         d.resolve(shared.session);
       });
 
@@ -124,6 +126,7 @@ angular.module('yololiumApp')
       gettingSession = null;
       shared.touchedAt = Date.now();
       shared.session = mangle(session);
+      // TODO Object.freeze (Mozilla's deepFreeze example)
       notifier.notify(shared.session);
       return shared.session;
     }
@@ -148,8 +151,12 @@ angular.module('yololiumApp')
         ;
 
       shared.session = null;
-      $http.delete(apiPrefix + '/session').success(function () {
-        d.resolve({ accounts: [], logins: [], account: { role: 'guest' } });
+      gettingSession = null;
+      $http.delete(apiPrefix + '/session').success(function (resp) {
+        shared.session = null;
+        gettingSession = null;
+        update(resp.data);
+        d.resolve(resp.data);
       });
       return d.promise;
     }
