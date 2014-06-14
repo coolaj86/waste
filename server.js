@@ -79,6 +79,8 @@ authstuff.routes.forEach(function (fn) {
 app
   .api(connect.router(require('./lib/session').create().route))
   .api(connect.router(require('./lib/accounts').create(app, config, Auth, authstuff.manualLogin).route))
+  .api(connect.router(require('./lib/account-creditcards')
+    .create(app, config, Auth, authstuff.manualLogin).route))
   ;
 
 //

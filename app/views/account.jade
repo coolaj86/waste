@@ -1,5 +1,116 @@
 h3 Account Settings
 
+p Here's where you change stuff about your account. Yay!
+
+h3 Billing Info
+
+form.form.stripe(ng-submit="A.updateBilling()")
+  h4 House Application
+  span(
+    ng-repeat="card in A.account.xattrs.creditcards"
+  , ng-class="{ 'alert-success': $first }"
+  )
+    span(ng-bind="card.type")
+    span &nbsp;ending in&nbsp;
+    span(ng-bind="card.last4")
+    span &nbsp;on file (expires&nbsp;
+    span(ng-bind="card.exp_month")
+    span /
+    span(ng-bind="card.exp_year")
+    span )&nbsp;
+    button.btn.btn-danger(type="button" ng-click="A.removeCard(card)") Remove
+
+  .stripe-form(ng-if="!A.account.xattrs.creditcards.length")
+    h4 Card Information
+    div
+      label
+        span Card Number&nbsp;
+        input(
+          data-stripe="number"
+          ng-model="A.newcard.number"
+          type="text"
+          size="20"
+          placeholder="ex: 4242-4242-4242-4242"
+        )
+    div
+      label
+        span CVC&nbsp;
+        input(
+          data-stripe="cvc"
+          ng-model="A.newcard.cvc"
+          type="number"
+          min="100"
+          max="9999"
+          step="1"
+          size="4"
+        )
+    div
+      label
+        span Expiration (MM/YYYY)&nbsp;
+        input(
+          data-stripe="exp-month"
+          ng-model="A.newcard.exp_month"
+          type="number"
+          min="1"
+          max="12"
+          step="1"
+          size="2"
+        )
+      span &nbsp;/&nbsp;
+      input(
+        data-stripe="exp-year"
+        ng-model="A.newcard.exp_year"
+        type="number"
+        min="2014"
+        max="2030"
+        step="1"
+        size="4"
+      )
+
+    h5 Billing Address
+    div
+      label
+        span Name&nbsp;
+        input(
+          data-stripe="name"
+          ng-model="A.newcard.name"
+          type="text"
+          size="30"
+          placeholder="ex: John Doe"
+        )
+    div
+      label
+        span Address Line 1&nbsp;
+        input(
+          data-stripe="address_line1"
+          ng-model="A.newcard.address_line1"
+          type="text"
+          size="40"
+          placeholder="ex: 123 Sasame St"
+        )
+    div
+      label
+        span Address Line 2&nbsp;
+        input(
+          data-stripe="address_line2"
+          ng-model="A.newcard.address_line2"
+          type="text"
+          size="40"
+          placeholder="ex: Bldg A Ste 100"
+        )
+    div
+      label
+        span Zip&nbsp;
+        input(
+          data-stripe="addres_zip"
+          ng-model="A.newcard.addres_zip"
+          type="text"
+          size="10"
+          placeholder="ex: 90210-4200"
+        )
+    button.btn.btn-primary(type="submit") Updating Billing Info
+
+h3 Linked Accounts
 div
   button.btn.btn-link(ng-click="A.showLoginModal()") Link another account
 
