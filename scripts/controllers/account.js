@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('AccountCtrl', function ($scope, $http, StLogin, StSession, mySession, StApi) {
+  .controller('AccountCtrl', function ($scope, $state, $http, StLogin, StSession, mySession, StApi) {
     var A = this
       ;
 
@@ -9,7 +9,9 @@ angular.module('yololiumApp')
       A.session = null;
       A.account = null;
 
-      if (!session) {
+      if (!session || 'guest' === session.account.role) {
+        // TODO make login appear
+        $state.go('root');
         return;
       }
 
@@ -27,10 +29,6 @@ angular.module('yololiumApp')
       A.session = session;
       A.account = session.account;
     }
-    init(null, mySession);
-    StSession.subscribe(function (session) {
-      init(null, session);
-    });
 
     A.showLoginModal = function () {
       StLogin.show({ force: true }).then(function (data) {
@@ -54,6 +52,61 @@ angular.module('yololiumApp')
       });
     };
 
+    function handleStripe(cb) {
+      return function (code, stripeTokenObject) {
+        console.log('stripeTokenObject');
+        console.log(code, stripeTokenObject);
+        $http.post(
+          StApi.apiPrefix + '/me/creditcards'
+        , stripeTokenObject
+        ).success(function (data) {
+          A.account.xattrs = A.account.xattrs || { creditcards: [] };
+          A.account.xattrs.creditcards[0] = A.account.xattrs.creditcards[0] || data.response;
+          console.log('Credit Card result', data);
+          cb(data);
+        });
+      };
+    }
+
+    A.updateBilling = function () {
+      function updated(data) {
+        if (!data) {
+          console.error('card info not complete');
+          return;
+        }
+
+        console.log('Updated Billing');
+        console.log(data);
+      }
+
+      if (A.newcard.number) {
+        // TODO https://stripe.com/docs/stripe.js#createToken
+        window.Stripe.card.createToken(window.$('form.stripe'), handleStripe(updated));
+      } else {
+        updated();
+      }
+    };
+
+    A.removeCard = function (card) {
+      // TODO stripe.customers.createCard(custid, { card: cardid });
+      // stripe.customers.deleteCard({CUSTOMER_ID}, {CARD_ID})
+      A.account.xattrs.creditcards.some(function (c, i) {
+        if (c === card) {
+          A.account.xattrs.creditcards.splice(i, 1);
+          $http.delete(StApi.apiPrefix + '/me/creditcards/' + card.id).then(function (resp) {
+            console.log('deleted');
+            console.log(resp.data);
+          });
+          return true;
+        }
+      });
+      A.account.xattrs.creditcards = [];
+    };
+
     StLogin.makeLogins(A, init);
-    StSession.subscribe(init, $scope);
+    StSession.subscribe(function (session) {
+      console.log('subscribing to session');
+      console.log(session);
+      init(null, session);
+    }, $scope);
   });
