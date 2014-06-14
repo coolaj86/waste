@@ -1,5 +1,8 @@
 'use strict';
 
+// TODO move into config
+window.Stripe.setPublishableKey('pk_test_526DRmZwEOiMxTigV5fX52ti');
+
 angular.module('yololiumApp', [
   'ngCookies',
   'ngResource',
@@ -7,10 +10,13 @@ angular.module('yololiumApp', [
   'ui.router',
   'ui.bootstrap'
 ])
-  .config(function ($stateProvider, $urlRouterProvider) {
+  .config(function ($stateProvider, $urlRouterProvider/*, StApi*/) {
     var nav
       , footer
       ;
+
+    // This identifies your website in the createToken call
+    //window.Stripe.setPublishableKey(StApi.stripe.publicKey);
 
     // IMPORTANT: (Issue #4)
     // These funny arrays (in resolve) are neccessary because ui.router

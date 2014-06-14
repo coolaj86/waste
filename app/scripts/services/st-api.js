@@ -27,5 +27,8 @@ angular.module('yololiumApp')
         , "token": "xxxxxxxx-test-xxxx-xxxx-guest-xxxxxx"
         }
       ]
+    , stripe: {
+        publicKey: 'pk_test_526DRmZwEOiMxTigV5fX52ti'
+      }
     };
   });
