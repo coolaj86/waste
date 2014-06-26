@@ -43,6 +43,19 @@ module.exports = {
 , userApi: '/api/user'
 , publicApi: '/api/public'
 , sessionSecret: 'a super secret, nothing better'
+, mailer: {
+    service: 'mailgun'
+  , opts: {
+      auth: {
+        user: 'postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org'
+      , pass: '7l3mogwdoem7'
+      }
+    , defaults: {
+        from: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
+      , replyTo: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
+      }
+    }
+  }
 , facebook: {
     // https://developers.facebook.com/apps
     // Client Token 5308ba111a46159e92d74fce76dbe807

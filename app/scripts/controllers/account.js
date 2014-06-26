@@ -3,6 +3,7 @@
 angular.module('yololiumApp')
   .controller('AccountCtrl', function ($scope, $state, $http, StLogin, StSession, mySession, StApi) {
     var A = this
+      , stripeKey = 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
       ;
 
     function init(err, session) {
@@ -30,8 +31,41 @@ angular.module('yololiumApp')
       A.account = session.account;
     }
 
+    A.addStripeCard = function () {
+      var addCardHandler
+        ;
+        
+      addCardHandler = window.StripeCheckout.configure({
+        key: stripeKey
+      //, image: '/images/stripe-ish-logo.png'
+      , token: function (stripeTokenObject) {
+          console.log('stripeTokenObject');
+          console.log(stripeTokenObject);
+          $http.post(
+            StApi.apiPrefix + '/me/creditcards'
+          , stripeTokenObject
+          ).success(function (data) {
+            A.account.xattrs = A.account.xattrs || { creditcards: [] };
+            A.account.xattrs.creditcards[0] = A.account.xattrs.creditcards[0] || data.response;
+            console.log('Added Stripe Credit Card', data);
+          });
+        }
+      });
+
+      addCardHandler.open({
+        name: 'Angular Template App'
+      , description: 'Add Credit Card to Account'
+      , currency: 'USD'
+      , amount: 0
+      , email: A.account.emails[0] && A.account.emails[0].value
+      , zipCode: true
+      , panelLabel: 'Add Card' // Normally "Pay {{amount}}}"
+      , allowRememberMe: true
+      });
+    };
+
     A.showLoginModal = function () {
-      StLogin.show({ force: true }).then(function (data) {
+      StLogin.showLoginModal().then(function (data) {
         console.log('hello');
         console.log(data);
         init(null, data);
@@ -103,7 +137,7 @@ angular.module('yololiumApp')
       A.account.xattrs.creditcards = [];
     };
 
-    StLogin.makeLogins(A, init);
+    StSession.makeLogins(A, init);
     StSession.subscribe(function (session) {
       console.log('subscribing to session');
       console.log(session);

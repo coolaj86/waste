@@ -49,7 +49,7 @@
             .form-group
               input.btn.btn-primary(ng-if="'update' == A.accountAction" type='submit' value="Update Account")
               input.btn.btn-primary(ng-if="'create' == A.accountAction" type='submit' value="Create Account")
-              a.btn.btn-default.pull-right(href='#') Help
+              a.btn.btn-default.pull-right(href='') Help
 
     form(ng-submit="A.updateAccount()", ng-if="'link' === A.accountAction")
       .modal-body
@@ -76,4 +76,4 @@
           .col-xs-12
             .form-group
               input.btn.btn-primary(type="submit", value="Link Account")
-              a.btn.btn-default.pull-right(href='#') Help
+              a.btn.btn-default.pull-right(href='') Help
