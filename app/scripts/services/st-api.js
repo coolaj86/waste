@@ -29,6 +29,7 @@ angular.module('yololiumApp')
       ]
     , stripe: {
         publicKey: 'pk_test_526DRmZwEOiMxTigV5fX52ti'
+      , storeName: 'Angular Template App'
       }
     };
   });

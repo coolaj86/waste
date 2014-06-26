@@ -147,6 +147,22 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+      .state('store', {
+        url: '/store/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/store.html'
+          , controller: "StoreCtrl as S"
+          , resolve: {
+              mySession: ['StSession', function (StSession) {
+                return StSession.get();
+              }]
+            }
+          }
+        , footer: footer
+        }
+      })
       .state('about', {
         url: '/about/'
       , views: {
