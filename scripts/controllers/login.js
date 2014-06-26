@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('LoginCtrl', function ($http, $modalInstance, StLogin, StSession, StApi) {
+  .controller('LoginCtrl', function ($http, $modalInstance, StSession, StApi) {
     var scope = this
       , oauthPrefix = StApi.oauthPrefix
       // TODO this is a code smell $http and apiPrefix should move to a service
@@ -10,6 +10,7 @@ angular.module('yololiumApp')
 
     // Crazy window open/close hacks and mobile chrome on iOS workarounds
 
+    scope.title = "Sign in or Create account";
     function closeWithSession(err, session) {
       $modalInstance.close(session);
     }
@@ -17,22 +18,23 @@ angular.module('yololiumApp')
     //
     // LDS.org
     //
-    StLogin.makeLogin(scope, 'ldsconnect', oauthPrefix + '/ldsconnect/connect', closeWithSession);
+    // TODO [].forEach StSession.loginWithLdsConnect = StSession.loginWithLdsConnect;
+    StSession.makeLogin(scope, 'ldsconnect', oauthPrefix + '/ldsconnect/connect', closeWithSession);
 
     //
     // Facebook
     //
-    StLogin.makeLogin(scope, 'facebook', oauthPrefix + '/facebook/connect', closeWithSession);
+    StSession.makeLogin(scope, 'facebook', oauthPrefix + '/facebook/connect', closeWithSession);
 
     //
     // Twitter
     //
-    StLogin.makeLogin(scope, 'twitter', oauthPrefix + '/twitter/authn/connect', closeWithSession);
+    StSession.makeLogin(scope, 'twitter', oauthPrefix + '/twitter/authn/connect', closeWithSession);
 
     //
     // Tumblr
     //
-    StLogin.makeLogin(scope, 'tumblr', oauthPrefix + '/tumblr/connect', closeWithSession);
+    StSession.makeLogin(scope, 'tumblr', oauthPrefix + '/tumblr/connect', closeWithSession);
 
 
     //
@@ -53,10 +55,16 @@ angular.module('yololiumApp')
     scope.authSecret = "";
     scope.loginWithBasicAuth = function () {
       var auth = { 'Authorization': 'Basic ' + btoa(scope.authId + ':' + scope.authSecret) }
+        , form = null
         ;
 
+      if ('create-account' === scope.authType) {
+        // TODO allow account creation
+        form = { create: true };
+      }
+
       // TODO UI needs spinner
-      $http.post(apiPrefix + '/session/basic', null, { headers: auth }).then(function (resp) {
+      $http.post(apiPrefix + '/session/basic', form, { headers: auth }).then(function (resp) {
         console.log('[Basic Auth] resp.data');
         console.log(resp.data);
 
@@ -75,7 +83,7 @@ angular.module('yololiumApp')
     //
     // Access Token
     //
-    scope.demoProfiles = StLogin.testProfiles;
+    scope.demoProfiles = StApi.testProfiles;
     scope.authToken = "";
     scope.loginWithToken = function () {
       var auth = { 'Authorization': 'Bearer ' + scope.authToken }

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('NavCtrl', function ($scope, $state, StLogin, StSession, mySession) {
+  .controller('NavCtrl', function ($scope, $state, StSession, mySession) {
     var scope = this
       , allTabs
       ;
@@ -10,6 +10,10 @@ angular.module('yololiumApp')
       { active: $state.includes('root')
       , title: 'Home'
       , href: $state.href('root')
+      }
+    , { active: $state.includes('store')
+      , title: 'Store'
+      , href: $state.href('store')
       }
     , { active: $state.includes('admin')
       , title: 'Admin'
@@ -45,7 +49,7 @@ angular.module('yololiumApp')
     updateSession(mySession);
 
     scope.showLoginModal = function () {
-      StLogin.show().then(function (session) {
+      StSession.ensureSession().then(function (session) {
         console.log('SESSION', session);
         updateSession(session);
       }, function () {

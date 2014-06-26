@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .service('StSession', function StSession($http, $q, $timeout, StApi) {
+  .service('StSession', function StSession($http, $q, $timeout, StApi, StLogin) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     var shared = { session: null, touchedAt: 0 }
       , gettingSession = null
@@ -161,6 +161,109 @@ angular.module('yololiumApp')
       return d.promise;
     }
 
+    function makeLogins(scope, cb) {
+      var providers
+        ;
+
+      providers = {
+        facebook: '/facebook/connect'
+      , twitter: '/twitter/authn/connect'
+      , tumblr: '/tumblr/connect'
+      , ldsconnect: '/ldsconnect/connect'
+      };
+
+      Object.keys(providers).forEach(function (key) {
+        makeLogin(scope, key, StApi.oauthPrefix + providers[key], cb);
+      });
+    }
+
+    function makeLogin(scope, abbr, authUrl, cb) {
+      var uAbbr = abbr.replace(/(^.)/, function ($1) { return $1.toUpperCase(); })
+        , login = {}
+        ;
+
+      login['poll' + uAbbr + 'Login'] = function () {
+        //jQuery('body').append('<p>' + 'heya' + '</p>');
+        console.log('[debug]', 'poll' + uAbbr + 'Login');
+        if (!window.localStorage) {
+          clearInterval(login['poll' + uAbbr + 'Int']);
+          // doomed!
+          return;
+        }
+
+        if (localStorage.getItem(abbr + 'Status')) {
+          window['complete' + uAbbr + 'Login'](localStorage.getItem(abbr + 'Status'));
+        }
+      };
+      window['complete' + uAbbr + 'Login'] = function (url, accessToken, email, link) {
+        var err = null
+          ;
+
+        if (/deny|denied/i.test(url)) {
+          err = new Error('Access Denied: ' + url);
+        } else if (/error/i.test(url)) {
+          err = new Error('Auth Error: ' + url);
+        }
+
+        console.log('[debug]', 'complete' + uAbbr + 'Login');
+        clearInterval(login['poll' + uAbbr + 'Int']);
+        localStorage.removeItem(abbr + 'Status');
+        login.loginCallback(err);
+
+        console.log('accessed parent function complete' + uAbbr + 'Login', accessToken, email, link);
+        //jQuery('body').append('<p>' + url + '</p>');
+        login.loginWindow.close();
+        delete login.loginWindow;
+      };
+      scope['loginWith' + uAbbr + ''] = function () {
+        console.log('[debug]', 'loginWith' + uAbbr + '');
+        login.loginCallback = function (err) {
+          console.log('loginCallback');
+          if (err) {
+            cb(err);
+            return;
+          }
+
+          read({ expire: true }).then(function (session) {
+            console.log('StSession.read()', session);
+            if (session.error) {
+              destroy();
+            }
+            cb(null, session);
+          });
+        };
+        login.loginWindow = window.open(authUrl);
+        login['poll' + uAbbr + 'Int'] = setInterval(login['poll' + uAbbr + 'Login'], 300);
+      };
+    }
+
+    function ensureSession(opts) {
+      opts = opts || {};
+      var d = $q.defer()
+        ;
+
+      function doUpdate(session) {
+        if (session && !session.error && 'guest' !== session.account.role) {
+          update(session);
+        }
+        d.resolve(session);
+      }
+
+      function doShow() {
+        StLogin.showLoginModal().then(doUpdate, d.reject);
+      }
+
+      read().then(function (session) {
+        if (!opts.force && session && !session.error && 'guest' !== session.account.role) {
+          d.resolve(session);
+        } else {
+          doShow();
+        }
+      }, doShow);
+
+      return d.promise;
+    }
+
     return {
       get: read
     , create: create
@@ -169,5 +272,8 @@ angular.module('yololiumApp')
     , destroy: destroy
     , subscribe: subscribe
     , oauthPrefix: StApi.oauthPrefix
+    , ensureSession: ensureSession
+    , makeLogins: makeLogins
+    , makeLogin: makeLogin
     };
   });
