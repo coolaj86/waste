@@ -33,6 +33,7 @@ angular.module('yololiumApp')
         // TODO send more detailed info about logins with each account
         if (/^local:/.test(loginId)) {
           account.localLoginId = loginId;
+          return true;
         }
       });
 
