@@ -31,5 +31,11 @@ angular.module('yololiumApp')
         publicKey: 'pk_test_526DRmZwEOiMxTigV5fX52ti'
       , storeName: 'Angular Template App'
       }
+    , loginProviders: {
+        facebook: '/facebook/connect'
+      , twitter: '/twitter/authn/connect'
+      , tumblr: '/tumblr/connect'
+      , ldsconnect: '/ldsconnect/connect'
+      }
     };
   });

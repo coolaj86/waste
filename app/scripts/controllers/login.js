@@ -3,7 +3,6 @@
 angular.module('yololiumApp')
   .controller('LoginCtrl', function ($http, $modalInstance, StSession, StApi) {
     var scope = this
-      , oauthPrefix = StApi.oauthPrefix
       // TODO this is a code smell $http and apiPrefix should move to a service
       , apiPrefix = StApi.apiPrefix
       ;
@@ -15,27 +14,7 @@ angular.module('yololiumApp')
       $modalInstance.close(session);
     }
 
-    //
-    // LDS.org
-    //
-    // TODO [].forEach StSession.loginWithLdsConnect = StSession.loginWithLdsConnect;
-    StSession.makeLogin(scope, 'ldsconnect', oauthPrefix + '/ldsconnect/connect', closeWithSession);
-
-    //
-    // Facebook
-    //
-    StSession.makeLogin(scope, 'facebook', oauthPrefix + '/facebook/connect', closeWithSession);
-
-    //
-    // Twitter
-    //
-    StSession.makeLogin(scope, 'twitter', oauthPrefix + '/twitter/authn/connect', closeWithSession);
-
-    //
-    // Tumblr
-    //
-    StSession.makeLogin(scope, 'tumblr', oauthPrefix + '/tumblr/connect', closeWithSession);
-
+    StSession.makeLoginsInScope(scope, closeWithSession);
 
     //
     // Modal

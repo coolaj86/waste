@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .service('StSession', function StSession($http, $q, $timeout, StApi, StLogin) {
+  .service('StSession', function StSession($http, $q, $timeout, StLogin, StAccount, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     var shared = { session: null, touchedAt: 0 }
       , gettingSession = null
@@ -161,24 +161,58 @@ angular.module('yololiumApp')
       return d.promise;
     }
 
+    // TODO if a login is successful, don't we always want to replace the current session?
+    // TODO if a login fails, don't we always want to keep the previous session?
+    //  guest -> guest
+    //  user -> user
     function makeLogins(scope, cb) {
-      var providers
-        ;
-
-      providers = {
-        facebook: '/facebook/connect'
-      , twitter: '/twitter/authn/connect'
-      , tumblr: '/tumblr/connect'
-      , ldsconnect: '/ldsconnect/connect'
-      };
-
-      Object.keys(providers).forEach(function (key) {
-        makeLogin(scope, key, StApi.oauthPrefix + providers[key], cb);
+      Object.keys(StApi.loginProviders).forEach(function (key) {
+        makeLogin(scope, key, StApi.oauthPrefix + StApi.loginProviders[key], cb);
       });
     }
+    function makeLogin(scope, key, authUrl, cb) {
+      var uKey = key.replace(/(^.)/, function ($1) { return $1.toUpperCase(); })
+        , promise = promiseLogin(uKey, authUrl)
+        ;
 
-    function makeLogin(scope, abbr, authUrl, cb) {
-      var uAbbr = abbr.replace(/(^.)/, function ($1) { return $1.toUpperCase(); })
+      // TODO code smell - this sholud be a directive
+      scope['loginWith' + uKey + ''] = function () {
+        promise().then(function (data) {
+          cb(null, data);
+        }, function (err) {
+          cb(err);
+        });
+      };
+    }
+
+    function promiseLoginsInScope(scope, prefix, resolve, reject) {
+      promiseLogins().forEach(function (obj) {
+        scope[prefix + obj.uKey] = function () {
+          obj.login().then(resolve, reject);
+        };
+      });
+    }
+    function promiseLogins() {
+      var logins = []
+        ;
+
+      Object.keys(StApi.loginProviders).forEach(function (key) {
+        var uKey = key.replace(/(^.)/, function ($1) { return $1.toUpperCase(); })
+          ;
+
+        logins.push({
+          key: key
+        , uKey: uKey
+        , login: promiseLogin(key, StApi.oauthPrefix + StApi.loginProviders[key])
+        });
+        //scope['loginWith' + uKey + ''] = ;
+      });
+
+      return logins;
+    }
+    function promiseLogin(abbr, authUrl) {
+      var d = $q.defer()
+        , uAbbr = abbr.replace(/(^.)/, function ($1) { return $1.toUpperCase(); })
         , login = {}
         ;
 
@@ -215,12 +249,14 @@ angular.module('yololiumApp')
         login.loginWindow.close();
         delete login.loginWindow;
       };
-      scope['loginWith' + uAbbr + ''] = function () {
+
+      //scope['loginWith' + uAbbr + ''] = 
+      return function () {
         console.log('[debug]', 'loginWith' + uAbbr + '');
         login.loginCallback = function (err) {
           console.log('loginCallback');
           if (err) {
-            cb(err);
+            d.reject(err);
             return;
           }
 
@@ -229,39 +265,29 @@ angular.module('yololiumApp')
             if (session.error) {
               destroy();
             }
-            cb(null, session);
+            d.resolve(session);
           });
         };
         login.loginWindow = window.open(authUrl);
         login['poll' + uAbbr + 'Int'] = setInterval(login['poll' + uAbbr + 'Login'], 300);
+
+        return d.promise;
       };
     }
 
     function ensureSession(opts) {
-      opts = opts || {};
-      var d = $q.defer()
-        ;
-
-      function doUpdate(session) {
-        if (session && !session.error && 'guest' !== session.account.role) {
-          update(session);
-        }
-        d.resolve(session);
+      function checkSession(session) {
+        // pass in just login?
+        return StLogin.ensureLogin(session, opts).then(function (session2) {
+          update(session2);
+          // pass in just account?
+          return StAccount.ensureAccount(shared.session, opts).then(function () {
+            return shared.session;
+          });
+        });
       }
 
-      function doShow() {
-        StLogin.showLoginModal().then(doUpdate, d.reject);
-      }
-
-      read().then(function (session) {
-        if (!opts.force && session && !session.error && 'guest' !== session.account.role) {
-          d.resolve(session);
-        } else {
-          doShow();
-        }
-      }, doShow);
-
-      return d.promise;
+      return read().then(checkSession, checkSession);
     }
 
     return {
@@ -273,7 +299,10 @@ angular.module('yololiumApp')
     , subscribe: subscribe
     , oauthPrefix: StApi.oauthPrefix
     , ensureSession: ensureSession
+    , makeLoginsInScope: makeLogins
     , makeLogins: makeLogins
+    , promiseLogins: promiseLogins
+    , promiseLoginsInScope: promiseLoginsInScope
     , makeLogin: makeLogin
     };
   });

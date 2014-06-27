@@ -1,18 +1,22 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('AccountCtrl', function ($scope, $state, $http, StLogin, StSession, mySession, StApi) {
+  .controller('AccountCtrl', function ($scope, $state, $http, StLogin, StAccount, StSession, mySession, StApi) {
     var A = this
       , stripeKey = 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
       ;
 
-    function init(err, session) {
+    function initReject() {
+      $state.go('root');
+    }
+
+    function init(session) {
       A.session = null;
       A.account = null;
 
       if (!session || 'guest' === session.account.role) {
-        // TODO make login appear
-        $state.go('root');
+        // TODO make login appear and save state in router
+        initReject();
         return;
       }
 
@@ -57,7 +61,7 @@ angular.module('yololiumApp')
       , description: 'Add Credit Card to Account'
       , currency: 'USD'
       , amount: 0
-      , email: A.account.emails[0] && A.account.emails[0].value
+      , email: A.account.email || A.account.emails && A.account.emails[0] && A.account.emails[0].value
       , zipCode: true
       , panelLabel: 'Add Card' // Normally "Pay {{amount}}}"
       , allowRememberMe: true
@@ -68,7 +72,7 @@ angular.module('yololiumApp')
       StLogin.showLoginModal().then(function (data) {
         console.log('hello');
         console.log(data);
-        init(null, data);
+        init(data);
       }, function (err) {
         console.error("Couldn't show login window???");
         console.error(err);
@@ -78,8 +82,10 @@ angular.module('yololiumApp')
 
     A.unlinkLogin = function (login) {
       $http.delete(StApi.apiPrefix + '/me/account/logins/' + login.id).then(function (resp) {
+        // TODO could probably just update the session in this scope
+        // instead of using StSession.update to broacast
         StSession.update(resp.data);
-        init(null, resp.data);
+        //init(resp.data);
 
         console.log('resp.data');
         console.log(resp.data);
@@ -137,10 +143,6 @@ angular.module('yololiumApp')
       A.account.xattrs.creditcards = [];
     };
 
-    StSession.makeLogins(A, init);
-    StSession.subscribe(function (session) {
-      console.log('subscribing to session');
-      console.log(session);
-      init(null, session);
-    }, $scope);
+    StSession.promiseLoginsInScope(A, 'loginWith', init, initReject);
+    StSession.subscribe(init, $scope);
   });
