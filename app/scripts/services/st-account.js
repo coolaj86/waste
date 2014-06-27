@@ -8,11 +8,44 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('StAccount', function StAccount($http, StApi) {
+  .service('StAccount', function StAccount($q, $http, $modal, StApi) {
+    // AngularJS will instantiate a singleton by calling "new" on this function
+
     var me = this
+      , required = ['localLoginId']
       ;
 
-    // AngularJS will instantiate a singleton by calling "new" on this function
+    me.showAccountModal = function (session, opts) {
+      console.log('opening the account update');
+      return $modal.open({
+        templateUrl: '/views/account-new.html'
+      , controller: 'AccountNewCtrl as A'
+      , backdrop: 'static'
+      , resolve: {
+          mySession: function () {
+            return session;
+          }
+        , stAccountOptions: function () {
+            return opts;
+          }
+        }
+      }).result;
+    };
+
+    me.ensureAccount = function (session, opts) {
+      // TODO move this logic to StAccount
+      function hasField(field) {
+        return session.account[field];
+      }
+
+      if (session.account && required.every(hasField)) {
+        console.log("I don't need to open UpdateSession modal");
+        return $q.when(session);
+      }
+
+      // TODO check if the account is up-to-date (no missing fields)
+      return me.showAccountModal(opts);
+    };
     
     function update(id, updates) {
       if (!id) {
