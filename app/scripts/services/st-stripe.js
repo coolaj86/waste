@@ -8,7 +8,7 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('Stripe', function Stripe($window, $interval, $q, $http, $modal, StSession, StApi) {
+  .service('StStripe', function StStripe($window, $interval, $q, $http, $modal, StSession, StApi) {
     var S = this
       , intervalToken
       , StripeApi
@@ -49,17 +49,36 @@ angular.module('yololiumApp')
     //   * Check session: sign in or create account
     //   * Check credit card: show StripeCheckout or Purchase Modal
     //   * Show thank you
-    function ensureSession() {
-      return StSession.ensureSession();
+    function ensurePaymentMethod(session, opts) {
+      // TODO store credit / wallet
+      if (session.account.xattrs.creditcards.length) {
+        opts.paymentDue = true;
+        return $q.when(opts);
+      } else {
+        return askForCard(opts);
+      }
     }
-    function ensureCard() {
+    function ensurePurchaseConfirmation(opts) {
+      // data is the response from the purchase
+      // or it's the options for the purchase
+      if (true === opts.paymentDue) {
+        return showTransactionModal(opts);
+      } else {
+        return $q.when(opts);
+      }
     }
-    function ensureConfirm() {
-    }
-    function sayThankYou() {
+    function ensurePurchaseTransaction(opts) {
+      if (true !== opts.paymentDue) {
+        return $q.when(opts);
+      }
+
+      return ;
     }
 
     function askForCard(opts) {
+      var d = $q.defer()
+        ;
+
       StripeCheckout.configure({
         key: StApi.stripe.publicKey
       //, image: '/images/stripe-ish-logo.png'
@@ -70,9 +89,9 @@ angular.module('yololiumApp')
             opts.url
           , { stripeToken: stripeTokenObject, transaction: opts.transaction }
           ).then(function (resp) {
-            opts.resolve(resp.data);
+            d.resolve(resp.data);
           }, function (err) {
-            opts.reject(err);
+            d.reject(err);
           });
         }
       }).open({
@@ -85,6 +104,8 @@ angular.module('yololiumApp')
       , panelLabel: opts.panelLabel // Normally "Pay {{amount}}}"
       , allowRememberMe: true
       });
+
+      return d.promise;
     }
 
     // AngularJS will instantiate a singleton by calling "new" on this function
@@ -109,73 +130,67 @@ angular.module('yololiumApp')
       });
     });
 
-    function showTransactionModal(data) {
-      //var d = $q.defer()
-      //  ;
+    function showTransactionModal(opts) {
+      // TODO select which funding source - card, store credit, etc
 
       return $modal.open({
         templateUrl: '/views/transaction.html'
       , controller: 'TransactionCtrl as T'
       , backdrop: 'static'
       , resolve: {
-          mySession: function (StSession) {
+          mySession: ['StSession', function (StSession) {
             return StSession.get();
+          }]
+        , transactionData: function () {
+            return opts;
           }
-        , transactionData: data
         }
-      }).result.then(function (data) {
-        console.log('[transaction] purchase or subscription succeeded');
-        console.log(data);
+      }).result.then(function (confirmed) {
+        if (!confirmed) {
+          throw new Error("User did not approve transaction");
+        }
+
+        return $http.post(opts.url , { transaction: opts.transaction }).then(function (resp) {
+          console.log('[transaction] purchase or subscription succeeded');
+          console.log(resp.data);
+          return resp.data;
+        });
       });
       //return d.promise;
     }
-    S.purchase = promisify(function (resolve, reject, user, purchase, card) {
+    S.purchase = function (purchase) {
       var url = StApi.apiPrefix + '/me/purchases'
         , opts
+        , session
         ;
 
       opts = {
         url: url
-      , email: user.email
-      , description: purchase.descrption
-          || ('Subscribe to '
-              + purchase.desc
+      , email: null
+      , description: purchase.description
+          || ('Purchase '
+              + purchase.title
               + ' for '
               + '$' + (purchase.amount / 100).toFixed(2)
              )
-      , panelLabel: 'Purchase ' + purchase.desc
+      , panelLabel: 'Purchase for '
       , amount: purchase.amount
-      , resolve: function (data) {
-          resolve(data);
-          console.log('Purchased ' + purchase.desc, data);
-        }
-      , reject: function (err) {
-          reject(err);
-        }
       , transaction: purchase
       };
 
-
-      if (card) {
-        showTransactionModal(opts).then(resolve, reject);
-      } else {
-        askForCard(opts);
-      }
-
-      getPaymentMethod(opts).then(function (didConfirmPurchase) {
-        var next
-          ;
-
-        if (didConfirmPurchase) {
-          next = confirmPurchase().then(getLogin);
-        } else {
-          next = getLogin();
-        }
-        return next;
-      }).then(function () {
-        return completePayment();
-      });
-    });
+      return StSession.ensureSession()
+        .then(function (_session) {
+          // If this asks for their card, we'll also charge it at the same time
+          session = _session;
+          opts.email = session.account.email;
+          return ensurePaymentMethod(session, opts);
+        })
+          // If the user was asked for their card, they don't need to confirm here
+        .then(ensurePurchaseConfirmation)
+          // If the user was asked for their card, the transaction already happened
+        .then(ensurePurchaseTransaction)
+        ;
+    };
 
     S.subscribe = promisify(function (resolve, reject, user, subscription, card) {
       var url = StApi.apiPrefix + '/me/subscriptions'

@@ -22,28 +22,23 @@ angular.module('yololiumApp')
     me.ensureLogin = function (currentSession, opts) {
       opts = opts || {};
 
-      var d = $q.defer()
-        ;
-
       // TODO this probably belongs in StSession?
       function isBetterThanGuest(session) {
         return session && !session.error && 'guest' !== session.account.role;
       }
 
       if (!opts.force && isBetterThanGuest(currentSession)) {
-        d.resolve(currentSession);
-        return;
+        return $q.when(currentSession);
       }
 
-      me.showLoginModal(opts).then(function (newSession) {
+      return me.showLoginModal(opts).then(function (newSession) {
         if (isBetterThanGuest(newSession)) {
-          d.resolve(newSession);
-          return;
+          return newSession;
         }
-        d.reject(newSession);
-      }, d.reject);
 
-      return d.promise;
+        // TODO throw an error?
+        throw newSession;
+      });
     };
 
     return me;
