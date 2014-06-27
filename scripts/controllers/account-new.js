@@ -3,7 +3,6 @@
 angular.module('yololiumApp')
   .controller('AccountNewCtrl', function ($scope, $http, $timeout, $modalInstance, StAccount, StSession, mySession) {
     var scope = this
-      , required = ['localLoginId']
       , account = { loginIds: [] }
       ;
 
@@ -37,19 +36,9 @@ angular.module('yololiumApp')
         }
       });
 
-      // TODO move this logic to StAccount
-      function hasField(field) {
+      Object.keys(session.account).forEach(function (field) {
         scope.account[field] = session.account[field];
-        return session.account[field];
-      }
-
-      if (required.every(hasField)) {
-        // timeout hack
-        console.log('UpdateSession close modal');
-        $timeout(function () {
-          $modalInstance.close(session);
-        }, 10);
-      }
+      });
     }
     init(mySession);
     StSession.subscribe(init, $scope);
@@ -79,7 +68,8 @@ angular.module('yololiumApp')
         mySession.selectedAccountId = account.id;
         */
 
-        //init(StSession.update(session));
+        // TODO could probably just update the session in this scope
+        // instead of using StSession.update to broacast
         StSession.update(session);
       });
     };

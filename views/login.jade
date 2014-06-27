@@ -1,5 +1,5 @@
 //- modal-dialog & model-content are containers for this template
-.auth-modal(ng-init="L.authType = 'login'; L.showSecret = true;")
+.auth-modal(ng-init="L.authType = 'login'; L.showSecret = false;")
   .modal-header
     button.close(type="button", ng-click="L.cancel()") &times;
     h4.modal-title {{ L.title }}
