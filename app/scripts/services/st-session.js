@@ -123,11 +123,14 @@ angular.module('yololiumApp')
 
     // external auth (i.e. facebook, twitter)
     function update(session) {
+      console.log('update 0');
       gettingSession = null;
       shared.touchedAt = Date.now();
       shared.session = mangle(session);
+      console.log('update 1');
       // TODO Object.freeze (Mozilla's deepFreeze example)
       notifier.notify(shared.session);
+      console.log('update 2');
       return shared.session;
     }
 
@@ -254,14 +257,15 @@ angular.module('yololiumApp')
       return function () {
         console.log('[debug]', 'loginWith' + uAbbr + '');
         login.loginCallback = function (err) {
-          console.log('loginCallback');
+          console.log('[st-session.js] promiseLogin loginCallback');
           if (err) {
             d.reject(err);
             return;
           }
 
+          console.log('[st-session.js] promiseLogin StSession.read()');
           read({ expire: true }).then(function (session) {
-            console.log('StSession.read()', session);
+            console.log('[st-session.js] promiseLogin StSession.read() callback');
             if (session.error) {
               destroy();
             }
@@ -277,11 +281,15 @@ angular.module('yololiumApp')
 
     function ensureSession(opts) {
       function checkSession(session) {
+        console.log('[st-session.js] checkSession', session);
         // pass in just login?
         return StLogin.ensureLogin(session, opts).then(function (session2) {
+          console.log('[st-session.js] ensureLogin callback');
           update(session2);
+          console.log('[st-session.js] ensureLogin update', shared.session);
           // pass in just account?
           return StAccount.ensureAccount(shared.session, opts).then(function () {
+            console.log('[st-session.js] ensureAccount callback');
             return shared.session;
           });
         });

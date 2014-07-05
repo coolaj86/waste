@@ -33,10 +33,22 @@ angular.module('yololiumApp')
     };
 
     me.ensureAccount = function (session, opts) {
+      console.log('[st-account.js] ENSURE ACCOUNT');
+      console.log(JSON.stringify(session, null, '  '));
+
       // TODO move this logic to StAccount
       function hasField(field) {
-        return session.account[field];
+        console.log('hasField', field, session.account[field], !!session.account[field]);
+        return !!session.account[field];
       }
+
+      session.account.loginIds.some(function (loginId) {
+        // TODO send more detailed info about logins with each account
+        if (/^local:/.test(loginId)) {
+          session.account.localLoginId = loginId;
+          return true;
+        }
+      });
 
       if (session.account && required.every(hasField)) {
         console.log("I don't need to open UpdateSession modal");
@@ -44,7 +56,9 @@ angular.module('yololiumApp')
       }
 
       // TODO check if the account is up-to-date (no missing fields)
-      return me.showAccountModal(opts);
+      console.log("open UpdateSession modal", required, required.every(hasField));
+      console.log(session.account);
+      return me.showAccountModal(session, opts);
     };
     
     function update(id, updates) {

@@ -56,6 +56,22 @@ module.exports = {
       }
     }
   }
+, google: {
+    gcm: {
+      projectId: 'industrial-net-625'
+    , projectNumber: '876156422908'
+    //, authorizedIps: ['0.0.0.0/0']
+    , publicApiServerKey: 'AIzaSyAwimo0tHDwkqdjtCtovBHS8jJHY0ZPT-8'
+    //, authorizedJavaScriptOrigins: ['http://local.ldsconnect.org']
+        // defaults to /oauth2callback
+    //, authorizedRedirectUri: 'http://local.ldsconnect.org/oauth/google/callback'
+    }
+  , oauth: {
+      id: '876156422908-ia6r6rs3hrttp70hl7gp1k4kuln0i8b4.apps.googleusercontent.com'
+    , email: '876156422908-ia6r6rs3hrttp70hl7gp1k4kuln0i8b4@developer.gserviceaccount.com'
+    , secret: 'e5FoXbYdTx51rHVdm1gJOg38'
+    }
+  }
 , facebook: {
     // https://developers.facebook.com/apps
     // Client Token 5308ba111a46159e92d74fce76dbe807
