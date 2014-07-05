@@ -51,7 +51,7 @@ angular.module('yololiumApp')
     //   * Show thank you
     function ensurePaymentMethod(session, opts) {
       // TODO store credit / wallet
-      if (session.account.xattrs.creditcards.length) {
+      if (session.account.xattrs.creditcards && session.account.xattrs.creditcards.length) {
         opts.paymentDue = true;
         return $q.when(opts);
       } else {

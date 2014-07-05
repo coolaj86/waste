@@ -31,7 +31,7 @@ knex.schema.createTable('accounts', function (t) {
 knex.schema.createTable('logins_accounts', function (t) {
   t.string('login_typed_uid').references('typed_uid').inTable('logins');
   t.string('account_uuid').references('uuid').inTable('accounts');
-  t.primary('login_typed_uid', 'account_id');
+  t.primary(['login_typed_uid', 'account_uuid']);
   //t.string('login_uid').references('id').inTable('logins');
   //t.string('login_type').references('type').inTable('logins');
   //t.primary('login_type', 'login_uid', 'account_id');
