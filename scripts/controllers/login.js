@@ -11,6 +11,7 @@ angular.module('yololiumApp')
 
     scope.title = "Sign in or Create account";
     function closeWithSession(err, session) {
+      console.log('[login.js] closeWithSession');
       $modalInstance.close(session);
     }
 

@@ -50,7 +50,7 @@ angular.module('yololiumApp')
 
     scope.showLoginModal = function () {
       StSession.ensureSession().then(function (session) {
-        console.log('SESSION', session);
+        console.log('NAV ENSURE SESSION', session);
         updateSession(session);
       }, function () {
         // nada

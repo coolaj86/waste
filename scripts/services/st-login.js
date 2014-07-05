@@ -23,21 +23,33 @@ angular.module('yololiumApp')
       opts = opts || {};
 
       // TODO this probably belongs in StSession?
-      function isBetterThanGuest(session) {
-        return session && !session.error && 'guest' !== session.account.role;
+      function hasLogin(session) {
+        // BUG a new user won't have an account yet
+        return session && session.mostRecentLoginId && session.logins && session.logins.length >= 1;
       }
 
-      if (!opts.force && isBetterThanGuest(currentSession)) {
+      if (!opts.force && hasLogin(currentSession)) {
         return $q.when(currentSession);
       }
 
       return me.showLoginModal(opts).then(function (newSession) {
-        if (isBetterThanGuest(newSession)) {
+        var error
+          ;
+
+        console.log('[st-login.js] showLoginModal callback');
+        if (hasLogin(newSession)) {
           return newSession;
         }
 
-        // TODO throw an error?
-        throw newSession;
+        error = {
+          name: "UnensuredLogin"
+        , message: "Didn't do a very good job of ensuring the login..."
+        , toString: function () {
+            return this.message;
+          }
+        };
+        console.log("[st-login.js]", error.message);
+        throw error;
       });
     };
 
