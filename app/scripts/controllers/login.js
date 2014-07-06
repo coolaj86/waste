@@ -21,7 +21,14 @@ angular.module('yololiumApp')
     // Modal
     //
     scope.cancel = function () {
-      $modalInstance.dismiss();
+      $modalInstance.dismiss({
+        cancelled: true
+      , ignore: true
+      , source: 'login-modal'
+      , name: 'LoginCancelled'
+      , message: 'escape button click'
+      , toString: function () { return this.name + ': ' + this.message; }
+      });
     };
 
     scope.showEmail = function () {
