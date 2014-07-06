@@ -33,11 +33,14 @@ angular.module('yololiumApp')
           });
         }
       , function (thing) {
-          if (thing.ignore) {
+          console.log('sad', thing);
+
+          // escape key press
+          // escape button click
+          if (/escape/i.test(thing.toString()) || (thing && (thing.ignore || thing.cancelled))) {
             return;
           }
 
-          console.log('sad', thing);
           StAlert.alert({
             title: "Payment failed"
           , message: "You missed out on the opportunity of a lifetime (to get "

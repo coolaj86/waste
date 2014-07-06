@@ -13,6 +13,7 @@
         a(ng-click="L.authType = 'create-account'; L.showSecret = true;") Create Account
       li(ng-class="{ active: 'token' == L.authType }")
         a(ng-click="L.authType = 'token'") Developer
+
   .modal-body
 
     .account.signin-option(ng-if="'token' !== L.authType")
