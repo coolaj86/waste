@@ -1,0 +1,19 @@
+//- modal-dialog & model-content are containers for this template
+.auth-modal
+  .modal-header
+    h4.modal-title {{ A.title }}
+
+  .modal-body
+    .row
+      .col-xs-12
+        p {{ A.message }}
+
+    .row
+      .col-xs-12
+        .form-group(ng-if="A.confirm")
+          button.btn.btn-primary(type='button' ng-click="A.resolve()") {{ A.confirmLabel || 'Confirm'}}
+          button.btn.btn-default(ng-if="A.confirm" type='button' ng-click="A.reject()") {{ A.cancelLabel || 'Cancel'}}
+        .form-group(ng-if="!A.confirm")
+          button.btn.btn-primary(type='button' ng-click="A.resolve()") {{ A.okLabel || 'OK'}}
+          //-a.btn.btn-default.pull-right(href='') Help
+  //.modal-footer

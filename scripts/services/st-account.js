@@ -21,6 +21,7 @@ angular.module('yololiumApp')
         templateUrl: '/views/account-new.html'
       , controller: 'AccountNewCtrl as A'
       , backdrop: 'static'
+      , keyboard: false
       , resolve: {
           mySession: function () {
             return session;

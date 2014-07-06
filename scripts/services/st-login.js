@@ -10,6 +10,7 @@ angular.module('yololiumApp')
         templateUrl: '/views/login.html'
       , controller: 'LoginCtrl as L'
       , backdrop: 'static'
+      , keyboard: true
       , resolve: {
           // so that we could add an explanation or something
           stLoginOptions: function () {
