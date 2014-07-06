@@ -62,7 +62,13 @@ angular.module('yololiumApp')
       // data is the response from the purchase
       // or it's the options for the purchase
       if (true === opts.paymentDue) {
-        return showTransactionModal(opts);
+        if (opts.transaction) {
+          // this should be the case here
+          //return showTransactionModal(opts.transaction);
+          return showTransactionModal(opts);
+        } else {
+          return showTransactionModal(opts);
+        }
       } else {
         return $q.when(opts);
       }
@@ -72,7 +78,8 @@ angular.module('yololiumApp')
         return $q.when(opts);
       }
 
-      return ;
+      // payment
+      return;
     }
 
     function askForCard(opts) {
@@ -137,12 +144,13 @@ angular.module('yololiumApp')
         templateUrl: '/views/transaction.html'
       , controller: 'TransactionCtrl as T'
       , backdrop: 'static'
+      , keyboard: false
       , resolve: {
           mySession: ['StSession', function (StSession) {
             return StSession.get();
           }]
         , transactionData: function () {
-            return opts;
+            return opts.transaction;
           }
         }
       }).result.then(function (confirmed) {
@@ -150,11 +158,14 @@ angular.module('yololiumApp')
           throw new Error("User did not approve transaction");
         }
 
+        // TODO move to ensure transaction
+        console.log(opts);
         return $http.post(opts.url , { transaction: opts.transaction }).then(function (resp) {
           console.log('[transaction] purchase or subscription succeeded');
           console.log(resp.data);
           return resp.data;
         });
+        // return opts;
       });
       //return d.promise;
     }
@@ -189,6 +200,15 @@ angular.module('yololiumApp')
         .then(ensurePurchaseConfirmation)
           // If the user was asked for their card, the transaction already happened
         .then(ensurePurchaseTransaction)
+        /*
+        .then(function (e) { return e; }, function (err) {
+          console.log('error in trans', err);
+          throw err;
+        })
+        .then(function () {
+            return purchase;
+          })
+        */
         ;
     };
 
@@ -223,7 +243,13 @@ angular.module('yololiumApp')
       };
 
       if (card) {
-        showTransactionModal(opts).then(resolve, reject);
+        if (opts.transaction) {
+          //showTransactionModal(opts.transaction).then(resolve, reject);
+          showTransactionModal(opts).then(resolve, reject);
+        } else {
+          // I think this is the case here... ?
+          showTransactionModal(opts).then(resolve, reject);
+        }
       } else {
         askForCard(opts);
       }

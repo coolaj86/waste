@@ -8,7 +8,7 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('StoreCtrl', function ($scope, $http, StStripe, StApi) {
+  .controller('StoreCtrl', function ($scope, $http, StStripe, StAlert, StApi) {
     var S = this
       ;
 
@@ -25,11 +25,24 @@ angular.module('yololiumApp')
 
     S.buy = function (product) {
       StStripe.purchase(product).then(
-        function () {
-          console.log('Bought the ', product.title);
+        function (thing) {
+          console.log('happy', thing);
+          StAlert.alert({
+            title: "Payment made"
+          , message: "Bought the" + product.title
+          });
         }
-      , function () {
-          console.log('Missed out on the opportunity of a lifetime ', product.title);
+      , function (thing) {
+          if (thing.ignore) {
+            return;
+          }
+
+          console.log('sad', thing);
+          StAlert.alert({
+            title: "Payment failed"
+          , message: "You missed out on the opportunity of a lifetime (to get "
+            + product.title + " at an unbelievable price)"
+          });
         }
       );
     };
