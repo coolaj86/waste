@@ -44,7 +44,7 @@ angular.module('yololiumApp')
     scope.updateAccount = function () {
       console.log('update account');
       console.log(scope.delta);
-      return StAccount.update(mySession.selectedAccountId, scope.delta).then(function (session) {
+      StAccount.update(mySession.selectedAccountId, scope.delta).then(function (session) {
         console.log('UPDATE 1');
         console.log(session);
         /*
@@ -71,8 +71,6 @@ angular.module('yololiumApp')
         StSession.update(session);
 
         $modalInstance.close(session);
-
-        return session;
       });
     };
   });
