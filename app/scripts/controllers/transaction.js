@@ -8,10 +8,12 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('TransactionCtrl', function ($scope, $modalInstance, mySession , transactionData) {
+  .controller('TransactionCtrl', function ($scope, $modalInstance, mySession, transactionData) {
     var T = this
       ;
 
+    console.log('transactionData');
+    console.log(transactionData);
     T.title = transactionData.title + " $" + (transactionData.amount/100).toFixed(2);
     if (transactionData.period) {
       T.title += "/" + transactionData.period;
@@ -21,6 +23,6 @@ angular.module('yololiumApp')
       $modalInstance.close(transactionData);
     };
     T.cancel = function () {
-      $modalInstance.dismiss();
+      $modalInstance.dismiss({ ignore: true });
     };
   });
