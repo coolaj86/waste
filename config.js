@@ -35,6 +35,18 @@ module.exports = {
   , secret: "7e0e7d6fbb948279f204a8a85f1bee10"
   , type: "md5"
   }
+, webhooks: {
+    voice: {
+      // You'll have to experiment to get these to sound right
+      // TODO allow mp3 location for message
+      speakablePhone: '5 55, 2 34, 01 23' // 555-234-0123
+    , speakableBusiness: 'Ackmee Corp' // ACME Corp
+    }
+  , text: {
+      smsdomain: 'sms.local.ldsconnect.org' // i.e. 555-234-0123@sms.local.ldsconnect.org
+    }
+  }
+, webhookPrefix: '/webhooks'
 , oauthPrefix: '/oauth'
 , sessionPrefix: '/session'
 , apiPrefix: '/api'
@@ -54,6 +66,8 @@ module.exports = {
         from: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
       , replyTo: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
       }
+    , apiKey: 'key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    , apiPublicKey: 'pubkey-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
     }
   }
 , google: {
