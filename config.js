@@ -68,7 +68,13 @@ module.exports = {
       }
     , apiKey: 'key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
     , apiPublicKey: 'pubkey-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    , emaildomain: 'local.ldsconnect.org'
     }
+  }
+, twilio: {
+    id: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  , auth: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  , number: '(555) 678-1234'
   }
 , google: {
     gcm: {

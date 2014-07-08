@@ -1,5 +1,7 @@
 Review purchases
 
+Multi-plex SMS messages by most-recent sender (and store history).
+
 Verify email address via short code in email
 Verify phone number via short code in SMS
 
