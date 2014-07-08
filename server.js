@@ -82,7 +82,7 @@ app
   .api(connect.router(require('./lib/accounts').create(app, config, Auth, authstuff.manualLogin).route))
   .api(connect.router(require('./lib/account-creditcards')
     .create(app, config, Auth, authstuff.manualLogin).route))
-  .use(connect.router(require('./webhooks').create(app, config).route))
+  .use(connect.router(require('./lib/webhooks').create(app, config).route))
   ;
 
 //
