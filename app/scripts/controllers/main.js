@@ -11,7 +11,7 @@ angular.module('yololiumApp')
     M.contactForm = {};
     M.contact = function () {
       M.pending = true;
-      $http.post(StApi.apiPreix + '/public/contact-form', M.contactForm).then(function () {
+      $http.post(StApi.apiPrefix + '/public/contact-form', M.contactForm).then(function () {
         M.pending = false;
         M.submitted = true;
       }, function () {
