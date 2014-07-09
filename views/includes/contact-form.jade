@@ -1,9 +1,9 @@
 div
-  div(ng-if="S.submitted")
+  div(ng-if="M.submitted")
     h2 Thanks!
     br
     h3 We'll be in touch shortly.
-  form.form-horizontal(ng-if="!S.submitted" ng-submit="S.contact()")
+  form.form-horizontal(ng-if="!M.submitted" ng-submit="M.contact()")
     fieldset
       legend
         h2
@@ -21,11 +21,11 @@ div
           .form-group
             label.col-lg-2.control-label(for='inputName') Name
             .col-lg-10
-              input#inputName.form-control(ng-model="S.contactForm.name" required type='text', placeholder='Name')
+              input#inputName.form-control(ng-model="M.contactForm.name" required type='text', placeholder='Name')
           .form-group
             label.col-lg-2.control-label(for='inputPhone') Phone
             .col-lg-10
-              input#inputPhone.form-control(ng-model="S.contactForm.phone" required type='tel', placeholder='Phone')
+              input#inputPhone.form-control(ng-model="M.contactForm.phone" required type='tel', placeholder='Phone')
           //-.checkbox
             label
               input(type='checkbox')
@@ -33,12 +33,12 @@ div
           .form-group
             label.col-lg-2.control-label(for='inputEmail') Email
             .col-lg-10
-              input#inputEmail.form-control(ng-model="S.contactForm.email" required type='email', placeholder='Email')
+              input#inputEmail.form-control(ng-model="M.contactForm.email" required type='email', placeholder='Email')
           .form-group
             label.col-lg-2.control-label(for='comments')
               span Details
             .col-lg-10
-              textarea#textArea.form-control(ng-model="S.contactForm.message" required rows='3')
+              textarea#textArea.form-control(ng-model="M.contactForm.message" required rows='3')
               span.help-block
                 | Please include the Date of your event, Venue or Location, and the best time to call you back.
           //-
