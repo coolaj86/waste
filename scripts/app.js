@@ -165,16 +165,17 @@ angular.module('yololiumApp', [
         }
       })
       .state('lds', {
-        parent: 'splash'
+        parent: 'main'
       })
       .state('weddings', {
-        parent: 'splash'
+        parent: 'main'
+      , url: 'weddings/'
       })
       .state('about', {
-        parent: 'splash'
+        parent: 'main'
       })
       .state('privacy', {
-        parent: 'splash'
+        parent: 'main'
       })
       /*
       , {
