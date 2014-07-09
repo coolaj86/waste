@@ -1,19 +1,86 @@
-.container
+.jumbotron(style="margin-bottom: 0;")
   .row
-    .col-sm-12
-      h3 Behold, Message
-      p {{ message }}
+    .col-xs-12
+      p Family-friendly, interactive DJs &amp; MCs for Social, Classy, Fun events.
+      
+      p Utah County &amp; Salt Lake County
+      br
+        
   .row
-    .col-sm-12
-      h3 Behold, M
-      p {{ M.message }}
+    .container
+      .col-md-6(style="text-align: center;")
+        //-img.img-circle(src="http://beta.images.coolaj86.com/api/resize/height/250?url=http://dropsha.re/files/WwMgyP8/ajthedj-square-logo-orange-2014-400px.png", style="height: 250px; border: 5px solid white;")
+        //-img.img-circle(src="http://beta.images.coolaj86.com/api/resize/height/250?url=http://dropsha.re/files/Arfxk.8/ajthedj-ajoneal.jpg", style="height: 250px; border: 5px solid white;")
+        img.img-circle(src="http://beta.images.coolaj86.com/api/resize/height/250?url=http://dropsha.re/files/ncbez.8/ajthedj-ajoneal.jpg", style="border: 5px solid white;")
+        h1 AJ ONeal
+        h3 DJ, MC, &amp; Entertainer
+        h2
+          a(href="tel:+13857225050" itemprop="telephone") 385.722.5050
+        h2
+          a(href="mailto:AJ@the.DJ" itemprop="email") AJ@the.DJ
+        br
+        center
+          a.css-fb-like
+            include includes/like.html
+          a.css-google-plus
+            include includes/plus.html
+        br
+      .col-md-6(style="text-align: left;")
+        include includes/contact-form.jade
+
   .row
-    .col-sm-12
-      h3 Behold, Data
-      pre
-        code {{ M.data | json }}
-  .row
-    .col-sm-12
-      h3 Behold, Session
-      pre
-        code {{ M.session | json }}
+    .col-md-1
+    .col-md-10
+      p
+        span We specialize in LDS activites including Ward, Stake, &amp; Institute dances,
+        br
+        span Youth Conferences, and YSA &amp; BYU dances.
+      
+      p We also DJ &amp; MC Weddings, Birthday Parties, and Charity events .
+
+      center
+        a(href="http://www.bbb.org/utah/business-reviews/disc-jockeys/aj-the-dj-in-orem-ut-22338714#bbbseal", target="bbb")
+          img(src="http://seal-utah.bbb.org/logo/frhzbum/aj-the-dj-22338714.png")
+div(style="font-size: 14pt;")
+  #about(style="background-color: #772953; color: #fff;")
+    .container
+      h2 About
+      include includes/about.jade
+
+  div(style="height: 20px; background-color: #511c39;")
+
+  //-#lds(style="background-color: #dd4814; color: white;")
+  #lds(style="background-color: #efb73e; color: white;")
+    .container
+      h2 LDS Events
+      include includes/lds-events.jade
+
+  div(style="height: 20px; background-color: #bf3e11; color: white;")
+
+  #weddings
+    .container
+      h2 Weddings
+      include includes/weddings.jade
+
+  div(style="height: 20px; background-color: #bf3e11; color: white;")
+
+  #locations(style="background-color: #efb73e; color: white;")
+    .container
+      h2 Locations
+      include includes/locations.jade
+
+  div(style="height: 20px; background-color: #511c39;")
+
+#affiliations(style="background-color: #772953; color: #fff;")
+  .container
+    h2 Affiliations
+    include includes/affiliations.jade
+       
+    //- stuff
+      Insurance
+      http://www.nameentertainers.com/join/insurance/
+      http://adja.org/insurance/
+
+#privacy
+  .container
+    include includes/privacy.jade

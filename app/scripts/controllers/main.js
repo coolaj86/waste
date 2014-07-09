@@ -5,21 +5,34 @@ angular.module('yololiumApp')
     var M = this
       ;
 
-    if (!mySession || 'guest' === mySession.account.role) {
-      console.log('redirect to splash');
-      $state.go('splash');
-      return;
-    }
+    // StSession.subscribe(redirect, $scope);
 
-    M.message = "This is bound scope, accessed as 'M.message' in templates and 'message' will not leak between scopes";
-    $scope.message = "This is unbound scope, accessed as 'message' in this and child scopes";
+    M.submitted = false;
+    M.contactForm = {};
+    M.contact = function () {
+      M.pending = true;
+      $http.post(StApi.apiPreix + '/guest/contactus', S.contactForm).then(function () {
+        M.pending = false;
+        M.submitted = true;
+      }, function () {
+        window.alert("There was an error sending your message.");
+      });
+    };
 
-    // These resources will take some time to resolve.
-    // If the page remains blank without error messages, throw the blame at one of these and check that they resolve
+    $scope.myInterval = 5000;
+    var slides = $scope.slides = [];
+    $scope.addSlide = function(img) {
+      // var newWidth = 600 + slides.length;
+      slides.push({
+        image: "http://images.coolaj86.com/api/resize/width/350?url=" + img,
+        text: ['Social', 'Classy', 'Fun'][slides.length % 3]
+      });
+    };
 
-    // Always a guest or null, at the least
-    M.session = mySession;
-
-    // Some data provided by the data service
-    M.data = data;
+    $scope.addSlide('http://aj.the.dj/images/thumbnail-hard-at-work.jpeg');
+    $scope.addSlide('http://aj.the.dj/images/best-busta-move.jpg');
+    $scope.addSlide('http://aj.the.dj/images/thumb-awes-sauce-01.jpg');
+    $scope.addSlide('http://aj.the.dj/images/thumb-awes-sauce-02.jpg');
+    $scope.addSlide('http://aj.the.dj/images/thumb-awes-sauce-03.jpg');
+    $scope.addSlide('http://aj.the.dj/images/thumb-awes-sauce-04.jpg');
   });

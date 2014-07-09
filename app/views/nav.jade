@@ -1,13 +1,17 @@
 //.navbar.navbar-default.navbar-fixed-top
-.navbar.navbar-default
+.navbar.navbar-default(style="margin-bottom: 0; border-top-width: 0;")
   .container
     .navbar-header
-      a.navbar-brand(href='/') Angular Template
-      button.navbar-toggle(type='button', ng-init="navCollapsed = true", ng-click="navCollapsed = !navCollapsed")
+      div.pull-left(style="padding-top: 9px; padding-left: 9px; padding-bottom: 9px;")
+        img.navbar-logo.img-circle(src="http://beta.images.coolaj86.com/api/resize/height/50?url=http://dropsha.re/files/nsnOz.8/ajthedj-logo.jpg", style="border: 2px solid white;")
+        //-img.navbar-logo.img-circle(src="http://beta.images.coolaj86.com/api/resize/height/250?url=http://dropsha.re/files/WwMgyP8/ajthedj.jpg", style="width: 50px; border: 2px solid white;")
+        //-img.navbar-logo.img-circle(src="http://beta.images.coolaj86.com/api/resize/height/250?url=http://dropsha.re/files/Arfxk.8/ajthedj.jpg", style="width: 50px; border: 2px solid white;")
+      a.navbar-brand(href="/" style="padding-top: 23px; padding-left: 25px;") AJ the DJ LLC
+      button.navbar-toggle(style="padding-top: 9px;" type='button', ng-init="navCollapsed = true", ng-click="navCollapsed = !navCollapsed")
         span.icon-bar
         span.icon-bar
         span.icon-bar
-    #navbar-main.navbar-collapse.collapse(ng-class="!navCollapsed && 'in'")
+    #navbar-main.navbar-collapse.collapse(style="padding-top: 9px;", ng-class="!navCollapsed && 'in'")
       ul.nav.navbar-nav
         //-li.dropdown
           a#themes.dropdown-toggle(data-toggle='dropdown', href='')
@@ -21,12 +25,20 @@
               a(href='../amelia/') Amelia
             li
               a(href='../cerulean/') Cerulean
-        li(ng-repeat="tab in N.tabs", ng-class="{ active: tab.active }")
+        li(du-scrollspy="about")
+          a(ng-href="#about" du-smooth-scroll) About
+        li(du-scrollspy="lds")
+          a(ng-href="#lds" du-smooth-scroll) LDS Events
+        li(du-scrollspy="weddings")
+          a(ng-href="#weddings" du-smooth-scroll) Weddings
+        //-li(ng-repeat="tab in N.tabs", ng-class="{ active: tab.active }")
           a(ng-href="{{tab.href}}") {{ tab.title }}
       ul.nav.navbar-nav.navbar-right
-        li(ng-show="!N.session")
+        li
+          a.btn.btn-info(href="#book") Book Now
+        //-li(ng-show="!N.session")
           a(href="", ng-click="N.showLoginModal()") Login
-        li.dropdown(ng-show="N.session")
+        //-li.dropdown(ng-show="N.session")
           a#account.dropdown-toggle(data-toggle='dropdown', href='')
             | Account
             span.caret

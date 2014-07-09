@@ -88,9 +88,11 @@ app
 //
 // App-Specific WebSocket Server
 //
+/*
 app
   .use(connect.router(ws.create(app, config, wsport, [])))
   ;
+*/
 
 //
 // Generic Template API

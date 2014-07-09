@@ -10,9 +10,9 @@
 // (I've cumulatively wasted nearly a full day of my life on such imagined problems)
 //
 module.exports = {
-  protocol: 'http'
-, hostname: 'local.ldsconnect.org'
-, port: 4004
+  protocol: 'https'
+, hostname: 'aj.the.dj'
+, port: 443
 , get host() {
     if (
         'http' === this.protocol && '80' === this.port.toString()
@@ -26,7 +26,7 @@ module.exports = {
 , get href() {
     return this.protocol + '://' + this.host;
   }
-, wsport: 4204
+, wsport: 9342
   // the default secret is 'super secret',
   // run `node ./generate-root-secret` to create a new one
 , rootUser: {
@@ -43,7 +43,7 @@ module.exports = {
     , speakableBusiness: 'Ackmee Corp' // ACME Corp
     }
   , text: {
-      smsdomain: 'sms.local.ldsconnect.org' // i.e. 555-234-0123@sms.local.ldsconnect.org
+      smsdomain: 'sms.aj.the.dj' // i.e. 555-234-0123@sms.local.ldsconnect.org
     }
   }
 , webhookPrefix: '/webhooks'
@@ -68,13 +68,13 @@ module.exports = {
       }
     , apiKey: 'key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
     , apiPublicKey: 'pubkey-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    , emaildomain: 'local.ldsconnect.org'
+    , emaildomain: 'aj.the.dj'
     }
   }
 , twilio: {
     id: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   , auth: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-  , number: '(555) 678-1234'
+  , number: '(385) 722-5050'
   }
 , google: {
     gcm: {

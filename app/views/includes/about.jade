@@ -1,0 +1,26 @@
+.row
+  .col-md-12
+    p Entertaining Weddings, Church, Institute, Youth, and other LDS-standards dances, social events and activities in Utah County, Utah Valley, and Salt Lake County
+    center
+      .video-container
+        iframe(width="560" height="315" src="//www.youtube.com/embed/fMD2iafyUdA" frameborder="0" allowfullscreen)
+        //-.visible-sm.visible-xs
+          video(controls="controls" width="720px" poster="http://aj.the.dj/media/provo-fall-ball-2013.jpg")
+            source(src="http://aj.the.dj/media/provo-fall-ball-2013.mp4" type="video/mp4")
+            source(src="http://aj.the.dj/media/provo-fall-ball-2013.webm" type="video/webm")
+            source(src="media/provo-fall-ball-2013.ogv" type="video/ogg")
+
+.row
+  br
+
+.row
+  .col-md-12(style="text-align: center;")
+    //.video-container 
+    .aj-carousel(style="margin: 0 auto; width: 90%;")
+      carousel(interval='myInterval')
+        slide(ng-repeat='slide in slides', active='slide.active')
+          img(ng-src='{{slide.image}}', style='margin:auto;')
+          .carousel-caption
+            h4 {{slide.text}}
+            p {{$index}}
+
