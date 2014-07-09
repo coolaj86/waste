@@ -1,0 +1,73 @@
+.auth-modal
+  form.form-horizontal
+    //-.modal-header(ng-if="B.title")
+      h4.modal-title {{ B.title }}
+      .alert(ng-if="B.alertMessage", ng-class="{{B.alertType}}")
+        span(ng-bind="B.alertMessage")
+
+    .modal-body
+      .row
+        .col-xs-12
+            button.close.pull-right(type="button", ng-click="B.cancel()") &times;
+            fieldset
+              legend Pay Deposit &amp; Book Event
+              .form-group
+                label.col-lg-12.control-label(ng-model="B.purchase.date" for='inputDate') Date of Event
+                .col-lg-12
+                  input#inputDate.form-control(type='date', placeholder='i.e. 2014-Aug-16')
+
+              .form-group
+                label.col-lg-12.control-label(for='inputHours') Estimated Number of Hours
+                .col-lg-12
+                  input#inputHours.form-control(type='number'
+                    ng-model="B.purchase.hours"
+                    ng-change="B.updateAmount()"
+                    placeholder='i.e. 3.5', step="0.5", min="3")
+
+              .form-group
+                label.col-lg-12.control-label(for='textArea') Notes
+                .col-lg-12
+                  textarea#textArea.form-control(ng-model="B.purchase.notes" rows='3', placeholder="(optional)")
+                  span.help-block
+                    | Any special notes you have for us.
+
+              .form-group
+                label.col-lg-12.control-label(for='inputAmount') Deposit (usually 50% of total cost)
+                .col-lg-12
+                  .input-group
+                    span.input-group-addon $
+                    input#inputAmount.form-control(
+                      ng-model="B.purchase.displayAmount"
+                      type="number"
+                      placeholder="i.e. $150"
+                      step="25"
+                      min="100"
+                    )
+                    span.input-group-addon .00
+              //-.form-group
+                label.col-lg-2.control-label(for='select') Selects
+                .col-lg-10
+                  select#select.form-control
+                    option 1
+                    option 2
+                    option 3
+                    option 4
+                    option 5
+                  br
+                  select.form-control(multiple='')
+                    option 1
+                    option 2
+                    option 3
+                    option 4
+                    option 5
+              //-.form-group
+                .col-lg-10.col-lg-offset-2
+                  button.btn.btn-default Cancel
+                  button.btn.btn-primary(type='submit') Submit
+      .row
+        .col-xs-12
+          //- TODO select payment method
+          //- TODO use store credit / wallet
+          button.btn.btn-default(type="button" ng-click="B.cancel()") Cancel
+          button.btn.btn-primary.pull-right(type="button" ng-click="B.confirm()") Confirm {{ B.transactionType }}
+

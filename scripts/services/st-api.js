@@ -28,8 +28,8 @@ angular.module('yololiumApp')
         }
       ]
     , stripe: {
-        publicKey: 'pk_test_526DRmZwEOiMxTigV5fX52ti'
-      , storeName: 'Angular Template App'
+        publicKey: 'pk_test_hwX1wzG4OMEv9esujApHjxI7'
+      , storeName: 'AJ the DJ LLC'
       }
     , loginProviders: {
         facebook: '/facebook/connect'
