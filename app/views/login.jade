@@ -1,5 +1,6 @@
 //- modal-dialog & model-content are containers for this template
-.auth-modal(ng-init="L.authType = 'login'; L.showSecret = false;")
+//-.auth-modal(ng-init="L.authType = 'login'; L.showSecret = false;")
+.auth-modal(ng-init="L.authType = 'create-account'; L.showSecret = true;")
   .modal-header
     button.close(type="button", ng-click="L.cancel()") &times;
     h4.modal-title {{ L.title }}
@@ -11,7 +12,7 @@
         a(ng-click="L.authType = 'login'; L.showSecret = false;") Login
       li(ng-class="{ active: 'create-account' == L.authType }")
         a(ng-click="L.authType = 'create-account'; L.showSecret = true;") Create Account
-      li(ng-class="{ active: 'token' == L.authType }")
+      //-li(ng-class="{ active: 'token' == L.authType }")
         a(ng-click="L.authType = 'token'") Developer
 
   .modal-body
@@ -23,8 +24,9 @@
             .form-group
               //- or user or app id
               //- TODO forgot username
-              label(for='username') Username | Email | Phone
-              input.form-control(ng-model="L.authId", type='text', placeholder="ex: john.doe@gmail.com")
+              label(for='username') Username
+              //- | Email | Phone
+              input.form-control(ng-model="L.authId", type='text', placeholder="ex: john.doe")
           .col-md-6
             .form-group
               //- or user or app secret
@@ -49,7 +51,7 @@
               a.btn.btn-default.pull-right(ng-click="L.noop()") Help
 
 
-    .social.signin-option(ng-if="'token' != L.authType")
+    //-.social.signin-option(ng-if="'token' != L.authType")
       hr
       .row
         .col-md-6
