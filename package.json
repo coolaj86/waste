@@ -33,6 +33,7 @@
     "twilio": "^1.6.0",
     "underscore.string": "^2.3.3",
     "useragent": "^2.0.8",
+    "validator": "^3.16.0",
     "ws": "^0.4.31"
   },
   "devDependencies": {

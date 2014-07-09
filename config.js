@@ -10,9 +10,9 @@
 // (I've cumulatively wasted nearly a full day of my life on such imagined problems)
 //
 module.exports = {
-  protocol: 'https'
+  protocol: 'http'
 , hostname: 'aj.the.dj'
-, port: 443
+, port: 80
 , get host() {
     if (
         'http' === this.protocol && '80' === this.port.toString()
@@ -43,7 +43,7 @@ module.exports = {
     , speakableBusiness: 'Ackmee Corp' // ACME Corp
     }
   , text: {
-      smsdomain: 'sms.aj.the.dj' // i.e. 555-234-0123@sms.local.ldsconnect.org
+      smsdomain: 'the.dj' // i.e. 555-234-0123@sms.local.ldsconnect.org
     }
   }
 , webhookPrefix: '/webhooks'
@@ -54,27 +54,31 @@ module.exports = {
 , adminApi: '/api/admin'
 , userApi: '/api/user'
 , publicApi: '/api/public'
-, sessionSecret: 'a super secret, nothing better'
+, sessionSecret: 'nothing better than a super secret for aj the dj'
 , mailer: {
     service: 'mailgun'
+  , defaults: {
+      from: 'AJ <aj@the.dj>'
+    , replyTo: 'AJ <aj@the.dj>'
+    , system: 'Woof <woof@the.dj>'
+    , forwardEmailTo: 'AJ the DJ <aj@coolajthedj.com>'
+    , forwardTo: 'AJ the DJ <aj@the.dj>'
+    }
+  , apiKey: 'key-6q321o87kj4bwlp0em997r9ddr6y-uw3'
+  , apiPublicKey: 'pubkey-37kqj40ofrzr5f7o-rxy9n0pv6l7kl35'
+  , emaildomain: 'the.dj'
   , opts: {
       auth: {
-        user: 'postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org'
-      , pass: '7l3mogwdoem7'
+        user: 'postmaster@the.dj'
+      , pass: '6lpzks37dno8'
       }
-    , defaults: {
-        from: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
-      , replyTo: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
-      }
-    , apiKey: 'key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    , apiPublicKey: 'pubkey-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    , emaildomain: 'aj.the.dj'
     }
   }
 , twilio: {
-    id: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-  , auth: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    id: 'AC08e198a865cfa0bada6c2b7d5b41b02a'
+  , auth: '2e04fe941270cb97c7cea94ad5728128'
   , number: '(385) 722-5050'
+  , forwardIncomingCallsTo: '(801) 360-4427'
   }
 , google: {
     gcm: {

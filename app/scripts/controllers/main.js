@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('MainCtrl', function ($scope, $state, $timeout, data, mySession) {
+  .controller('MainCtrl', function ($scope, $state, $timeout, $http, mySession, StApi) {
     var M = this
       ;
 
@@ -11,7 +11,7 @@ angular.module('yololiumApp')
     M.contactForm = {};
     M.contact = function () {
       M.pending = true;
-      $http.post(StApi.apiPreix + '/guest/contactus', S.contactForm).then(function () {
+      $http.post(StApi.apiPreix + '/public/contact-form', M.contactForm).then(function () {
         M.pending = false;
         M.submitted = true;
       }, function () {
