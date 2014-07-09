@@ -1,4 +1,5 @@
 'use strict';
+
 // All of these keys are valid working keys registered to
 // "Hogwarts Test Application" at http://local.ldsconnect.org,
 // which points to 127.0.0.1 for your testing pleasure.
@@ -79,6 +80,8 @@ module.exports = {
   , auth: '2e04fe941270cb97c7cea94ad5728128'
   , number: '(385) 722-5050'
   , forwardIncomingCallsTo: '(801) 360-4427'
+  //, voicemailWav: '/media/voicemail.wav' // from web root
+  , voicemailWav: 'http://aj.the.dj/media/voicemail.wav' // from web root
   }
 , google: {
     gcm: {
