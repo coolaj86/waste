@@ -10,10 +10,17 @@
 // and spend hours debugging a problem that doesn't exist
 // (I've cumulatively wasted nearly a full day of my life on such imagined problems)
 //
+// TODO need a req.href() or something
+/*
+    var host = (req.headers.host||'').replace(/^www\./, '')
+      , hostname = host.split(':')[0]
+      , protocol = 'http' + (req.connection.encrypted ? 's' : '') + '://'
+      , href = protocol + host + req.url
+*/
 module.exports = {
-  protocol: 'http'
+  protocol: 'https'
 , hostname: 'aj.the.dj'
-, port: 80
+, port: 443
 , get host() {
     if (
         'http' === this.protocol && '80' === this.port.toString()
@@ -81,7 +88,9 @@ module.exports = {
   , number: '(385) 722-5050'
   , forwardIncomingCallsTo: '(801) 360-4427'
   //, voicemailWav: '/media/voicemail.wav' // from web root
-  , voicemailWav: 'http://aj.the.dj/media/voicemail.wav' // from web root
+  , get voicemailWav() {
+      return this.href + '/media/voicemail.wav'; // from web root
+    }
   }
 , google: {
     gcm: {
