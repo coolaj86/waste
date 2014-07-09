@@ -7,6 +7,7 @@ angular.module('yololiumApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
+  'duScroll',
   'ui.router',
   'ui.bootstrap'
 ])
@@ -163,7 +164,20 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+      .state('lds', {
+        parent: 'splash'
+      })
+      .state('weddings', {
+        parent: 'splash'
+      })
       .state('about', {
+        parent: 'splash'
+      })
+      .state('privacy', {
+        parent: 'splash'
+      })
+      /*
+      , {
         url: '/about/'
       , views: {
           nav: nav
@@ -173,5 +187,6 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+      */
       ;
   });
