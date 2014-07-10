@@ -5,8 +5,8 @@ var connect = require('connect')
   , app = connect()
   , auth = require('./lib/sessionlogic')
   , config = require('./config')
-  , ws = require('./lib/ws')
-  , wsport = config.wsport || 8282
+  //, ws = require('./lib/ws')
+  //, wsport = config.wsport || 8282
   , authstuff
   , ru = config.rootUser
     // Authn
@@ -82,15 +82,21 @@ app
   .api(connect.router(require('./lib/accounts').create(app, config, Auth, authstuff.manualLogin).route))
   .api(connect.router(require('./lib/account-creditcards')
     .create(app, config, Auth, authstuff.manualLogin).route))
+  .api(connect.router(require('./lib/public-contact').create(app, { mailer: config.mailer }).route))
+  ;
+
+app
   .use(connect.router(require('./lib/webhooks').create(app, config).route))
   ;
 
 //
 // App-Specific WebSocket Server
 //
+/*
 app
   .use(connect.router(ws.create(app, config, wsport, [])))
   ;
+*/
 
 //
 // Generic Template API

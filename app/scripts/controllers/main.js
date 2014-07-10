@@ -1,25 +1,50 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('MainCtrl', function ($scope, $state, $timeout, data, mySession) {
+  .controller('MainCtrl', function ($scope, $state, $timeout, $http, $sce, mySession, StApi) {
     var M = this
       ;
 
-    if (!mySession || 'guest' === mySession.account.role) {
-      console.log('redirect to splash');
-      $state.go('splash');
-      return;
+    M.pic = StApi.business.pic;
+    M.tagline = StApi.business.tagline;
+    M.video = $sce.trustAsResourceUrl(StApi.business.video);
+
+    if (StApi.redirectGuestsToSplash) {
+      if (!mySession || 'guest' === mySession.account.role) {
+        console.log('redirect to splash');
+        $state.go('splash');
+        return;
+      }
     }
 
-    M.message = "This is bound scope, accessed as 'M.message' in templates and 'message' will not leak between scopes";
-    $scope.message = "This is unbound scope, accessed as 'message' in this and child scopes";
+    //M.message = "This is bound scope, accessed as 'M.message' in templates and 'message' will not leak between scopes";
+    //$scope.message = "This is unbound scope, accessed as 'message' in this and child scopes";
 
-    // These resources will take some time to resolve.
-    // If the page remains blank without error messages, throw the blame at one of these and check that they resolve
+    // StSession.subscribe(redirect, $scope);
 
-    // Always a guest or null, at the least
-    M.session = mySession;
+    M.submitted = false;
+    M.contactForm = {};
+    M.contact = function () {
+      M.pending = true;
+      $http.post(StApi.apiPrefix + '/public/contact-form', M.contactForm).then(function () {
+        M.pending = false;
+        M.submitted = true;
+      }, function () {
+        window.alert("There was an error sending your message.");
+      });
+    };
 
-    // Some data provided by the data service
-    M.data = data;
+    $scope.myInterval = 3000;
+    var slides = $scope.slides = [];
+    $scope.addSlide = function(img) {
+      // var newWidth = 600 + slides.length;
+      slides.push({
+        image: "http://images.coolaj86.com/api/resize/width/350?url=" + img,
+        text: ['Social', 'Classy', 'Fun'][slides.length % 3]
+      });
+    };
+
+    StApi.business.slides.forEach(function (img) {
+      $scope.addSlide(img);
+    });
   });

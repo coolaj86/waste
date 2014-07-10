@@ -1,19 +1,40 @@
-.container
+.jumbotron(style="margin-bottom: 0;")
   .row
-    .col-sm-12
-      h3 Behold, Message
-      p {{ message }}
+    .col-xs-12
+      p {{ M.tagline }}
+      br
+        
   .row
-    .col-sm-12
-      h3 Behold, M
-      p {{ M.message }}
-  .row
-    .col-sm-12
-      h3 Behold, Data
-      pre
-        code {{ M.data | json }}
-  .row
-    .col-sm-12
-      h3 Behold, Session
-      pre
-        code {{ M.session | json }}
+    .container
+      .col-md-6(style="text-align: center;")
+        img.img-circle(
+          ng-src="http://beta.images.coolaj86.com/api/resize/height/250?url={{M.pic}}"
+          style="border: 5px solid white;"
+        )
+        h1 John Doe
+        h3 Hotshot, Ladder-climber, #1
+        h2
+          a(href="tel:+15552220123" itemprop="telephone") 555.222.0123
+        h2
+          a(href="mailto:john.doe@gmail.com" itemprop="email") john.doe@gmail.com
+        br
+        center
+          a.css-fb-like
+            include includes/like.html
+          a.css-google-plus
+            include includes/plus.html
+        br
+      .col-md-6(style="text-align: left;")
+        include includes/contact-form.jade
+
+div(style="font-size: 14pt;")
+  #about(style="background-color: #772953; color: #fff;")
+    .container
+      h2 About
+      include includes/about.jade
+
+  div(style="height: 20px; background-color: #511c39;")
+
+#privacy
+  .container
+    include includes/privacy.jade
