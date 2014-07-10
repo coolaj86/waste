@@ -9,6 +9,13 @@
 // and spend hours debugging a problem that doesn't exist
 // (I've cumulatively wasted nearly a full day of my life on such imagined problems)
 //
+// TODO need a req.href() or something
+/*
+    var host = (req.headers.host||'').replace(/^www\./, '')
+      , hostname = host.split(':')[0]
+      , protocol = 'http' + (req.connection.encrypted ? 's' : '') + '://'
+      , href = protocol + host + req.url
+*/
 module.exports = {
   protocol: 'http'
 , hostname: 'local.ldsconnect.org'
@@ -57,24 +64,31 @@ module.exports = {
 , sessionSecret: 'a super secret, nothing better'
 , mailer: {
     service: 'mailgun'
+  , defaults: {
+      from: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
+    , replyTo: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
+    , system: 'Woof <woof@local.ldsconnect.org>'
+    , forwardEmailTo: 'John Doe <john.doe+local.ldsconnect.org@gmail.com>'
+    , forwardTo: 'John Doe <john.doe@local.ldsconnect.org>'
+    }
+  , apiKey: 'key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  , apiPublicKey: 'pubkey-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  , emaildomain: 'local.ldsconnect.org'
   , opts: {
       auth: {
         user: 'postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org'
       , pass: '7l3mogwdoem7'
       }
-    , defaults: {
-        from: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
-      , replyTo: 'Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>'
-      }
-    , apiKey: 'key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    , apiPublicKey: 'pubkey-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    , emaildomain: 'local.ldsconnect.org'
     }
   }
 , twilio: {
     id: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   , auth: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   , number: '(555) 678-1234'
+  , forwardIncomingCallsTo: '(555) 222-0123'
+  , get voicemailWav() {
+      return this.href + '/media/voicemail.wav'; // from web root
+    }
   }
 , google: {
     gcm: {

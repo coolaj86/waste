@@ -1,10 +1,13 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('NavCtrl', function ($scope, $state, StSession, mySession) {
+  .controller('NavCtrl', function ($scope, $state, StSession, mySession, StPayInvoice, StApi) {
     var scope = this
       , allTabs
       ;
+
+    scope.logo = StApi.business.logo;
+    scope.title = StApi.business.title;
 
     allTabs = [
       { active: $state.includes('root')
@@ -43,6 +46,11 @@ angular.module('yololiumApp')
         if (!scope.session) { return false; }
         return -1 !== tab.roles.indexOf(scope.account.role);
       });
+      allTabs.forEach(function (tab) {
+        if (tab.active) {
+          scope.activeTab = tab.title;
+        }
+      });
     }
 
     StSession.subscribe(updateSession, $scope);
@@ -63,5 +71,9 @@ angular.module('yololiumApp')
       }, function () {
         // nada
       });
+    };
+
+    scope.payInvoice = function () {
+      StPayInvoice.show();
     };
   });
