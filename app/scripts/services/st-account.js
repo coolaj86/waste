@@ -34,9 +34,6 @@ angular.module('yololiumApp')
     };
 
     me.ensureAccount = function (session, opts) {
-      console.log('[st-account.js] ENSURE ACCOUNT');
-      console.log(JSON.stringify(session, null, '  '));
-
       // TODO move this logic to StAccount
       function hasField(field) {
         console.log('hasField', field, session.account[field], !!session.account[field]);

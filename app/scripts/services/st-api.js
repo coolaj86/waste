@@ -2,15 +2,15 @@
 
 /**
  * @ngdoc service
- * @name yololiumApp.StApi
+ * @name steve.StApi
  * @description
  * # StApi
- * Service in the yololiumApp.
+ * Service in the steve.
  */
-angular.module('yololiumApp')
-  .service('StApi', function StApi() {
-    // AngularJS will instantiate a singleton by calling "new" on this function
-    return {
+(function () {
+  var x = {
+//*/
+  //.value('StApi', {
       apiPrefix: '/api'
     , oauthPrefix: '/oauth'
     , testProfiles: [
@@ -51,5 +51,34 @@ angular.module('yololiumApp')
         , "http://home.roadrunner.com/~tuco/looney/acme/doit.jpg"
         ]
       }
+//  });
+///*
     };
+angular.module('steve', [])
+  .constant('stConfig', x)
+//
+/*
+  .provider('StConfigProvider', function StConfigProvider() {
+    var me = this || {}
+      ;
+
+    Object.keys(x).forEach(function (k) {
+      me[k] = x[k];
+    });
+
+    
+    // return x;
+  })
+// */
+  .service('StApi', function StApi() {
+    // AngularJS will instantiate a singleton by calling "new" on this function
+    var me = this
+      ;
+
+    Object.keys(x).forEach(function (k) {
+      me[k] = x[k];
+    });
+
+    //return me;
   });
+}());

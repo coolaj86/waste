@@ -9,9 +9,10 @@ angular.module('yololiumApp', [
   'ngSanitize',
   'duScroll',
   'ui.router',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'steve'
 ])
-  .config(function ($stateProvider, $urlRouterProvider/*, StApi*/) {
+  .config(function ($stateProvider, $urlRouterProvider, stConfig) {
     var nav
       , footer
       ;
@@ -73,10 +74,8 @@ angular.module('yololiumApp', [
           , controller: 'MainCtrl as M'
           , resolve: {
               mySession: ['StSession', function (StSession) {
+                console.log('hello world');
                 return StSession.get();
-              }]
-            , data: ['Data', function (Data) {
-                return Data.get();
               }]
             }
           }
@@ -125,7 +124,7 @@ angular.module('yololiumApp', [
           , controller: 'AdminCtrl as A'
           , resolve: {
               mySession: ['StSession', function (StSession) {
-                return StSession.get();
+                return StSession.ensureSession();
               }]
             }
           }
@@ -190,4 +189,42 @@ angular.module('yololiumApp', [
       })
       */
       ;
-  });
+  })
+  .run(function ($rootScope, $state, StSession) {
+    var currentSession
+      ;
+
+    // TODO subscribe to session changes
+    StSession.get().then(function (session) {
+      currentSession = session;
+    });
+
+    $rootScope.stStateHack = {};
+    $rootScope.$on('$stateChangeStart', function (e, to, params, from) {
+      // TODO https://github.com/angular-ui/ui-router/issues/92 @christopherthielen (at the very bottom)
+      $rootScope.stStateHack.to = to && to.name;
+      $rootScope.stStateHack.from = from && "" !== from.name && from.name;
+      $rootScope.stStateHack.params = params;
+
+      console.log('change start', to, from);
+      if (!angular.isFunction(to.data && to.data.rule)) { return; }
+
+      var result = to.data.rule(currentSession)
+        ;
+
+      // if (!result || result.ok) { /*business as usual*/ } else { /* other thing */ }
+      if (result && result.to) {
+        e.preventDefault();
+        // TODO go to authentication state
+        // TODO include previous state in params (so it knows where to go next)
+        $state.go(result.to, result.params, { notify: false });
+      }
+    });
+
+    $rootScope.$on('$stateChangeError', function (e, to) {
+      console.error(e);
+      console.error(to);
+      // TODO if login is rejected, don't finish the state change
+    });
+  })
+  ;

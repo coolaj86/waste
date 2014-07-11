@@ -21,7 +21,7 @@ angular.module('yololiumApp')
     , { active: $state.includes('admin')
       , title: 'Admin'
       , href: $state.href('admin')
-      , roles: ['admin']
+      , roles: ['admin', 'root']
       }
     , { active: $state.includes('user')
       , title: 'User'
@@ -39,12 +39,20 @@ angular.module('yololiumApp')
         session = null;
       }
 
+      var role = session && session.account.role
+        ;
+
+      if ('root' === role) {
+        role = 'admin';
+      }
+      console.log('ROLE', role);
+
       scope.session = session;
       scope.account = session && session.account;
       scope.tabs = allTabs.filter(function (tab) {
         if (!tab.roles || !tab.roles.length) { return true; }
         if (!scope.session) { return false; }
-        return -1 !== tab.roles.indexOf(scope.account.role);
+        return -1 !== tab.roles.indexOf(role);
       });
       allTabs.forEach(function (tab) {
         if (tab.active) {
