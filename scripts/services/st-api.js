@@ -28,7 +28,7 @@ angular.module('yololiumApp')
         }
       ]
     , stripe: {
-        publicKey: 'pk_test_hwX1wzG4OMEv9esujApHjxI7'
+        publicKey: 'pk_live_SSBLW1rVlYjOsMI75IMM1Zjz'
       , storeName: 'AJ the DJ LLC'
       }
     , loginProviders: {
