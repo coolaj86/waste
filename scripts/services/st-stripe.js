@@ -78,6 +78,15 @@ angular.module('yololiumApp')
         return $q.when(opts);
       }
 
+      $http.post(
+        opts.url
+      , { stripeToken: null, transaction: opts.transaction }
+      ).then(function (resp) {
+        d.resolve(resp.data);
+      }, function (err) {
+        d.reject(err);
+      });
+
       // payment
       return;
     }
@@ -96,6 +105,11 @@ angular.module('yololiumApp')
             opts.url
           , { stripeToken: stripeTokenObject, transaction: opts.transaction }
           ).then(function (resp) {
+            if (resp.data.error) {
+              d.reject(resp.data.error);
+              return;
+            }
+
             d.resolve(resp.data);
           }, function (err) {
             d.reject(err);
