@@ -132,8 +132,10 @@ module.exports = {
   }
 , stripe: {
     // https://manage.stripe.com/account/apikeys
-    id: "pk_test_hwX1wzG4OMEv9esujApHjxI7"
-  , secret: "sk_test_o1DfpT64SMt54nC8NIhQDk72"
+    id: "pk_live_SSBLW1rVlYjOsMI75IMM1Zjz"
+  , secret: "sk_live_x9Y4AXFZrFZyFJobhnCK2iiP"
+  //  id: "pk_test_hwX1wzG4OMEv9esujApHjxI7"
+  //, secret: "sk_test_o1DfpT64SMt54nC8NIhQDk72"
   }
 , tumblr: {
     // https://www.tumblr.com/settings/apps
