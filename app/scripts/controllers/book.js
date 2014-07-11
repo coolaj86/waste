@@ -57,6 +57,14 @@ angular.module('yololiumApp')
     }
     initTimepicker();
 
+    B.updateDisplayAmount = function () {
+      console.log('update display');
+      console.log(B.purchase.amount);
+      console.log(B.purchase.displayAmount);
+      B.purchase.amount = Math.round(parseInt((String(B.purchase.displayAmount || "")).replace(/$/, '') * 100));
+      console.log(B.purchase.amount);
+      console.log('update display');
+    };
     B.confirm = function () {
       $modalInstance.close();
 
@@ -77,8 +85,8 @@ angular.module('yololiumApp')
         function (thing) {
           console.log('happy', thing);
           StAlert.alert({
-            title: "$" + (product.amount/100) + "Payment made"
-          , message: product.title + " has been paid. Check your email for confirmation."
+            title: "$" + (product.amount / 100) + " Payment made"
+          , message: product.title + " has been paid. You should receive an email confirmation from Stripe within 5 to 10 minutes."
           });
         }
       , function (thing) {

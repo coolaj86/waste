@@ -20,7 +20,7 @@
                 .row
                   .col-xs-12
                     label.col-lg-12.control-label(for='inputHours') When should I be set up
-                .row
+                .row(style="margin-left: 0")
                   .col-lg-3.col-md-3.col-sm-4.col-xs-6
                     span.help-block be set up by
                     timepicker(
@@ -31,7 +31,7 @@
                       show-meridian="true"
                     )
 
-                  .col-lg-3.col-md-3.col-sm-4.col-xs-6
+                  .col-lg-4.col-md-4.col-sm-5.col-xs-6
                     span.help-block start tearing down at
                     timepicker(
                       ng-model="B.purchase.toTime"
@@ -55,10 +55,12 @@
                     span.input-group-addon $
                     input#inputAmount.form-control(
                       ng-model="B.purchase.displayAmount"
+                      ng-change="B.updateDisplayAmount()"
                       type="number"
                       placeholder="i.e. $150"
-                      step="25"
-                      min="100"
+                      step="1"
+                      min="1"
+                      required
                     )
                     span.input-group-addon .00
               //-.form-group
