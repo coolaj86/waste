@@ -3,7 +3,8 @@
 angular.module('yololiumApp')
   .service('StSession', function StSession($http, $q, $timeout, StLogin, StAccount, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
-    var shared = { session: null, touchedAt: 0 }
+    var me = this || {}
+      , shared = { session: null, touchedAt: 0 }
       , gettingSession = null
       , noopts = {}
       , notifier = $q.defer()
@@ -97,6 +98,9 @@ angular.module('yololiumApp')
       }
 
       $http.get(apiPrefix + '/session').success(function (_userSession) {
+        me.created = me.created || Date.now();
+        me.updated = Date.now();
+
         //console.log('_userSession', _userSession);
         update(_userSession);
         //shared.session = mangle(_userSession);
@@ -123,14 +127,11 @@ angular.module('yololiumApp')
 
     // external auth (i.e. facebook, twitter)
     function update(session) {
-      console.log('update 0');
       gettingSession = null;
       shared.touchedAt = Date.now();
       shared.session = mangle(session);
-      console.log('update 1');
       // TODO Object.freeze (Mozilla's deepFreeze example)
       notifier.notify(shared.session);
-      console.log('update 2');
       return shared.session;
     }
 
@@ -280,8 +281,10 @@ angular.module('yololiumApp')
     }
 
     function ensureSession(opts) {
+      // TODO 'admin' -> 'You must be an admin to access this page'
+      // TODO such a login should not link to the current account, if any
       function checkSession(session) {
-        console.log('[st-session.js] checkSession', session);
+        //console.log('[st-session.js] checkSession', session);
         // pass in just login?
         return StLogin.ensureLogin(session, opts).then(function (session2) {
           console.log('[st-session.js] ensureLogin callback');
@@ -298,7 +301,7 @@ angular.module('yololiumApp')
       return read().then(checkSession, checkSession);
     }
 
-    return {
+    var x = {
       get: read
     , create: create
     , read: read
@@ -313,4 +316,10 @@ angular.module('yololiumApp')
     , promiseLoginsInScope: promiseLoginsInScope
     , makeLogin: makeLogin
     };
+
+    Object.keys(x).forEach(function (k) {
+      me[k] = x[k];
+    });
+
+    return me;
   });
