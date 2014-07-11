@@ -17,12 +17,29 @@
                   input#inputDate.form-control(type='date', placeholder='i.e. 2014-Aug-16')
 
               .form-group
-                label.col-lg-12.control-label(for='inputHours') Estimated Number of Hours
-                .col-lg-12
-                  input#inputHours.form-control(type='number'
-                    ng-model="P.purchase.hours"
-                    ng-change="P.updateAmount()"
-                    placeholder='i.e. 3.5', step="0.5", min="3")
+                .row
+                  .col-xs-12
+                    label.col-lg-12.control-label(for='inputHours') When should I be set up
+                .row
+                  .col-lg-3.col-md-3.col-sm-4.col-xs-6
+                    span.help-block be set up by
+                    timepicker(
+                      ng-model="B.purchase.fromTime"
+                      ng-change="B.updateAmount()"
+                      hour-step="1"
+                      minute-step="30"
+                      show-meridian="true"
+                    )
+
+                  .col-lg-3.col-md-3.col-sm-4.col-xs-6
+                    span.help-block start tearing down at
+                    timepicker(
+                      ng-model="B.purchase.toTime"
+                      ng-change="B.updateAmount()"
+                      hour-step="1"
+                      minute-step="30"
+                      show-meridian="true"
+                    )
 
               .form-group
                 label.col-lg-12.control-label(for='textArea') Notes
