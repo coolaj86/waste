@@ -16,14 +16,46 @@ angular.module('yololiumApp')
 
     P.title = "Pay Part or All of your Invoice";
 
-    P.purchase = {};
-    P.updateAmount = function () {
-      console.log('UPDATE AMOUNT');
-      console.log(P.purchase);
-      P.purchase.amount = (5000 * P.purchase.hours);
-      P.purchase.displayAmount = (P.purchase.amount / 100);
-      console.log(P.purchase);
-    };
+    B.purchase = {};
+
+    function initTimepicker() {
+      B.purchase.fromTime = new Date();
+      B.purchase.fromTime.setHours(19);
+      B.purchase.fromTime.setMinutes(0);
+      B.purchase.fromTime.setSeconds(0);
+      B.purchase.fromTime.setMilliseconds(0);
+      console.log(B.purchase.fromTime);
+      B.purchase.toTime = new Date();
+      B.purchase.toTime.setHours(22);
+      B.purchase.toTime.setMinutes(30);
+      B.purchase.toTime.setSeconds(0);
+      B.purchase.toTime.setMilliseconds(0);
+      console.log(B.purchase.toTime);
+
+      B.hstep = 1;
+      B.mstep = 30;
+
+      B.ismeridian = true;
+
+      B.updateAmount = function () {
+        if (B.purchase.fromTime.valueOf() > B.purchase.toTime.valueOf()) {
+          // might not work during daylight savings switch on June 21st... but who hires me until 2am?
+          B.purchase.toTime = new Date(B.purchase.toTime.valueOf() + (24 * 60 * 60 * 1000));
+        }
+        B.purchase.hours = (B.purchase.toTime.valueOf() - B.purchase.fromTime.valueOf()) / (60 * 60 * 1000);
+
+        console.log('UPDATE AMOUNT');
+        console.log(B.purchase);
+        B.purchase.amount = (5000 * B.purchase.hours);
+        if (B.purchase.amount < 15000) {
+          B.purchase.amount = 15000;
+        }
+        B.purchase.displayAmount = (B.purchase.amount / 100);
+        console.log(B.purchase);
+      };
+      B.updateAmount();
+    }
+    initTimepicker();
 
     P.confirm = function () {
       $modalInstance.close();
