@@ -33,6 +33,7 @@ angular.module('yololiumApp')
 
       product = {
         title: "Event Deposit"
+      , id: "deposit"
       , short: B.purchase.hours + " hours service"
       , desc: "Transferable, but non-refundable deposit"
       , amount: B.purchase.amount
@@ -59,7 +60,7 @@ angular.module('yololiumApp')
 
           StAlert.alert({
             title: "Payment failed"
-          , message: "You missed out on the opportunity of a lifetime (to get "
+          , message: "Something went wrong while processing the payment. However, if you receive an email confirmation, the card was successfully charged and we'll have to manually update your payment history. Otherwise your card was not yet charged."
             + product.title + " at an unbelievable price)"
           });
         }
