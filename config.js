@@ -72,6 +72,15 @@ module.exports = {
     , forwardEmailTo: 'AJ the DJ <aj@coolajthedj.com>'
     , forwardTo: 'AJ the DJ <aj@the.dj>'
     }
+  , subjectPrefixes: {
+      all: "✆ ℡ ☎ ☏ ✆ ✍ ☺ ☁ ⚑ ⚐ ⚙ ⚛ ✉ ✎ ✏ ✐ ✇ ☢ ★ ☣ ☠ ⍟ ✪ ✩"
+    , sms:"☁ SMS "
+    , email: "✉ "
+    , voice: "✆ Call "
+    , voicemail: "✆ Voicemail "
+    , system: "⚑ "
+    , error: "☠ "
+    }
   , apiKey: 'key-6q321o87kj4bwlp0em997r9ddr6y-uw3'
   , apiPublicKey: 'pubkey-37kqj40ofrzr5f7o-rxy9n0pv6l7kl35'
   , emaildomain: 'the.dj'
