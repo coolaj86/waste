@@ -71,8 +71,15 @@ module.exports = {
     , forwardEmailTo: 'John Doe <john.doe+local.ldsconnect.org@gmail.com>'
     , forwardTo: 'John Doe <john.doe@local.ldsconnect.org>'
     }
+    // http://unicode-table.com/
+    // http://unicodefor.us/characters/
+    // http://en.wiktionary.org/wiki/User:Petruk/dingbat
+    // http://danshort.com/HTMLentities/index.php?w=dingb
+    // http://www.utf8-chartable.de/unicode-utf8-table.pl?start=9728
+    // Church, House, House Building, Office ⌂ 🏠 ⛪ 🏢 
+    // Full color graphics: 🏠 ⛪ 🏢 ✏ ☎ ☁ ✉ ✈
   , subjectPrefixes: {
-      all: "✆ ℡ ☎ ☏ ✆ ✍ ☺ ☁ ⚑ ⚐ ⚙ ⚛ ✉ ✎ ✏ ✐ ✇ ☢ ★ ☣ ☠ ⍟ ✪ ✩"
+      all: "✆ ℡ ☎ ☏ ✆ ✍ ☺ ☁ ⚑ ⚐ ⚙ ⚛ ✉ ✎ ✏ ✐ ✇ ☢ ★ ☣ ☠ ⍟ ✪ ✩ ⌂"
     , sms:"☁ SMS "
     , email: "✉ "
     , voice: "✆ Call "
