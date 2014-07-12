@@ -1,18 +1,18 @@
 .auth-modal
   form.form-horizontal
-    //-.modal-header(ng-if="B.title")
-      h4.modal-title {{ B.title }}
-      .alert(ng-if="B.alertMessage", ng-class="{{B.alertType}}")
-        span(ng-bind="B.alertMessage")
+    //-.modal-header(ng-if="P.title")
+      h4.modal-title {{ P.title }}
+      .alert(ng-if="P.alertMessage", ng-class="{{P.alertType}}")
+        span(ng-bind="P.alertMessage")
 
     .modal-body
       .row
         .col-xs-12
-            button.close.pull-right(type="button", ng-click="B.cancel()") &times;
+            button.close.pull-right(type="button", ng-click="P.cancel()") &times;
             fieldset
               legend Pay Deposit &amp; Book Event
               .form-group
-                label.col-lg-12.control-label(ng-model="B.purchase.date" for='inputDate') Date of Event
+                label.col-lg-12.control-label(ng-model="P.purchase.date" for='inputDate') Date of Event
                 .col-lg-12
                   input#inputDate.form-control(type='date', placeholder='i.e. 2014-Aug-16')
 
@@ -24,8 +24,8 @@
                   .col-lg-3.col-md-3.col-sm-4.col-xs-6
                     span.help-block be set up by
                     timepicker(
-                      ng-model="B.purchase.fromTime"
-                      ng-change="B.updateAmount()"
+                      ng-model="P.purchase.fromTime"
+                      ng-change="P.updateAmount()"
                       hour-step="1"
                       minute-step="30"
                       show-meridian="true"
@@ -34,8 +34,8 @@
                   .col-lg-4.col-md-4.col-sm-5.col-xs-6
                     span.help-block start tearing down at
                     timepicker(
-                      ng-model="B.purchase.toTime"
-                      ng-change="B.updateAmount()"
+                      ng-model="P.purchase.toTime"
+                      ng-change="P.updateAmount()"
                       hour-step="1"
                       minute-step="30"
                       show-meridian="true"
@@ -44,7 +44,7 @@
               .form-group
                 label.col-lg-12.control-label(for='textArea') Notes
                 .col-lg-12
-                  textarea#textArea.form-control(ng-model="B.purchase.notes" rows='3', placeholder="(optional)")
+                  textarea#textArea.form-control(ng-model="P.purchase.notes" rows='3', placeholder="(optional)")
                   span.help-block
                     | Any special notes you have for us.
 
@@ -54,8 +54,8 @@
                   .input-group
                     span.input-group-addon $
                     input#inputAmount.form-control(
-                      ng-model="B.purchase.displayAmount"
-                      ng-change="B.updateDisplayAmount()"
+                      ng-model="P.purchase.displayAmount"
+                      ng-change="P.updateDisplayAmount()"
                       type="number"
                       placeholder="i.e. $150"
                       step="1"
@@ -87,6 +87,6 @@
         .col-xs-12
           //- TODO select payment method
           //- TODO use store credit / wallet
-          button.btn.btn-default(type="button" ng-click="B.cancel()") Cancel
-          button.btn.btn-primary.pull-right(type="button" ng-click="B.confirm()") Confirm {{ B.transactionType }}
+          button.btn.btn-default(type="button" ng-click="P.cancel()") Cancel
+          button.btn.btn-primary.pull-right(type="button" ng-click="P.confirm()") Confirm {{ P.transactionType }}
 
