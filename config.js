@@ -71,6 +71,15 @@ module.exports = {
     , forwardEmailTo: 'John Doe <john.doe+local.ldsconnect.org@gmail.com>'
     , forwardTo: 'John Doe <john.doe@local.ldsconnect.org>'
     }
+  , subjectPrefixes: {
+      all: "✆ ℡ ☎ ☏ ✆ ✍ ☺ ☁ ⚑ ⚐ ⚙ ⚛ ✉ ✎ ✏ ✐ ✇ ☢ ★ ☣ ☠ ⍟ ✪ ✩"
+    , sms:"☁ SMS "
+    , email: "✉ "
+    , voice: "✆ Call "
+    , voicemail: "✆ Voicemail "
+    , system: "⚑ "
+    , error: "☠ "
+    }
   , apiKey: 'key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   , apiPublicKey: 'pubkey-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   , emaildomain: 'local.ldsconnect.org'
