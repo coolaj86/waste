@@ -5,23 +5,23 @@
     center
       p
         span
-          a(href="mailto:MAIL@CHANGE_MY_URL") MAIL@CHANGE_MY_URL
+          a(ng-href="mailto:{{ F.tpl.email }}") {{ F.tpl.email }}
 
         span   •   
 
         span
-          a(href="tel:+15552220123") (555) 222-0123
+          a(href="tel:{{ F.tpl.phoneIntl }}") {{ F.tpl.phone }}
 
         span   •   
 
         span(itemprop="address", itemscope, itemtype="http://schema.org/PostalAddress")
-          span(itemprop="addressLocality") Baywatch
+          span(itemprop="addressLocality") {{ F.tpl.city }}
           span ,   
-          span(itemprop="addressRegion") CA
+          span(itemprop="addressRegion") {{ F.tpl.st }}
           span   •   
-          span(itemprop="postalCode") 90210
+          span(itemprop="postalCode") {{ F.tpl.zip }}{{ (F.tpl.zipExt ? '-' + F.tpl.zipExt : '') }}
 
-      p Copyright © 2010-2014 CHANGE MY TITLE
+      p Copyright © 2010-{{ new Date().getFullYear() }} {{ F.tpl.title }}
 
       p 
         span Built with&#32;
@@ -35,4 +35,3 @@
         a(target="_blank", href="http://AJ.the.DJ") the DJ
         span )&#32;
         a(target="_blank", href="http://fb.com/coolaj86") ONeal
-
