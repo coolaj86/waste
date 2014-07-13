@@ -1,8 +1,5 @@
 'use strict';
 
-// TODO move into config
-window.Stripe.setPublishableKey('pk_test_526DRmZwEOiMxTigV5fX52ti');
-
 angular.module('yololiumApp', [
   'ngCookies',
   'ngResource',
@@ -12,7 +9,7 @@ angular.module('yololiumApp', [
   'ui.bootstrap',
   'steve'
 ])
-  .config(function ($stateProvider, $urlRouterProvider, stConfig) {
+  .config(function ($stateProvider, $urlRouterProvider/*, stConfig*/) {
     var nav
       , footer
       ;
@@ -36,6 +33,7 @@ angular.module('yololiumApp', [
 
     footer = {
       templateUrl: '/views/footer.html'
+    , controller: 'FooterCtrl as F'
     };
 
     //$locationProvider.html5Mode(true);
@@ -82,6 +80,7 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+
       // This is the root state for not-logged-in users
       .state('splash', {
         url: '/splash/'
@@ -99,6 +98,7 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+
       .state('user', {
         url: '/user/'
       , views: {
@@ -115,6 +115,7 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+
       .state('admin', {
         url: '/admin/'
       , views: {

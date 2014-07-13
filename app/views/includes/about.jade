@@ -1,6 +1,6 @@
 .row
   .col-md-12
-    p Doing a lot of awesome with our crazy tagline here. Make sure to check out the amazing video.
+    p {{ M.tagline2 }}
     center
       .video-container
         iframe(width="560" height="315" ng-src="{{ M.video }}" frameborder="0" allowfullscreen)
@@ -8,10 +8,10 @@
           video(
             controls="controls"
             width="720px"
-            poster="https://s3.amazonaws.com/ksr/projects/392582/photo-main.jpg?1397803142"
+            ng-attr-poster="{{ M.videoPoster }}"
             ng-src="{{ M.video }}"
           )
-            //-source(ng-src="{{M.video}}" type="video/mp4")
+            //-source(ng-repeat="v in M.videoSrc" ng-src="{{v.src}}" ng-attr-type="{{v.type}}")
 
 .row
   br
@@ -26,4 +26,3 @@
           //-.carousel-caption
             h4 {{slide.text}}
             p {{$index}}
-
