@@ -17,7 +17,7 @@
       , protocol = 'http' + (req.connection.encrypted ? 's' : '') + '://'
       , href = protocol + host + req.url
 */
-module.exports = {
+var CONFIG = {
   protocol: 'https'
 , hostname: 'aj.the.dj'
 , port: 443
@@ -52,6 +52,11 @@ module.exports = {
     }
   , text: {
       smsdomain: 'the.dj' // i.e. 555-234-0123@sms.local.ldsconnect.org
+    }
+  , voicemail: {
+      forwardViaSms: false
+    , forwardViaEmail: true
+    , createTranscript: false
     }
   }
 , webhookPrefix: '/webhooks'
@@ -98,7 +103,7 @@ module.exports = {
   , forwardIncomingCallsTo: '(801) 360-4427'
   //, voicemailWav: '/media/voicemail.wav' // from web root
   , get voicemailWav() {
-      return this.href + '/media/voicemail.wav'; // from web root
+      return CONFIG.href + '/media/voicemail.wav'; // from web root
     }
   }
 , google: {
@@ -154,3 +159,4 @@ module.exports = {
   , consumerSecret: 'FhnXG8TPhQ3xl4xTtfDaCsgAOHHsg7QHUQzmqPmeMcrSjS4CQU'
   }
 };
+module.exports = CONFIG;
