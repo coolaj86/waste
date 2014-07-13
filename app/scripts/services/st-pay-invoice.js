@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc service
- * @name yololiumApp.djDeposit
+ * @name yololiumApp.stPayInvoice
  * @description
- * # djDeposit
+ * # stPayInvoice
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('DjDeposit', function DjDeposit($modal) {
+  .service('StPayInvoice', function StPayInvoice($modal) {
     // AngularJS will instantiate a singleton by calling "new" on this function
 
     this.show = function (opts) {
@@ -22,8 +22,8 @@ angular.module('yololiumApp')
       }
 
       return $modal.open({
-        templateUrl: '/views/book.html'
-      , controller: 'BookCtrl as B'
+        templateUrl: '/views/pay-invoice.html'
+      , controller: 'PayInvoiceCtrl as P'
       , backdrop: 'static'
       , keyboard: keyboard
       , resolve: {

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('NavCtrl', function ($scope, $state, StSession, mySession, DjDeposit) {
+  .controller('NavCtrl', function ($scope, $state, StSession, mySession, StPayInvoice) {
     var scope = this
       , allTabs
       ;
@@ -66,6 +66,6 @@ angular.module('yololiumApp')
     };
 
     scope.bookGig = function () {
-      DjDeposit.show();
+      StPayInvoice.show();
     };
   });

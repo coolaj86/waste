@@ -78,17 +78,16 @@ angular.module('yololiumApp')
         return $q.when(opts);
       }
 
-      $http.post(
+      return $http.post(
         opts.url
       , { stripeToken: null, transaction: opts.transaction }
       ).then(function (resp) {
-        d.resolve(resp.data);
-      }, function (err) {
-        d.reject(err);
-      });
+        if (resp.data.error) {
+          throw resp.data.error;
+        }
 
-      // payment
-      return;
+        return resp.data;
+      });
     }
 
     function askForCard(opts) {
@@ -106,6 +105,7 @@ angular.module('yololiumApp')
           , { stripeToken: stripeTokenObject, transaction: opts.transaction }
           ).then(function (resp) {
             if (resp.data.error) {
+              console.error("[ST-ERROR] something amiss during Stripe's checkout.js");
               d.reject(resp.data.error);
               return;
             }
@@ -175,8 +175,16 @@ angular.module('yololiumApp')
         // TODO move to ensure transaction
         console.log(opts);
         return $http.post(opts.url , { transaction: opts.transaction }).then(function (resp) {
-          console.log('[transaction] purchase or subscription succeeded');
+          console.log('[transaction]');
           console.log(resp.data);
+          if (resp.data.error) {
+            console.error("[ST-ERROR] something wrong durping post to '" + opts.url + "'");
+            console.error(resp.data);
+            console.error(opts);
+            throw resp.data.error;
+          }
+
+          console.log('[transaction] purchase or subscription succeeded');
           return resp.data;
         });
         // return opts;
