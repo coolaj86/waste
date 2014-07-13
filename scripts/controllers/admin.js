@@ -149,13 +149,13 @@ angular.module('yololiumApp')
         rules = {
           dtstart: {
             utc: new Date(
-              new Date(mergeLocaleZoneless(msg.date, msg.time)).now() + (60 * 1000)
+              new Date(mergeLocaleZoneless(msg.date, msg.time)).valueOf() + (60 * 1000)
             ).toISOString()
           , locale: 'GMT-0000 (UTC)'
           }
         , rrule: {
             until: new Date(
-              new Date(mergeLocaleZoneless(msg.date, msg.time)).now() + (day / 2) + (60 * 1000)
+              new Date(mergeLocaleZoneless(msg.date, msg.time)).valueOf() + (day / 2) + (60 * 1000)
             ).toISOString()
           , byhour: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
           , bysecond: [59]
@@ -171,13 +171,13 @@ angular.module('yololiumApp')
           rules = {
             dtstart: {
               utc: new Date(
-                new Date(mergeLocaleZoneless(msg.date, msg.time)).now() + (60 * 1000)
+                new Date(mergeLocaleZoneless(msg.date, msg.time)).valueOf() + (60 * 1000)
               ).toISOString()
             , locale: 'GMT-0000 (UTC)'
             }
           , rrule: {
               until: new Date(
-                new Date(mergeLocaleZoneless(msg.date, msg.time)).now() + (day) + (60 * 1000)
+                new Date(mergeLocaleZoneless(msg.date, msg.time)).valueOf() + (day) + (60 * 1000)
               ).toISOString()
             , byhour: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
             , bysecond: [59]
@@ -190,7 +190,7 @@ angular.module('yololiumApp')
           rules = {
             dtstart: {
               utc: new Date(
-                new Date(mergeLocaleZoneless(msg.date, msg.time)).now() + (60 * 1000)
+                new Date(mergeLocaleZoneless(msg.date, msg.time)).valueOf() + (60 * 1000)
               ).toISOString()
             , locale: 'GMT-0000 (UTC)'
             }
@@ -199,6 +199,8 @@ angular.module('yololiumApp')
         }
       }
 
+      rules.data = { body: $scope.msg.body };
+      console.log(rules);
       $http.post('/api/alarms', rules, function () {
       });
     };   
