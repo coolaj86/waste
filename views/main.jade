@@ -1,6 +1,5 @@
 div(ui-view="content" autocroll="false")
   .jumbotron(style="margin-bottom: 0;")
-
     .row
       .col-xs-12
         p {{ M.tagline }}
@@ -13,12 +12,12 @@ div(ui-view="content" autocroll="false")
             ng-src="http://beta.images.coolaj86.com/api/resize/height/250?url={{M.pic}}"
             style="border: 5px solid white; width: 260px; height: 260px;"
           )
-          h1 John Doe
-          h3 Hotshot, Ladder-climber, #1
+          h1 {{ M.tpl.personName }}
+          h3 {{ M.tpl.personTitle }}
           h2
-            a(href="tel:+15552220123" itemprop="telephone") 555.222.0123
+            a(ng-href="tel:{{ M.tpl.phoneIntl }}" itemprop="telephone") {{ M.tpl.phone }}
           h2
-            a(href="mailto:john.doe@gmail.com" itemprop="email") john.doe@gmail.com
+            a(ng-href="mailto:{{ M.tpl.email }}" itemprop="email") {{ M.tpl.email }}
           br
           center
             a.css-fb-like

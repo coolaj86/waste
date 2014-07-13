@@ -21,7 +21,6 @@
     <meta property="og:description", content="CHANGE MY DESCRIPTION">
     <meta property="og:image", content="http://CHANGE_MY_URL/images/CHANGE_MY_LOGO.png">
 
-
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
     <!-- http://www.kylejlarson.com/blog/2012/iphone-5-web-design/ -->
@@ -95,20 +94,9 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <span ui-view="nav" class="st-none" autocroll="false"></span>
-    <div ui-view="body" autocroll="false"></div>
-    <span ui-view="footer" autocroll="false"></span>
-
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
-     <script>
-       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-       ga('create', 'UA-38431552-1');
-       ga('send', 'pageview');
-    </script>
+    <span ui-view="nav" class="st-none" autoscroll="false"></span>
+    <div ui-view="body" autoscroll="false"></div>
+    <span ui-view="footer" autoscroll="false"></span>
 
     <script src="https://checkout.stripe.com/checkout.js"></script>
     <script src="https://js.stripe.com/v2/"></script>
@@ -152,8 +140,21 @@
     <script src="scripts/services/st-pay-invoice.js"></script>
     <script src="scripts/controllers/contacts.js"></script>
     <script src="scripts/services/st-contacts.js"></script>
+    <script src="scripts/controllers/footer.js"></script>
     <!-- endbuild -->
     
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', window.googleAnalyticsToken);
+      ga('send', 'pageview');
+    </script>
+    <script src="https://checkout.stripe.com/checkout.js"></script>
+    <script src="https://js.stripe.com/v2/"></script>
     <div id="fb-root"></div>
     <script>(function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
