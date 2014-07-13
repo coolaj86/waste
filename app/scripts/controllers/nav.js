@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('NavCtrl', function ($scope, $state, StSession, mySession, StPayInvoice, StApi) {
+  .controller('NavCtrl', function ($rootScope, $scope, $state, StSession, mySession, StPayInvoice, StApi) {
     var scope = this
       , allTabs
       ;
@@ -9,32 +9,36 @@ angular.module('yololiumApp')
     scope.logo = StApi.business.logo;
     scope.title = StApi.business.title;
 
-    allTabs = [
-      { active: $state.includes('root')
-      , title: 'Home'
-      , href: $state.href('root')
-      }
-    , { active: $state.includes('store')
-      , title: 'Store'
-      , href: $state.href('store')
-      }
-    , { active: $state.includes('admin')
-      , title: 'Admin'
-      , href: $state.href('admin')
-      , roles: ['admin', 'root']
-      }
-    , { active: $state.includes('user')
-      , title: 'User'
-      , href: $state.href('user')
-      , roles: ['user']
-      }
-    , { active: $state.includes('about')
-      , title: 'About'
-      , href: $state.href('about')
-      }
-    ];
+    $rootScope.$on('$stateChangeSuccess', function () {
+      updateSession(mySession);
+    });
 
     function updateSession(session) {
+      allTabs = [
+        { active: $state.is('root')
+        , title: 'Home'
+        , href: $state.href('root')
+        }
+      , { active: $state.includes('store')
+        , title: 'Store'
+        , href: $state.href('store')
+        }
+      , { active: $state.includes('admin')
+        , title: 'Admin'
+        , href: $state.href('admin')
+        , roles: ['admin', 'root']
+        }
+      , { active: $state.includes('user')
+        , title: 'User'
+        , href: $state.href('user')
+        , roles: ['user']
+        }
+      , { active: $state.includes('about')
+        , title: 'About'
+        , href: $state.href('about')
+        }
+      ];
+
       if (!session || !session.account || session.guest || 'guest' === session.account.role) {
         session = null;
       }
