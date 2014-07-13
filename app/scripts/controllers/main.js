@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('MainCtrl', function ($scope, $state, $stateParams, $timeout, $http, $sce, mySession, StApi) {
+  .controller('MainCtrl', function ($scope, $state, $stateParams, $timeout, $http, $sce, mySession, StApi, stConfig) {
     if ($stateParams.next) {
       $state.go($stateParams.next, $stateParams.nextParams);
     }
@@ -12,6 +12,7 @@ angular.module('yololiumApp')
     M.pic = StApi.business.pic;
     M.tagline = StApi.business.tagline;
     M.video = $sce.trustAsResourceUrl(StApi.business.video);
+    M.tpl = stConfig.business;
 
     if (StApi.redirectGuestsToSplash) {
       if (!mySession || 'guest' === mySession.account.role) {

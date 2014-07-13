@@ -8,6 +8,9 @@
  * Service in the steve.
  */
 (function () {
+
+  window.googleAnalyticsToken = 'UA-XXXXXXXX-1';
+
   var x = {
 //*/
   //.value('StApi', {
@@ -30,7 +33,9 @@
     , stripe: {
         publicKey: 'pk_test_526DRmZwEOiMxTigV5fX52ti'
       , storeName: 'Business Name Here'
+      , storeLogo: null
       }
+    , payInvoiceTitle: "Pay Part or All of your Invoice"
     , loginProviders: {
         facebook: '/facebook/connect'
       , twitter: '/twitter/authn/connect'
@@ -40,10 +45,24 @@
     , business: {
         title: "ACME Crop"
       , tagline: "Family-friendly goods and services from a company that makes everything."
+      , tagline2: "Doing a lot of awesome with our crazy tagline here. Make sure to check out the amazing video"
+      , facebookLike: "http://example.com" // your page
+      , googlePlusOne: "https://plus.google.com/+google" // your page
+      , personName: "John Doe"
+      , personTitle: "Hotshot, Ladder-climber, #1"
       , logo: "http://upload.wikimedia.org/wikipedia/en/7/7e/Oldacmelogo.png"
       , pic: "http://api.randomuser.me/portraits/men/10.jpg"
-      , video: "//www.youtube.com/embed/dFdIxE9tqO0"
       //, video: "https://d2pq0u4uni88oo.cloudfront.net/projects/392582/video-186252-h264_high.mp4"
+      , video: "//www.youtube.com/embed/dFdIxE9tqO0"
+      , videoPoster: "https://s3.amazonaws.com/ksr/projects/392582/photo-main.jpg?1397803142"
+      , email: "john.doe@mail.com"
+      , phoneIntl: "+15552220123"
+      , phone: "(555) 222-0123"
+      , city: "Baywatch"
+      , st: "CA"
+      , state: "California"
+      , zip: "90210"
+      , zipExt: null
       , slides: [
           "https://s3.amazonaws.com/ksr/projects/392582/photo-main.jpg?1397803142"
         , "http://img4.wikia.nocookie.net/__cb20100821210849/familyguy/images/7/7d/ACME.png"
@@ -54,8 +73,8 @@
 //  });
 ///*
     };
-angular.module('steve', [])
-  .constant('stConfig', x)
+  angular.module('steve', [])
+    .constant('stConfig', x)
 //
 /*
   .provider('StConfigProvider', function StConfigProvider() {

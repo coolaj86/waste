@@ -25,7 +25,6 @@
               a(href='../amelia/') Amelia
             li
               a(href='../cerulean/') Cerulean
-
         li(du-scrollspy="about", ng-if="'Home' == N.activeTab")
           a(ng-href="#about" du-smooth-scroll) About
         li(du-scrollspy="privacy", ng-if="'Home' == N.activeTab")
@@ -37,7 +36,7 @@
       ul.nav.navbar-nav.navbar-right(style="padding-top: 9px;")
         li(ng-show="!N.session")
           a(href="", ng-click="N.showLoginModal()") Login
-        li.dropdown(ng-show="N.session")
+        //-li.dropdown(ng-show="N.session")
           a#account.dropdown-toggle(data-toggle='dropdown', href='')
             | Account
             span.caret

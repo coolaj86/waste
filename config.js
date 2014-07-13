@@ -1,4 +1,5 @@
 'use strict';
+
 // All of these keys are valid working keys registered to
 // "Hogwarts Test Application" at http://local.ldsconnect.org,
 // which points to 127.0.0.1 for your testing pleasure.
@@ -16,7 +17,7 @@
       , protocol = 'http' + (req.connection.encrypted ? 's' : '') + '://'
       , href = protocol + host + req.url
 */
-module.exports = {
+var CONFIG = {
   protocol: 'http'
 , hostname: 'local.ldsconnect.org'
 , port: 4004
@@ -33,7 +34,7 @@ module.exports = {
 , get href() {
     return this.protocol + '://' + this.host;
   }
-, wsport: 4204
+, wsport: 9342
   // the default secret is 'super secret',
   // run `node ./generate-root-secret` to create a new one
 , rootUser: {
@@ -50,7 +51,12 @@ module.exports = {
     , speakableBusiness: 'Ackmee Corp' // ACME Corp
     }
   , text: {
-      smsdomain: 'sms.local.ldsconnect.org' // i.e. 555-234-0123@sms.local.ldsconnect.org
+      smsdomain: 'the.dj' // i.e. 555-234-0123@sms.local.ldsconnect.org
+    }
+  , voicemail: {
+      forwardViaSms: false
+    , forwardViaEmail: true
+    , createTranscript: false
     }
   }
 , webhookPrefix: '/webhooks'
@@ -61,7 +67,7 @@ module.exports = {
 , adminApi: '/api/admin'
 , userApi: '/api/user'
 , publicApi: '/api/public'
-, sessionSecret: 'a super secret, nothing better'
+, sessionSecret: 'nothing better than a super secret for aj the dj'
 , mailer: {
     service: 'mailgun'
   , defaults: {
@@ -102,8 +108,9 @@ module.exports = {
   , auth: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   , number: '(555) 678-1234'
   , forwardIncomingCallsTo: '(555) 222-0123'
+  //, voicemailWav: '/media/voicemail.wav' // from web root
   , get voicemailWav() {
-      return this.href + '/media/voicemail.wav'; // from web root
+      return CONFIG.href + '/media/voicemail.wav'; // from web root
     }
   }
 , google: {
@@ -146,8 +153,10 @@ module.exports = {
   }
 , stripe: {
     // https://manage.stripe.com/account/apikeys
-    id: "pk_test_526DRmZwEOiMxTigV5fX52ti"
-  , secret: "sk_test_Erl9x9947vVPaYigTyKKuXZl"
+    id: "pk_live_SSBLW1rVlYjOsMI75IMM1Zjz"
+  , secret: "sk_live_x9Y4AXFZrFZyFJobhnCK2iiP"
+  //  id: "pk_test_hwX1wzG4OMEv9esujApHjxI7"
+  //, secret: "sk_test_o1DfpT64SMt54nC8NIhQDk72"
   }
 , tumblr: {
     // https://www.tumblr.com/settings/apps
@@ -157,3 +166,4 @@ module.exports = {
   , consumerSecret: 'FhnXG8TPhQ3xl4xTtfDaCsgAOHHsg7QHUQzmqPmeMcrSjS4CQU'
   }
 };
+module.exports = CONFIG;

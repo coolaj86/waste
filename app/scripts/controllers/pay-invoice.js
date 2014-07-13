@@ -8,13 +8,13 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('PayInvoiceCtrl', function ($scope, $modalInstance, StStripe, StAlert) {
+  .controller('PayInvoiceCtrl', function ($scope, $modalInstance, StStripe, StAlert, stConfig) {
     console.log('Pay Invoice');
 
     var P = this
       ;
 
-    P.title = "Pay Part or All of your Invoice";
+    P.title = stConfig.payInvoiceTitle;
 
     P.purchase = {};
 
@@ -80,29 +80,43 @@ angular.module('yololiumApp')
       //, imgsrc: getImgUrl("http://www.reenigne.org/photos/2004/4/doodads.jpg")
       };
 
+      function happyMessage(thing) {
+        console.log('happy', thing);
+        StAlert.alert({
+          title: "$" + (product.amount / 100) + " Payment made"
+        , message: product.title + " has been paid. You should receive an email confirmation from Stripe within 5 to 10 minutes."
+        });
+      }
+
+      function sadMessage(thing) {
+        console.log('sad', thing);
+
+        StAlert.alert({
+          title: "Payment failed"
+        , message: "Something went wrong while processing the payment. However, if you receive an email confirmation, the card was successfully charged and we'll have to manually update your payment history. Otherwise your card was not yet charged."
+        });
+      }
+
       // TODO pre-confirmed option
       StStripe.purchase(product).then(
         function (thing) {
-          console.log('happy', thing);
-          StAlert.alert({
-            title: "$" + (product.amount / 100) + " Payment made"
-          , message: product.title + " has been paid. You should receive an email confirmation from Stripe within 5 to 10 minutes."
-          });
-        }
-      , function (thing) {
-          console.log('sad', thing);
-
-          // escape key press
-          // escape button click
-          if (/escape/i.test(thing.toString()) || (thing && (thing.ignore || thing.cancelled))) {
+          // TODO move this error check up the chain
+          if (thing.error) {
+            sadMessage(thing);
             return;
           }
 
-          StAlert.alert({
-            title: "Payment failed"
-          , message: "Something went wrong while processing the payment. However, if you receive an email confirmation, the card was successfully charged and we'll have to manually update your payment history. Otherwise your card was not yet charged."
-            + product.title + " at an unbelievable price)"
-          });
+          happyMessage(thing);
+        }
+      , function (thing) {
+          // escape key press
+          // escape button click
+          if (/escape/i.test(thing.toString()) || (thing && (thing.ignore || thing.cancelled))) {
+            console.log('cancelled transaction', thing);
+            return;
+          }
+
+          sadMessage(thing);
         }
       );
     };
