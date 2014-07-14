@@ -66,6 +66,32 @@ angular.module('yololiumApp', [
       .state('root', {
         url: '/'
       , views: {
+          body: {
+            template: '<div></div>'
+          , controller: function ($state, mySession, stConfig) {
+              if (!stConfig.useSplash) {
+                $state.go('home');
+                return;
+              }
+              
+              if (!mySession || !mySession.account || 'guest' === mySession.account.role) {
+                $state.go('splash');
+              } else {
+                $state.go('home');
+              }
+            }
+          , resolve: {
+              mySession: ['StSession', function (StSession) {
+                console.log('hello world');
+                return StSession.get();
+              }]
+            }
+          }
+        }
+      })
+
+      .state('home', {
+        views: {
           nav: nav
         , body: {
             templateUrl: 'views/main.html'
