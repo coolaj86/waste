@@ -99,6 +99,7 @@ function init(Db) {
   // Service Webhooks
   //
   app
+    .use(connect.router(require('./lib/bitcrypt').create(app, config, Db).route))
     .use(connect.router(require('./lib/webhooks').create(app, config).route))
     ;
 

@@ -164,5 +164,9 @@ var CONFIG = {
     consumerKey: 'b0ix4BsnbExgzi8zf0mmowj8k9g36YqwP5uBUOLoyxYoqBTlD8'
   , consumerSecret: 'FhnXG8TPhQ3xl4xTtfDaCsgAOHHsg7QHUQzmqPmeMcrSjS4CQU'
   }
+, bitcrypt: {
+    accessToken: "pandabearwarriorlove"
+  , keySecret: "lovethepurpleundeniably"
+  }
 };
 module.exports = CONFIG;
