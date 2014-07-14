@@ -5,6 +5,7 @@ var connect = require('connect')
   , app = connect()
   , auth = require('./lib/sessionlogic')
   , config = require('./config')
+  , serveStatic = require('serve-static')
   //, ws = require('./lib/ws')
   //, wsport = config.wsport || 8282
   , authstuff
@@ -34,15 +35,35 @@ app.api = function (path, fn) {
   return app;
 };
 
+// Welcome to the new age - Connect 3.x
+// All modules have been moved to new homes
+// See https://github.com/senchalabs/connect
 app
-  //.use(connect.logger())
-  .use(connect.errorHandler({ dumpExceptions: true, showStack: true }))
-  .use(connect.query())
-  .use(connect.json())
-  .use(connect.urlencoded())
-  .use(connect.compress())
-  .use(connect.cookieParser())
-  .use(connect.session({ secret: config.sessionSecret }))
+  //.use(require('morgan')())
+  .use(require('errorhandler')({ dumpExceptions: true, showStack: true }))
+  .use(require('./lib/connect-shims/query')())
+  .use(require('body-parser').urlencoded({
+    extended: true
+  , inflate: true
+  , limit: 100 * 1024
+  , type: 'urlencoded'
+  , verify: undefined
+  }))
+  .use(require('body-parser').json({
+    strict: true // only objects and arrays
+  , inflate: true
+  , limit: 100 * 1024
+  , reviver: undefined
+  , type: 'json'
+  , verify: undefined
+  }))
+  .use(require('compression')())
+  .use(require('cookie-parser')())
+  .use(require('express-session')({
+    secret: config.sessionSecret
+  , saveUninitialized: true // see https://github.com/expressjs/session
+  , resave: true // see https://github.com/expressjs/session
+  }))
   .use(require('./lib/connect-shims/redirect'))
   .use(require('./lib/connect-shims/send'))
   .use(require('./lib/connect-shims/xend'))
@@ -103,11 +124,11 @@ app
 //
 app
   //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
-  .use(connect.static(path.join(__dirname, 'priv', 'public')))
-  //.use(connect.static(path.join(__dirname, 'dist')))
-  //.use(connect.static(path.join(__dirname, '.tmp', 'concat')))
-  .use(connect.static(path.join(__dirname, 'app')))
-  .use(connect.static(path.join(__dirname, '.tmp')))
+  .use(serveStatic(path.join(__dirname, 'priv', 'public')))
+  //.use(serveStatic(path.join(__dirname, 'dist')))
+  //.use(serveStatic(path.join(__dirname, '.tmp', 'concat')))
+  .use(serveStatic(path.join(__dirname, 'app')))
+  .use(serveStatic(path.join(__dirname, '.tmp')))
   ;
 
 module.exports = app;
