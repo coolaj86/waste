@@ -16,7 +16,7 @@
       , protocol = 'http' + (req.connection.encrypted ? 's' : '') + '://'
       , href = protocol + host + req.url
 */
-module.exports = {
+var CONFIG = {
   protocol: 'http'
 , hostname: 'local.ldsconnect.org'
 , port: 4004
@@ -51,6 +51,11 @@ module.exports = {
     }
   , text: {
       smsdomain: 'sms.local.ldsconnect.org' // i.e. 555-234-0123@sms.local.ldsconnect.org
+    }
+  , voicemail: {
+      forwardViaSms: false
+    , forwardViaEmail: true
+    , createTranscript: false
     }
   }
 , webhookPrefix: '/webhooks'
@@ -102,8 +107,9 @@ module.exports = {
   , auth: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   , number: '(555) 678-1234'
   , forwardIncomingCallsTo: '(555) 222-0123'
+  //, voicemailWav: '/media/voicemail.wav' // from web root
   , get voicemailWav() {
-      return this.href + '/media/voicemail.wav'; // from web root
+      return CONFIG.href + '/media/voicemail.wav'; // from web root
     }
   }
 , google: {
@@ -146,8 +152,10 @@ module.exports = {
   }
 , stripe: {
     // https://manage.stripe.com/account/apikeys
-    id: "pk_test_526DRmZwEOiMxTigV5fX52ti"
-  , secret: "sk_test_Erl9x9947vVPaYigTyKKuXZl"
+    id: "pk_live_SSBLW1rVlYjOsMI75IMM1Zjz"
+  , secret: "sk_live_x9Y4AXFZrFZyFJobhnCK2iiP"
+  //  id: "pk_test_hwX1wzG4OMEv9esujApHjxI7"
+  //, secret: "sk_test_o1DfpT64SMt54nC8NIhQDk72"
   }
 , tumblr: {
     // https://www.tumblr.com/settings/apps
@@ -157,3 +165,4 @@ module.exports = {
   , consumerSecret: 'FhnXG8TPhQ3xl4xTtfDaCsgAOHHsg7QHUQzmqPmeMcrSjS4CQU'
   }
 };
+module.exports = CONFIG;

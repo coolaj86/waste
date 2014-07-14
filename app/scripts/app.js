@@ -1,8 +1,5 @@
 'use strict';
 
-// TODO move into config
-window.Stripe.setPublishableKey('pk_test_526DRmZwEOiMxTigV5fX52ti');
-
 angular.module('yololiumApp', [
   'ngCookies',
   'ngResource',
@@ -12,7 +9,7 @@ angular.module('yololiumApp', [
   'ui.bootstrap',
   'steve'
 ])
-  .config(function ($stateProvider, $urlRouterProvider, stConfig) {
+  .config(function ($stateProvider, $urlRouterProvider/*, stConfig*/) {
     var nav
       , footer
       ;
@@ -36,6 +33,7 @@ angular.module('yololiumApp', [
 
     footer = {
       templateUrl: '/views/footer.html'
+    , controller: 'FooterCtrl as F'
     };
 
     //$locationProvider.html5Mode(true);
@@ -68,6 +66,32 @@ angular.module('yololiumApp', [
       .state('root', {
         url: '/'
       , views: {
+          body: {
+            template: '<div></div>'
+          , controller: function ($state, mySession, stConfig) {
+              if (!stConfig.useSplash) {
+                $state.go('home');
+                return;
+              }
+              
+              if (!mySession || !mySession.account || 'guest' === mySession.account.role) {
+                $state.go('splash');
+              } else {
+                $state.go('home');
+              }
+            }
+          , resolve: {
+              mySession: ['StSession', function (StSession) {
+                console.log('hello world');
+                return StSession.get();
+              }]
+            }
+          }
+        }
+      })
+
+      .state('home', {
+        views: {
           nav: nav
         , body: {
             templateUrl: 'views/main.html'
@@ -82,6 +106,7 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+
       // This is the root state for not-logged-in users
       .state('splash', {
         url: '/splash/'
@@ -99,6 +124,7 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+
       .state('user', {
         url: '/user/'
       , views: {
@@ -115,6 +141,7 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+
       .state('admin', {
         url: '/admin/'
       , views: {
