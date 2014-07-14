@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "body-parser": "^1.4.3",
-    "bookshelf": "^0.6.10",
+    "bookshelf": "^0.7.6",
     "btoa": "^1.1.2",
     "compression": "^1.0.8",
     "connect": "^3.0.2",
@@ -15,7 +15,7 @@
     "es6-promise": "^1.0.0",
     "express-session": "^1.6.5",
     "foreachasync": "~3.0.0",
-    "knex": "^0.5.14",
+    "knex": "^0.6.22",
     "level": "^0.18.0",
     "lodash": "^2.4.1",
     "node-uuid": "~1.4.1",
