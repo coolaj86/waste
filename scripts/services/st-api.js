@@ -30,6 +30,7 @@
         , "token": "xxxxxxxx-test-xxxx-xxxx-guest-xxxxxx"
         }
       ]
+    , useSplash: false // if non-logged in users should get a different page at /
     , stripe: {
         publicKey: 'pk_test_526DRmZwEOiMxTigV5fX52ti'
       , storeName: 'Business Name Here'
