@@ -13,4 +13,5 @@ angular.module('yololiumApp')
       ;
 
     scope.tpl = stConfig.business;
+    scope.currentYear = new Date().getFullYear();
   });
