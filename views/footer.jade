@@ -21,7 +21,7 @@
           span   •   
           span(itemprop="postalCode") {{ F.tpl.zip }}{{ (F.tpl.zipExt ? '-' + F.tpl.zipExt : '') }}
 
-      p Copyright © 2010-{{ new Date().getFullYear() }} {{ F.tpl.title }}
+      p Copyright © 2010-{{ F.currentYear }} {{ F.tpl.title }}
 
       p 
         span Built with&#32;
