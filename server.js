@@ -111,6 +111,7 @@ function init(Db) {
       .create(app, config, Auth, authstuff.manualLogin).route
     ))
     .api(connect.router(require('./lib/public-contact').create(app, { mailer: config.mailer }).route))
+    .api(connect.router(require('./lib/twilio').create(app, config).route))
     ;
 
   //

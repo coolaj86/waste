@@ -158,6 +158,24 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+
+      .state('call', {
+        url: '/call/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/call.html'
+          , controller: 'CallCtrl as Call'
+          , resolve: {
+              mySession: ['StSession', function (StSession) {
+                return StSession.ensureSession('admin');
+              }]
+            }
+          }
+        , footer: footer
+        }
+      })
+
       .state('account', {
         url: '/account/'
       , views: {
