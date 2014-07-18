@@ -11,6 +11,7 @@ function init(Db) {
 
   var auth = require('./lib/sessionlogic')
     , serveStatic = require('serve-static')
+    , urlrouter = require('connect_router')
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
     , authstuff
@@ -25,10 +26,6 @@ function init(Db) {
   config.apiPrefix = config.apiPrefix || '/api';
 
   require('./lib/sessionlogic/root-user').init(ru, Auth);
-
-  if (!connect.router) {
-    connect.router = require('connect_router');
-  }
 
   app.api = function (path, fn) {
     if (!fn) {
@@ -60,15 +57,17 @@ function init(Db) {
     , verify: undefined
     }))
     .use(require('compression')())
+    .use(require('./lib/connect-shims/redirect'))
+    .use(require('./lib/connect-shims/send'))
+    .use(require('./lib/connect-shims/xend'))
+    .use(urlrouter(require('./lib/vidurls').route))
+    .use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
     .use(require('cookie-parser')())
     .use(require('express-session')({
       secret: config.sessionSecret
     , saveUninitialized: true // see https://github.com/expressjs/session
     , resave: true // see https://github.com/expressjs/session
     }))
-    .use(require('./lib/connect-shims/redirect'))
-    .use(require('./lib/connect-shims/send'))
-    .use(require('./lib/connect-shims/xend'))
     //.use(express.router)
     ;
     //route(app);
@@ -94,7 +93,7 @@ function init(Db) {
     // Since the API prefix is sometimes necessary,
     // it's probably better to always require the
     // auth providers to use it manually
-    app.use(connect.router(fn));
+    app.use(urlrouter(fn));
   });
 
   // 
@@ -102,23 +101,23 @@ function init(Db) {
   //
   // TODO a way to specify that a database should be attached to /me
   app
-    .api(connect.router(require('./lib/session').create().route))
-    .api(connect.router(require('./lib/accounts').create(app, config, Auth, authstuff.manualLogin).route))
-    .api(connect.router(require('./lib/account/contacts')
+    .api(urlrouter(require('./lib/session').create().route))
+    .api(urlrouter(require('./lib/accounts').create(app, config, Auth, authstuff.manualLogin).route))
+    .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))
-    .api(connect.router(require('./lib/account-creditcards')
+    .api(urlrouter(require('./lib/account-creditcards')
       .create(app, config, Auth, authstuff.manualLogin).route
     ))
-    .api(connect.router(require('./lib/public-contact').create(app, { mailer: config.mailer }).route))
-    .api(connect.router(require('./lib/twilio').create(app, config).route))
+    .api(urlrouter(require('./lib/public-contact').create(app, { mailer: config.mailer }).route))
+    .api(urlrouter(require('./lib/twilio').create(app, config).route))
     ;
 
   //
   // Service Webhooks
   //
   app
-    .use(connect.router(require('./lib/webhooks').create(app, config).route))
+    .use(urlrouter(require('./lib/webhooks').create(app, config).route))
     ;
 
   //
@@ -126,7 +125,7 @@ function init(Db) {
   //
   /*
   app
-    .use(connect.router(ws.create(app, config, wsport, [])))
+    .use(urlrouter(ws.create(app, config, wsport, [])))
     ;
   */
 
