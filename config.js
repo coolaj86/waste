@@ -67,6 +67,9 @@ var CONFIG = {
 , userApi: '/api/user'
 , publicApi: '/api/public'
 , sessionSecret: 'a super secret, nothing better'
+, alarms: {
+    url: 'http://alarms.beta.coolaj86.com'
+  }
 , mailer: {
     service: 'mailgun'
   , defaults: {
