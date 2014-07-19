@@ -28,6 +28,11 @@ angular.module('yololiumApp')
         , href: $state.href('admin')
         , roles: ['admin', 'root']
         }
+      , { active: $state.includes('push')
+        , title: 'Push'
+        , href: $state.href('push')
+        , roles: ['user', 'admin', 'root']
+        }
       , { active: $state.includes('user')
         , title: 'User'
         , href: $state.href('user')
