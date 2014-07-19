@@ -2,6 +2,7 @@
   "name": "yololium",
   "version": "0.1.0",
   "dependencies": {
+    "bluebird": "^2.2.2",
     "body-parser": "^1.4.3",
     "bookshelf": "^0.7.6",
     "btoa": "^1.1.2",

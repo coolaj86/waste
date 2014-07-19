@@ -192,6 +192,24 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+
+      .state('push', {
+        url: '/push/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/push.html'
+          , controller: "PushCtrl as P"
+          , resolve: {
+              mySession: ['StSession', function (StSession) {
+                return StSession.get();
+              }]
+            }
+          }
+        , footer: footer
+        }
+      })
+
       .state('store', {
         url: '/store/'
       , views: {
