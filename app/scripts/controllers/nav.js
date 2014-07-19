@@ -31,7 +31,6 @@ angular.module('yololiumApp')
       , { active: $state.includes('push')
         , title: 'Push'
         , href: $state.href('push')
-        , roles: ['user', 'admin', 'root']
         }
       , { active: $state.includes('user')
         , title: 'User'
