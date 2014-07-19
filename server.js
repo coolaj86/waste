@@ -58,7 +58,7 @@ function init(Db) {
     }))
     .use(require('compression')())
     .use(require('./lib/connect-shims/redirect'))
-    .use(require('./lib/connect-shims/send'))
+    .use(require('connect-send-json').json())
     .use(require('./lib/connect-shims/xend'))
     .use(urlrouter(require('./lib/vidurls').route))
     .use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
