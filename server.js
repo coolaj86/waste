@@ -137,8 +137,8 @@ function init(Db) {
     .use(serveStatic(path.join(__dirname, 'priv', 'public')))
     //.use(serveStatic(path.join(__dirname, 'dist')))
     //.use(serveStatic(path.join(__dirname, '.tmp', 'concat')))
-    .use(serveStatic(path.join(__dirname, 'app')))
     .use(serveStatic(path.join(__dirname, '.tmp')))
+    .use(serveStatic(path.join(__dirname, 'app')))
     ;
 }
 
