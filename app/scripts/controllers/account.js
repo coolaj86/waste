@@ -33,9 +33,24 @@ angular.module('yololiumApp')
 
       A.session = session;
       A.account = session.account;
+
+      // ensure we have xattrs and creditcards
+      if (!A.account.xattrs) {
+        A.account.xattrs = {};
+      }
+      if (!A.account.xattrs.creditcards) {
+        A.account.xattrs.creditcards = [];
+      }
+
     }
 
-    A.addStripeCard = function () {
+    // pop up Stripe's add-card dialog
+    // hit rest POST endpoing on success
+    // FIXME: can we prevent browser from hanging while dialog is loading?
+    // test credit card numbers: 
+    //   http://www.paypalobjects.com/en_US/vhelp/paypalmanager_help/credit_card_numbers.htm
+    // ^ks
+    A.addCard = function () {
       var addCardHandler
         ;
         
@@ -43,29 +58,41 @@ angular.module('yololiumApp')
         key: stripeKey
       //, image: '/images/stripe-ish-logo.png'
       , token: function (stripeTokenObject) {
-          console.log('stripeTokenObject');
-          console.log(stripeTokenObject);
           $http.post(
             StApi.apiPrefix + '/me/creditcards'
           , stripeTokenObject
-          ).success(function (data) {
-            A.account.xattrs = A.account.xattrs || { creditcards: [] };
-            A.account.xattrs.creditcards[0] = A.account.xattrs.creditcards[0] || data.response;
-            console.log('Added Stripe Credit Card', data);
+          ).success(function () {
+            A.account.xattrs.creditcards.push(stripeTokenObject.card);
+          }).error(function () {
+            window.alert('Unknown error adding card. Please try again.');
           });
         }
       });
 
       addCardHandler.open({
+        // FIXME: modal name
         name: 'Angular Template App'
       , description: 'Add Credit Card to Account'
       , currency: 'USD'
       , amount: 0
-      , email: A.account.email || A.account.emails && A.account.emails[0] && A.account.emails[0].value
+      , email: A.account.email || (A.account.emails && A.account.emails[0] && A.account.emails[0].value ? A.account.emails[0].value : '')
       , zipCode: true
       , panelLabel: 'Add Card' // Normally "Pay {{amount}}}"
       , allowRememberMe: true
       });
+    };
+
+    // return true if card has expired
+    // ^ks
+    A.isExpired = function (card) {      
+      var date = new Date()
+        , year = date.getFullYear()
+        , month = date.getMonth() + 1
+        ;
+        if (card.exp_year > year) {
+          return;
+        }
+        return card.exp_month < month;
     };
 
     A.showLoginModal = function () {
@@ -127,22 +154,46 @@ angular.module('yololiumApp')
       }
     };
 
+    // hit DELETE endpoint and remove card from scope
+    // on error, restore old card list to scope
+    // ^ks
     A.removeCard = function (card) {
-      // TODO stripe.customers.createCard(custid, { card: cardid });
-      // stripe.customers.deleteCard({CUSTOMER_ID}, {CARD_ID})
-      A.account.xattrs.creditcards.some(function (c, i) {
-        if (c === card) {
-          A.account.xattrs.creditcards.splice(i, 1);
-          $http.delete(StApi.apiPrefix + '/me/creditcards/' + card.id).then(function (resp) {
-            console.log('deleted');
-            console.log(resp.data);
-          });
-          return true;
-        }
+      var currentCards
+        , newCards
+        ;
+      currentCards = A.account.xattrs.creditcards;
+      newCards = currentCards.filter(function (c) {
+        return (c !== card);
       });
-      A.account.xattrs.creditcards = [];
+      if (newCards.length && card.is_preferred) {
+        // the preferred card was deleted so set the first card to preferred
+        newCards[0].is_preferred = true;
+      }
+      A.account.xattrs.creditcards = newCards;
+      $http.delete(StApi.apiPrefix + '/me/creditcards/' + card.id)
+        .error(function () {
+          window.alert('Unexpected error removing card.');
+          // update dom with array of original cards
+          A.account.xattrs.creditcards = currentCards;
+        })
+      ;
+    };
+
+    // change preferred status of cards and hit PATCH endpoint
+    // ^ks
+    A.setPreferredCard = function (card) {
+      A.account.xattrs.creditcards.forEach(function (c) {
+        c.is_preferred = false;
+      });
+      card.is_preferred = true;
+      $http({
+          method: 'PATCH'
+        , url: StApi.apiPrefix + '/me/creditcards'
+        , data: {preferredCardId: card.id}
+      });
     };
 
     StSession.promiseLoginsInScope(A, 'loginWith', init, initReject);
     StSession.subscribe(init, $scope);
+
   });
