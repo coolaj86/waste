@@ -2,57 +2,13 @@
 
 var UUID = require('node-uuid')
   , authutils = require('./lib/utils-auth')
-  //, Promise = require('bluebird').Promise
+  , Promise = require('bluebird').Promise
   ;
 
-
-function createAccounts(DB) {
-  function Accounts() {
-  }
-
-  Accounts.create = function (stuff) {
-    var account
-      ;
-
-    if (stuff.uuid) {
-      throw new Error('uuids are assigned by the accounts, not by you');
-    }
-    account = DB.Accounts.forge(stuff);
-
-    return account.save({ uuid: UUID.v4() }, { method: 'insert' });
-  };
-
-  Accounts.linkLogins = function (accounts, logins) {
-    if (!accounts) {
-      throw new Error('missing accounts to link');
-    }
-
-    if (!Array.isArray(accounts)) {
-      accounts = [accounts];
-    }
-
-    if (!logins) {
-      throw new Error('missing logins to link');
-    }
-
-    if (!Array.isArray(logins)) {
-      logins = [logins];
-    }
-
-    // TODO loop through accounts and attach logins to them
-    throw new Error('Not Implemented: Accounts.linkLogins()');
-  };
-
-  Accounts.linkLogins = function (accounts, logins) {
-    throw new Error('Not Implemented: Accounts.unlinkLogins()');
-  };
-
-  return Accounts;
-}
 module.exports.run = function (Db) {
   var mocks = {}
     , Logins = require('./logins').create(Db)
-    , Accounts = createAccounts(Db)
+    , Accounts = require('./accounts').create(Db)
     ;
 
   // See Story at https://github.com/coolaj86/angular-project-template/issues/8
@@ -149,7 +105,7 @@ module.exports.run = function (Db) {
         console.log(login.changed);
         console.log(login.attributes);
         loginObj.public = loginObj.public || {};
-        login.get('public')
+        login.get('public');
         Object.keys(loginObj.public).forEach(function (key) {
           pub[key] = loginObj.public[key];
         });
@@ -182,11 +138,21 @@ module.exports.run = function (Db) {
     // TODO every login needs a mergeUpdates hook
     return Logins.login(loginObj)
       .then(function (login) {
+        var pub
+          ;
+
         // Update profile with updated data
+        pub = login.get('public') || {};
+        login.set('public', pub);
+        console.log(login.changed);
+        console.log(login.attributes);
         loginObj.public = loginObj.public || {};
+        login.get('public');
         Object.keys(loginObj.public).forEach(function (key) {
-          login.set(key, loginObj.public[key]);
+          pub[key] = loginObj.public[key];
         });
+        // TODO and oauth token, which is not in public
+        console.log(login.attributes);
 
         if (!login.hasChanged()) {
           console.log('[tw] profile has not changed');
@@ -194,6 +160,7 @@ module.exports.run = function (Db) {
         }
 
         console.log('[tw] profile updated');
+        console.log(login.changed);
         return login.save().then(function (data) {
           console.log('[tw] saved updates');
           return data;
@@ -208,30 +175,109 @@ module.exports.run = function (Db) {
   loginWithFacebook(mocks.fbProfile).then(function (fbLogin) {
     console.log('a');
     if (fbLogin.related('accounts').length) {
-      console.log('has an account');
+      console.log('fbLogin has an account');
       return [fbLogin];
     }
     console.log('b');
 
     // I don't have an account, so I create one
-    return LocalLogin.create({ uid: 'coolaj86', secret: 'sauce' }).then(function (localLogin) {
+    return LocalLogin.create({ uid: 'coolaj86', secret: 'sauce123' }).then(function (localLogin) {
       var logins = [fbLogin, localLogin]
         ;
 
       // TODO we'll test which logins exist in the local session before we allow linking
+      console.log(fbLogin.toJSON());
       return Accounts.create({
-        name: fbLogin.name
+        name: fbLogin.get('public').name
         // TODO sometimes a facebook account is unverified and therefore the email doesn't show up
-      , email: fbLogin.emails[0].value
+      , email: fbLogin.get('public').emails[0].value
       }).then(function (account) {
-        return account.attach(logins).then(function () {
-          return logins;
+        var ps = []
+          ;
+
+        account.related('logins').forEach(function (login) {
+          var p
+            ;
+
+          // TODO also check that the account still exists
+          if (login.get('primaryAccountId')) {
+            return;
+          }
+
+          p = fbLogin.set('primaryAccountId', account.id).save();
+          ps.push(p);
+        });
+
+        return Promise.all(ps).then(function () {
+          return account.related('logins').attach(logins).then(function () {
+            return logins;
+          });
         });
       });
     });
   }).then(function () {
-    loginWithTwitter(mocks.twProfile);
-    // I login some other time with other credentials
-    //public: mocks.fbProfile
+    console.log('[tw] login time');
+    // I login some other time with new credentials (twitter)
+    return loginWithTwitter(mocks.twProfile).then(function (twLogin) {
+      console.log('[tw] got twLogin');
+      // If the user has previous associated the account
+      if (twLogin.related('accounts').length) {
+        console.log('twLogin has an associated account');
+        return [twLogin];
+      }
+
+      // If the user chooses to link with facebook
+      console.log('[tw] needs to associate');
+      return loginWithFacebook(mocks.fbProfile).then(function (fbLogin) {
+        var account
+          ;
+
+        console.log('[tw] got fb login');
+        fbLogin.related('accounts').some(function (_account) {
+          if (_account.id === fbLogin.get('primaryAccountId')) {
+            account = _account;
+            return true;
+          }
+        });
+
+        if (!account) {
+          account = fbLogin.related('accounts')[0];
+          // TODO set primary account
+        }
+
+        if (!account) {
+          // TODO create account
+          throw new Error('no associated account');
+        }
+
+        return twLogin.related('accounts').attach(account).then(function () {
+          return Promise.all(
+            twLogin.reset('accounts').load('accounts')
+          , fbLogin.reset('accounts').load('accounts')
+          ).then(function () {
+            console.log('[tw] associated');
+            return [twLogin, fbLogin];
+          });
+        });
+      });
+    });
+  }).then(function (logins) {
+    console.log('[fin] got a login with an account');
+    var accountsMap = {}
+      ;
+
+    logins.forEach(function (login) {
+      console.log('[fin] accounts in this login');
+      console.log(login.related('accounts').length);
+      login.related('accounts').forEach(function (account) {
+        accountsMap[account.id] = account;
+      });
+    });
+
+    // I am now logged in and have associated accounts
+    console.log({
+      accounts: Object.keys(accountsMap).map(function (id) { return accountsMap[id].toJSON(); })
+    , logins: logins.map(function (login) { return login.toJSON(); })
+    });
   });
 };

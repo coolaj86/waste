@@ -21,12 +21,21 @@ function init(knex, meta, tableMap) {
     }
 
     if ('undefined' === typeof obj.hasTimestamps) {
-      obj.hasTimestamps = ['created_at', 'updated_at'];
+      // TODO which should this be?
+      obj.hasTimestamps = ['createdAt', 'updatedAt'];
+      //obj.hasTimestamps = ['created_at', 'updated_at'];
     }
 
-    obj.format = utils.format(emu, 'xattrs', tableMap, []/*jsonCols*/);
-    obj.parse = utils.parse(emu, 'xattrs', tableMap, []/*(jsonCols*/);
-    console.log(tablename, 'obj.accounts', obj.accounts);
+    if (!tableMap[obj.tableName]) {
+      console.warn("[createModel] '" + obj.tableName + "' is declared as a model, but has no associated table");
+      return;
+    }
+
+    console.log('[createModel]', obj.tableName, ucamel);
+    console.log('[createModel.format]');
+    obj.format = utils.format(emu, 'xattrs', tableMap[obj.tableName], []/*jsonCols*/);
+    console.log('[createModel.parse]');
+    obj.parse = utils.parse(emu, 'xattrs', tableMap[obj.tableName], []/*jsonCols*/);
     Db[ucamel] = Orm.Model.extend(obj);
 
     return Db[ucamel];
@@ -58,7 +67,7 @@ module.exports.create = function myCreate(knex) {
     ;
 
   function createTables() {
-    console.log('[create tables]');
+    //console.log('[create tables]');
     return require('../migrations').create(knex).then(function () {
       return myCreate(knex);
     });
@@ -73,6 +82,8 @@ module.exports.create = function myCreate(knex) {
   }
 
   return info.then(function (meta) {
+    //console.log('[meta info]');
+    //console.log(meta);
     if (0 === Object.keys(meta).length) {
       console.error('[no keys]', meta);
       return createTables();
@@ -88,6 +99,8 @@ module.exports.create = function myCreate(knex) {
         ;
 
       p = knex(table).columnInfo().then(function (cols) {
+        //console.log('[columnInfo]', table);
+        //console.log(cols);
         tablesMap[table] = cols;
       }, function (err) {
         console.error('[no table]', table);
