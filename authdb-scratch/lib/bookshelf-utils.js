@@ -13,6 +13,12 @@ utils.toSnakeCase = function (attrs) {
     return memo;
   }, {});
 };
+utils.toSnakeCaseArr = function (keys) {
+  return _.reduce(keys, function(memo, key, i) {
+    memo[i] = _.str.underscored(key);
+    return memo;
+  }, []);
+};
 
 utils.toCamelCaseArr = function (keys) {
   return _.reduce(keys, function(memo, key, i) {
@@ -28,11 +34,15 @@ utils.toCamelCase = function (attrs) {
   }, {});
 };
 
-utils.inflateXattrs = function(xattrKey, keys) {
+utils.inflateXattrs = function(xattrKey, keys, debug) {
   xattrKey = xattrKey || 'xattrs';
   keys = keys || [];
 
   return function (attrs) {
+    if (debug) {
+      console.log('[inflate.run]');
+    }
+
     attrs = utils.toCamelCase(attrs);
 
     var xattrs = attrs[xattrKey] || {}
@@ -59,15 +69,36 @@ utils.inflateXattrs = function(xattrKey, keys) {
   };
 };
 
-utils.zipXattrs = function(xattrKey, keys, emulate) {
+utils.zipXattrs = function(xattrKey, keys, emulate, debug) {
+  if (debug) {
+    console.log('[zipXattrs.new]', emulate);
+    console.log(xattrKey);
+    console.log(keys);
+  }
+
   return function (attrs) {
     var xattrs = {}
       ;
 
+    if (debug) {
+      console.log('[zipXattrs.needles]');
+      console.log(Object.keys(attrs));
+      console.log('[zipXattrs.haystack]');
+      console.log(keys);
+    }
     Object.keys(attrs).forEach(function (key) {
       if (-1 === keys.indexOf(key)) {
+        if (debug) {
+          console.log('[zipXattrs.needle.missing]');
+          console.log(key);
+        }
         xattrs[key] = attrs[key];
         delete attrs[key];
+      } else {
+        if (debug) {
+          console.log('[zipXattrs.needle.found]');
+          console.log(key);
+        }
       }
     });
 
@@ -82,19 +113,35 @@ utils.zipXattrs = function(xattrKey, keys, emulate) {
     }
 
     attrs = utils.toSnakeCase(attrs);
+    if (debug) {
+      console.log('[zipXattrs.snaked]');
+      console.log(Object.keys(attrs));
+    }
     return attrs;
   };
 };
 
-utils.format = function (emu, zipCol, colsMap, jsonCols) {
+// format from model snake case in database
+utils.format = function (emu, zipCol, colsMap, jsonCols, debug) {
   var camelFieldNames = utils.toCamelCaseArr(Object.keys(colsMap))
+      // TODO find where created_at and updated_at are
+      // not becoming camelized to createdAt and updated_at
+      .concat(Object.keys(colsMap))
     ;
 
+  if (debug) {
+    console.log('[format.new]', camelFieldNames);
+  }
   jsonCols = jsonCols || [];
 
   return function (attrs) {
     // TODO json cols
-    attrs = utils.zipXattrs('xattrs', camelFieldNames, emu)(attrs);
+    attrs = utils.zipXattrs(zipCol, camelFieldNames, emu, debug)(attrs);
+
+    if (debug) {
+      console.log('[format.run]', Object.keys(colsMap));
+      console.log(colsMap);
+    }
 
     Object.keys(colsMap).forEach(function (key) {
       if ('datetime' === colsMap[key].type) {
@@ -114,21 +161,38 @@ utils.format = function (emu, zipCol, colsMap, jsonCols) {
         attrs[col] = JSON.stringify(attrs[col]);
       }
     });
+
+    if (debug) {
+      console.log('[format.return]', Object.keys(colsMap));
+      console.log(attrs);
+    }
+
     return attrs;
   };
 };
 
-utils.parse = function (emu, zipCol, colsMap, jsonCols) {
+// parse from database to camels in model
+utils.parse = function (emu, zipCol, colsMap, jsonCols, debug) {
   jsonCols = jsonCols || [];
 
+  if (debug) {
+    console.log('[parse.new]');
+  }
+
   return function (attrs) {
-    attrs = utils.inflateXattrs('xattrs', emu)(attrs);
+    attrs = utils.inflateXattrs(zipCol, emu, debug)(attrs);
 
     jsonCols.forEach(function (col) {
       if (attrs[col] && 'text' === colsMap[col].type) {
         attrs[col] = JSON.parse(attrs[col]);
       }
     });
+
+    if (debug) {
+      console.log('[parse.return]', Object.keys(colsMap));
+      console.log(attrs);
+    }
+
     return attrs;
   };
 };

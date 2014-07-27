@@ -111,10 +111,20 @@ module.exports.create = function (knex) {
         });
       }
 
+      console.log('\n[tablename]', props.tablename);
+      console.log(props);
+      console.log(info);
       return { name: props.tablename, meta: info };
     }, function (err) {
       console.error(err);
-      return createTable(props);
+      props._errorCount = props._errorCount || 0;
+      if (props.errorCount > 3) {
+        throw new Error('life sucks becaues the error count reached >3');
+      }
+      props._errorCount += 1;
+      return createTable(props).then(function () {
+        return getTable(props);
+      });
     });
   }
 

@@ -9,8 +9,18 @@ module.exports.create = function (DB) {
 
   Logins.get = function (loginObj) {
     return DB.Logins
-      .forge({ typedUid: Logins.getTypedUid(loginObj) })
+      .forge({
+        typedUid: Logins.getTypedUid(loginObj)
+      , typed_uid: Logins.getTypedUid(loginObj)
+      })
       .fetch({ withRelated: ['accounts'] })
+      /*
+      .on('query', function (stmt, vals) {
+        console.log('[login] query');
+        console.log(stmt);
+        console.log(vals);
+      })
+      */
       ;
   };
 
@@ -49,7 +59,9 @@ module.exports.create = function (DB) {
 
     loginObj.typedUid = Logins.getTypedUid(loginObj);
 
-    login = DB.Logins.forge();
+    login = DB.Logins
+      .forge()
+      ;
 
     return login.save(loginObj).then(function (login) {
       console.log('DB.Logins');
