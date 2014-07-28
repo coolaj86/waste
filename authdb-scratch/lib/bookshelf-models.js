@@ -31,10 +31,10 @@ function init(knex, meta, tableMap) {
       return;
     }
 
-    console.log('[createModel]', obj.tableName, ucamel);
-    console.log('[createModel.format]');
+    //console.log('[createModel]', obj.tableName, ucamel);
+    //console.log('[createModel.format]');
     obj.format = utils.format(emu, 'xattrs', tableMap[obj.tableName], []/*jsonCols*/);
-    console.log('[createModel.parse]');
+    //console.log('[createModel.parse]');
     obj.parse = utils.parse(emu, 'xattrs', tableMap[obj.tableName], []/*jsonCols*/);
     Db[ucamel] = Orm.Model.extend(obj);
 

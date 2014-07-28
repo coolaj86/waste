@@ -28,7 +28,7 @@ module.exports.create = function(thing) {
 
   knex = Knex.initialize(config || {
     client: 'sqlite3'
-  , debug: true
+  //, debug: true
   , connection: {
       filename : path.join(__dirname, '..', 'priv', filename || 'knex.sqlite3')
     , debug: true

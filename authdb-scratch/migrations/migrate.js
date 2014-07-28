@@ -111,9 +111,11 @@ module.exports.create = function (knex) {
         });
       }
 
+      /*
       console.log('\n[tablename]', props.tablename);
       console.log(props);
       console.log(info);
+      */
       return { name: props.tablename, meta: info };
     }, function (err) {
       console.error(err);
