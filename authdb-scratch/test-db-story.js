@@ -1,8 +1,5 @@
 'use strict';
 
-var Promise = require('bluebird').Promise
-  ;
-
 module.exports.run = function (Db) {
   var mocks = {}
     , Logins = require('./logins').create(Db)
@@ -35,15 +32,13 @@ module.exports.run = function (Db) {
         });
         login.set('public', pub);
         // TODO and oauth token, which is not in public
-        console.log(login.attributes);
 
         if (!login.hasChanged()) {
           console.log('[fb] profile has not changed');
           return login;
         }
 
-        console.log('[fb] profile updated');
-        console.log(login.changed);
+        console.log('[fb] profile updated:', login.changed);
         return login.save().then(function (savedLogin) {
           console.log('[fb] saved updates');
           return savedLogin;
@@ -82,8 +77,7 @@ module.exports.run = function (Db) {
           return login;
         }
 
-        console.log('[tw] profile updated');
-        console.log(login.changed);
+        console.log('[tw] profile updated:', login.changed);
         return login.save().then(function (data) {
           console.log('[tw] saved updates');
           return data;
@@ -107,9 +101,6 @@ module.exports.run = function (Db) {
 
     // I don't have an account, so I create one
     return LocalLogin.create({ uid: 'coolaj86', secret: 'sauce123' }).then(function (localLogin) {
-      console.log('[logins.related]');
-      console.log(fbLogin.related);
-      console.log(localLogin.related);
       var logins = [fbLogin, localLogin]
         ;
 
@@ -169,14 +160,10 @@ module.exports.run = function (Db) {
           throw new Error('no associated account');
         }
 
-        return twLogin.related('accounts').attach(account)/*.then(function () {
-          return Promise.all(
-            twLogin.reset('accounts').load('accounts')
-          , fbLogin.reset('accounts').load('accounts')
-          )*/.then(function () {
+        return twLogin.related('accounts').attach(account)
+          .then(function () {
             console.log('[tw] associated');
             return [twLogin, fbLogin];
-          /*});*/
           });
       });
     });
@@ -186,8 +173,7 @@ module.exports.run = function (Db) {
       ;
 
     logins.forEach(function (login) {
-      console.log('[fin] accounts in this login');
-      console.log(login.related('accounts').length);
+      console.log('[fin] accounts in this login:', login.related('accounts').length);
       login.related('accounts').forEach(function (account) {
         accountsMap[account.id] = account;
       });
