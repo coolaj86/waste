@@ -2,7 +2,7 @@
   { "tablename": "logins"
   , "uuid": false
   , "columns": {
-      "typed_uid": { "type": "string", "nullable": false, "primary": true }
+      "hashid": { "type": "string", "nullable": false, "primary": true }
     , "uid": { "type": "string", "nullable": false }
     , "type": { "type": "string", "nullable": false }
     , "primary_account_id": "string"
@@ -23,7 +23,7 @@
 , { "tablename": "accounts_logins"
   , "timestamps": true
   , "columns": [
-      { "primary": true, "name": "login_typed_uid", "type": "string", "references": ["logins", "typed_uid"] }
+      { "primary": true, "name": "login_hashid", "type": "string", "references": ["logins", "hashid"] }
     , { "primary": true, "name": "account_uuid", "type": "string", "references": ["accounts", "uuid"] }
     ]
   , "xattrs": true

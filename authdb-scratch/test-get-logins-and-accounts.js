@@ -15,17 +15,32 @@ module.exports.run = function (Db) {
     loginObj.uid = loginObj.public.id;
 
     // TODO every login needs a mergeUpdates hook
-    return Logins.login(loginObj)
-      .then(function (login) {
-        return login;
-      });
+    return Logins.login(loginObj);
+  }
+
+  // I login with twitter
+  function loginWithTwitter(profile) {
+    // TODO public / private profile info
+    var loginObj = { public: profile }
+      ;
+
+    loginObj.type = 'twitter';
+    loginObj.uid = loginObj.public.id;
+
+    // TODO every login needs a mergeUpdates hook
+    return Logins.login(loginObj);
   }
 
   mocks.fbProfile = require('./profile.fb.json');
+  mocks.twProfile = require('./profile.tw.json');
 
   // I log in with facebook
   loginWithFacebook(mocks.fbProfile).then(function (fbLogin) {
-    console.log("login.related('accounts')");
-    console.log(fbLogin.related('accounts'));
+    console.log("[fb] login.related('accounts')");
+    console.log(fbLogin.related('accounts').length);
+    loginWithTwitter(mocks.twProfile).then(function (twLogin) {
+      console.log("[tw] login.related('accounts')");
+      console.log(twLogin.related('accounts').length);
+    });
   });
 };

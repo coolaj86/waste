@@ -1,88 +1,16 @@
 'use strict';
 
-var UUID = require('node-uuid')
-  , authutils = require('./lib/utils-auth')
-  , Promise = require('bluebird').Promise
+var Promise = require('bluebird').Promise
   ;
 
 module.exports.run = function (Db) {
   var mocks = {}
     , Logins = require('./logins').create(Db)
     , Accounts = require('./accounts').create(Db)
+    , LocalLogin = require('./locals').create(Logins)
     ;
 
   // See Story at https://github.com/coolaj86/angular-project-template/issues/8
-
-  // TODO let the local login be like facebook connect (with an associated profile? ...prolly not)
-  // such that even local logins are over oauth2
-  function LocalLogin() {
-  }
-  LocalLogin.get = function (auth) {
-    auth.type = 'local';
-    return auth.__login || Logins.get(auth).then(function (login) {
-      auth.__login = login;
-      return login;
-    });
-  };
-  LocalLogin.getOrError = function (auth) {
-    return LocalLogin.get(auth).then(function (login) {
-      if (!login) {
-        throw new Error('login not found');
-      }
-    });
-  };
-  LocalLogin.loginOrCreate = function (auth) {
-    // The default behaviour is to try to login
-    // and create an account if the user does not exist
-    return LocalLogin.login(auth).then(function (login) {
-      return login;
-    }, function () {
-      return LocalLogin.realCreate(auth);
-    });
-  };
-  LocalLogin.create = LocalLogin.loginOrCreate;
-  LocalLogin.realCreate = function (auth) {
-    console.log('!!!!!!!!!!!!!!!!!!');
-    console.log(auth);
-    var creds = authutils.createSecretHash(auth.secret)
-      ;
-    console.log(creds);
-
-    // TODO length restrictions
-    if (!(auth.secret && auth.secret.length >= 8)) {
-      throw new Error('Must have a secret at least 8 characters long to create an account');
-    }
-
-    // will fail if user exists
-    return Logins.create({
-      uid: auth.uid
-    , type: auth.type
-    , typedUid: Logins.getTypedUid(auth)
-    , secret: creds.secret
-    , salt: creds.salt
-    , hashType: creds.hashType
-    });
-  };
-  LocalLogin.login = function (auth) {
-    return LocalLogin.getOrError(auth).then(function (login) {
-      var valid
-        ;
-        
-      valid = authutils.testSecret(
-        login.get('salt')
-      , auth.secret
-      , login.get('secret') // hashed version
-      , login.get('hashType')
-      );
-
-      if (!valid || !auth.secret) {
-        throw new Error('invalid secret');
-      }
-
-      return Logins.login(login);
-    });
-  };
-
 
   // I login with facebook
   function loginWithFacebook(profile) {
@@ -101,14 +29,11 @@ module.exports.run = function (Db) {
 
         // Update profile with updated data
         pub = login.get('public') || {};
-        login.set('public', pub);
-        console.log(login.changed);
-        console.log(login.attributes);
         loginObj.public = loginObj.public || {};
-        login.get('public');
         Object.keys(loginObj.public).forEach(function (key) {
           pub[key] = loginObj.public[key];
         });
+        login.set('public', pub);
         // TODO and oauth token, which is not in public
         console.log(login.attributes);
 
@@ -119,9 +44,9 @@ module.exports.run = function (Db) {
 
         console.log('[fb] profile updated');
         console.log(login.changed);
-        return login.save().then(function (data) {
+        return login.save().then(function (savedLogin) {
           console.log('[fb] saved updates');
-          return data;
+          return savedLogin;
         });
       });
   }
@@ -143,14 +68,12 @@ module.exports.run = function (Db) {
 
         // Update profile with updated data
         pub = login.get('public') || {};
-        login.set('public', pub);
-        console.log(login.changed);
-        console.log(login.attributes);
         loginObj.public = loginObj.public || {};
         login.get('public');
         Object.keys(loginObj.public).forEach(function (key) {
           pub[key] = loginObj.public[key];
         });
+        login.set('public', pub);
         // TODO and oauth token, which is not in public
         console.log(login.attributes);
 
@@ -173,49 +96,44 @@ module.exports.run = function (Db) {
 
   // I log in with facebook
   loginWithFacebook(mocks.fbProfile).then(function (fbLogin) {
-    console.log('a');
+    console.log('logged in with facebook');
+
     if (fbLogin.related('accounts').length) {
       console.log('fbLogin has an account');
       return [fbLogin];
     }
-    console.log('b');
+
+    console.log('fbLogin does not have an account');
 
     // I don't have an account, so I create one
     return LocalLogin.create({ uid: 'coolaj86', secret: 'sauce123' }).then(function (localLogin) {
+      console.log('[logins.related]');
+      console.log(fbLogin.related);
+      console.log(localLogin.related);
       var logins = [fbLogin, localLogin]
         ;
 
       // TODO we'll test which logins exist in the local session before we allow linking
-      console.log(fbLogin.toJSON());
+      //console.log(fbLogin.toJSON());
       return Accounts.create({
-        name: fbLogin.get('public').name
+        name: fbLogin.get('public').name.displayName
         // TODO sometimes a facebook account is unverified and therefore the email doesn't show up
       , email: fbLogin.get('public').emails[0].value
       }).then(function (account) {
-        var ps = []
-          ;
-
-        account.related('logins').forEach(function (login) {
-          var p
-            ;
-
-          // TODO also check that the account still exists
-          if (login.get('primaryAccountId')) {
-            return;
-          }
-
-          p = fbLogin.set('primaryAccountId', account.id).save();
-          ps.push(p);
-        });
-
-        return Promise.all(ps).then(function () {
-          return account.related('logins').attach(logins).then(function () {
-            return logins;
+        return Logins.linkAccounts(logins, [account])
+          .then(function (/*TODO logins*/) {
+            return Logins.setPrimaryAccount(logins, account).then(function () {
+              logins.forEach(function (login, i) {
+                console.log(i, login.related('accounts').length);
+              });
+              //throw new Error('something fishy');
+              return logins;
+            });
           });
-        });
       });
     });
   }).then(function () {
+
     console.log('[tw] login time');
     // I login some other time with new credentials (twitter)
     return loginWithTwitter(mocks.twProfile).then(function (twLogin) {
@@ -233,6 +151,7 @@ module.exports.run = function (Db) {
           ;
 
         console.log('[tw] got fb login');
+        // fbLogin.reset('accounts').load('accounts').then(function (login) { ... });
         fbLogin.related('accounts').some(function (_account) {
           if (_account.id === fbLogin.get('primaryAccountId')) {
             account = _account;
@@ -250,15 +169,15 @@ module.exports.run = function (Db) {
           throw new Error('no associated account');
         }
 
-        return twLogin.related('accounts').attach(account).then(function () {
+        return twLogin.related('accounts').attach(account)/*.then(function () {
           return Promise.all(
             twLogin.reset('accounts').load('accounts')
           , fbLogin.reset('accounts').load('accounts')
-          ).then(function () {
+          )*/.then(function () {
             console.log('[tw] associated');
             return [twLogin, fbLogin];
+          /*});*/
           });
-        });
       });
     });
   }).then(function (logins) {

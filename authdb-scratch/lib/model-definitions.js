@@ -18,11 +18,10 @@ module.exports.models = {
   });
   */
 , Logins:
-  { idAttribute: 'typedUid'
+  { idAttribute: 'hashid'
   , accounts: function () {
-      //return this.belongsToMany(Db.Accounts);
-      //return this.belongsToMany(Db.Accounts, 'accounts_logins', 'account_uuid', 'login_typed_uid');
-      return this.belongsToMany(Db.Accounts, 'accounts_logins', 'login_typed_uid', 'account_uuid');
+      return this.belongsToMany(Db.Accounts);
+      //return this.belongsToMany(Db.Accounts, 'accounts_logins', 'login_hashid', 'account_uuid');
     }
     // format before saving
   , hasTimestamps: ['createdAt', 'updatedAt']
@@ -30,17 +29,20 @@ module.exports.models = {
 , Accounts:
   { idAttribute: 'uuid'
   , logins: function () {
-      return this.belongsToMany(Db.Logins, 'accounts_logins', 'account_uuid', 'login_typed_uid');
+      return this.belongsToMany(Db.Logins);
+      //return this.belongsToMany(Db.Logins, 'accounts_logins', 'account_uuid', 'login_hashid');
     }
   , hasTimestamps: ['createdAt', 'updatedAt']
   }
 , AccountsLogins:
   // no idAttribute
   { account: function() {
-      return this.belongsTo(Db.Accounts, 'account_uuid');
+      return this.belongsTo(Db.Accounts);
+      //return this.belongsTo(Db.Accounts, 'account_uuid');
     }
   , login: function() {
-      return this.belongsTo(Db.Logins, 'login_typed_uid');
+      return this.belongsTo(Db.Logins);
+      //return this.belongsTo(Db.Logins, 'login_hashid');
     }
   , hasTimestamps: ['createdAt', 'updatedAt']
   }
