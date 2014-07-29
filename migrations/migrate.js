@@ -1,26 +1,41 @@
 'use strict';
 
-var Promise = require('es6-promise').Promise
+var Promise = require('bluebird')
   ;
 
 module.exports.create = function (knex) {
   require('./pre-migrate');
   var meta
       // TODO migrations rather than just tables
-    , tables = require('./migrations')
+    , files = require('./migrations')
+    , tables = []
     ;
+
+  // convert all entries to arrays
+  files.forEach(function (file) {
+    if (!Array.isArray(file)) {
+      file = [file];
+    }
+    file.forEach(function (table) {
+      tables.push(table);
+    });
+  });
 
   meta = {
     tablename: '_st_meta_'
   , timestamps: true
   , xattrs: true
-  , cols: [
-      { name: { type: 'string', length: 255 } }
-    ]
+  , columns: {
+      name: { type: 'string', length: 255 }
+    }
   };
 
   function createTable(props) {
     return knex.schema.createTable(props.tablename, function (t) {
+      var columns
+        , primaries = []
+        ;
+
       if (props.uuid) {
         t.uuid('uuid').unique().index().notNullable();
         t.primary('uuid');
@@ -32,17 +47,51 @@ module.exports.create = function (knex) {
         t.timestamps(); //.notNullable();
       }
 
-      if (!props.cols) {
+      if (!props.columns) {
         return;
       }
 
-      props.cols.forEach(function (col) {
+      if (Array.isArray(props.columns)) {
+        columns = props.columns;
+      } else {
+        columns = [];
+        Object.keys(props.columns).forEach(function (colname) {
+          var col = props.columns[colname]
+            ;
+
+          if ('string' === typeof col) {
+            col = { type: col };
+          }
+          col.name = col.name || colname;
+          columns.push(col);
+        });
+      }
+
+      columns.forEach(function (col) {
+        var cur
+          ;
+
         switch (col.type) {
           case 'string':
-            t.string(col.name, col.length);
+            col.length = col.length || 255;
+            cur = t.string(col.name, col.length);
             break;
         }
+
+        cur = cur || t;
+        if (col.references) {
+          cur.references(col.references[1]).inTable(col.references[0]);
+        }
+
+        // TODO maybe this is best elswhere so that it isn't done twice?
+        if (col.primary) {
+          primaries.push(col.name);
+        }
       });
+
+      if (primaries.length) {
+        t.primary.apply(t, primaries);
+      }
     }).then(function (data) {
       console.info('[table] [created]', props.tablename);
       return data;
@@ -62,10 +111,22 @@ module.exports.create = function (knex) {
         });
       }
 
+      /*
+      console.log('\n[tablename]', props.tablename);
+      console.log(props);
+      console.log(info);
+      */
       return { name: props.tablename, meta: info };
     }, function (err) {
       console.error(err);
-      return createTable(props);
+      props._errorCount = props._errorCount || 0;
+      if (props.errorCount > 3) {
+        throw new Error('life sucks becaues the error count reached >3');
+      }
+      props._errorCount += 1;
+      return createTable(props).then(function () {
+        return getTable(props);
+      });
     });
   }
 
