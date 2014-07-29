@@ -9,23 +9,19 @@ var connect = require('connect')
 function init(Db) {
   // TODO maybe a main DB for core (Accounts) and separate DBs for the modules?
 
-  var auth = require('./lib/sessionlogic')
+  var session = require('./lib/sessionlogic')
     , serveStatic = require('serve-static')
     , urlrouter = require('connect_router')
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
-    , authstuff
+    , sessionLogic
     , ru = config.rootUser
-      // Authn
-    , Users = require('./lib/loginlogic/users').create({ dbfile: path.join(__dirname, 'priv', 'users.priv.json') })
-      // Authz
-    , Accounts = require('./lib/loginlogic/accounts').create({ dbfile: path.join(__dirname, 'priv', 'accounts.priv.json')})
-    , Auth = require('./lib/loginlogic').create(config, Users, Accounts)
+    , Auth = require('./lib/auth-logic').create(Db, config)
     ;
 
   config.apiPrefix = config.apiPrefix || '/api';
 
-  require('./lib/sessionlogic/root-user').init(ru, Auth);
+  require('./lib/fixtures/root-user').create(ru, Auth);
 
   app.api = function (path, fn) {
     if (!fn) {
@@ -88,8 +84,8 @@ function init(Db) {
   //
   // Generic Template Auth
   //
-  authstuff = auth.init(app, config, Auth);
-  authstuff.routes.forEach(function (fn) {
+  sessionLogic = session.init(app, config, Auth);
+  sessionLogic.routes.forEach(function (fn) {
     // Since the API prefix is sometimes necessary,
     // it's probably better to always require the
     // auth providers to use it manually
@@ -102,12 +98,12 @@ function init(Db) {
   // TODO a way to specify that a database should be attached to /me
   app
     .api(urlrouter(require('./lib/session').create().route))
-    .api(urlrouter(require('./lib/accounts').create(app, config, Auth, authstuff.manualLogin).route))
+    .api(urlrouter(require('./lib/accounts').create(app, config, Auth, sessionLogic.manualLogin).route))
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))
     .api(urlrouter(require('./lib/account-creditcards')
-      .create(app, config, Auth, authstuff.manualLogin).route
+      .create(app, config, Auth, sessionLogic.manualLogin).route
     ))
     .api(urlrouter(require('./lib/public-contact').create(app, { mailer: config.mailer }).route))
     .api(urlrouter(require('./lib/twilio').create(app, config).route))

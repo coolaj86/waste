@@ -35,12 +35,21 @@ var CONFIG = {
   }
 , wsport: 4204
   // the default secret is 'super secret',
-  // run `node ./generate-root-secret` to create a new one
 , rootUser: {
-    id: 'root'
+    // essential attributes for local account
+    uid: 'root'
   , salt: "UdVsog0lLYCV1x2mMAGZa6x+7W41xqtTyR4PLZpE8Pc="
   , secret: "7e0e7d6fbb948279f204a8a85f1bee10"
-  , type: "md5"
+  , hashtype: "md5"
+    // extra attributes for login
+  , login: { public: {} }
+    // extra attributes for account
+  , account: { role: 'root' }
+  , deleteTheseLinesAfterConfiguring: (function () {
+      console.warn("You should change your webapp root passphrase.");
+      console.warn("run `./bin/generate-root-secret.js` and paste the results into config.js.rootUser");
+      return true;
+    }())
   }
 , webhooks: {
     voice: {
