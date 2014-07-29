@@ -12,12 +12,15 @@
         a(ng-click="L.authType = 'login'; L.showSecret = false;") Login
       li(ng-class="{ active: 'create-account' == L.authType }")
         a(ng-click="L.authType = 'create-account'; L.showSecret = true;") Create Account
-      //-li(ng-class="{ active: 'token' == L.authType }")
+      li(ng-class="{ active: 'social' == L.authType }")
+        a(ng-click="L.authType = 'social'") Social
+      li(ng-class="{ active: 'token' == L.authType }")
         a(ng-click="L.authType = 'token'") Developer
 
   .modal-body
 
-    .account.signin-option(ng-if="'token' !== L.authType")
+
+    .account.signin-option(ng-if="'login' == L.authType || 'create-account' == L.authType")
       .row
         form(ng-submit="L.loginWithBasicAuth()")
           .col-md-6
@@ -51,7 +54,8 @@
               a.btn.btn-default.pull-right(ng-click="L.noop()") Help
 
 
-    //-.social.signin-option(ng-if="'token' != L.authType")
+
+    .social.signin-option(ng-if="'social' == L.authType")
       hr
       .row
         .col-md-6
