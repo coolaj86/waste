@@ -1,5 +1,10 @@
 'use strict';
 
+// add stripe card
+// add custom card
+// use st-alert to pop open custom card
+// in node, allow adding either type of card
+
 /**
  * @ngdoc service
  * @name yololiumApp.stripe
