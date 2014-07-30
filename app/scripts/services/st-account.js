@@ -82,7 +82,7 @@ angular.module('yololiumApp')
     }
 
     function create(updates) {
-      var logins = []
+      var logins = updates.logins || []
         , accounts = []
         ;
 
@@ -94,6 +94,7 @@ angular.module('yololiumApp')
         logins.push(updates.localLogin);
         delete updates.localLogin;
       }
+      delete updates.logins;
 
       accounts.push(updates);
 
