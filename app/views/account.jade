@@ -53,10 +53,15 @@
               span &#32;Preferred Card 
   .row
     button.btn.btn-success.btn-sm(
-      ng-click="A.addCard(card)"
+      ng-click="A.addCardStripe()"
     )
       span.glyphicon.glyphicon-plus
-      span &#32;Add Card
+      span &#32;Add Card (Stripe)
+    button.btn.btn-warning.btn-sm(
+      ng-click="A.addCardCustom()"
+    )
+      span.glyphicon.glyphicon-plus
+      span &#32;Add Card (Custom)
 
 
   h3 Linked Accounts

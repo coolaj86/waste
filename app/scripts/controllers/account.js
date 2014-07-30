@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('AccountCtrl', function ($scope, $state, $http, StLogin, StAccount, StSession, mySession, StApi) {
+  .controller('AccountCtrl', function ($scope, $state, $http, StLogin, StAccount, StSession, mySession, StApi, $modal) {
     var A = this
       , stripeKey = 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
       ;
@@ -50,7 +50,7 @@ angular.module('yololiumApp')
     // test credit card numbers: 
     //   http://www.paypalobjects.com/en_US/vhelp/paypalmanager_help/credit_card_numbers.htm
     // ^ks
-    A.addCard = function () {
+    A.addCardStripe = function () {
       var addCardHandler
         ;
         
@@ -79,6 +79,20 @@ angular.module('yololiumApp')
       , zipCode: true
       , panelLabel: 'Add Card' // Normally "Pay {{amount}}}"
       , allowRememberMe: true
+      });
+    };
+
+    A.addCardCustom = function () {
+      console.log('addCardCustom');
+      var modal = $modal.open({
+        templateUrl: "/views/cc-entry.html"
+      });
+      modal.opened.then(function() {
+        setTimeout(function() {
+          $('form.cc-entry-form').card({
+            container: '.cc-entry-card'
+          });          
+        }, 10);
       });
     };
 

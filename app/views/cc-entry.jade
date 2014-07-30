@@ -1,0 +1,20 @@
+.auth-modal
+  .modal-header
+    h4.modal-title Add Credit Card
+
+  .modal-body
+    form.cc-entry-form
+      .cc-entry-card
+      .cc-entry-fields
+        .row
+          .col-xs-6
+            input.cc-entry-input.col-xs-6(type="text", name="number", placeholder="Card number")
+          .col-xs-6
+            input.cc-entry-input.col-xs-6(type="text", name="name", placeholder="Name on card")
+        .row
+          .col-xs-3
+            input.cc-entry-input.col-xs-3(type="text", name="expiry", placeholder="MM/YY")
+          .col-xs-3
+            input.cc-entry-input.col-xs-3(type="text", name="cvc", placeholder="CVC")
+          .col-xs-6
+            input.btn.col-xs-6(type="submit", value="Submit")
