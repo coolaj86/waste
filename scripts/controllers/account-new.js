@@ -30,7 +30,8 @@ angular.module('yololiumApp')
       scope.accountAction = scope.accountAction || defaultAction;
 
       scope.account = scope.account || {};
-      scope.delta = scope.delta || { localLogin: {} };
+      scope.delta = scope.delta || {};
+      scope.delta.localLogin = scope.delta.localLogin || {};
       scope.logins = session.logins.map(function (login) {
         return {
           comment: 'local' === login.provider ? (login.uid || 'username') : login.provider
