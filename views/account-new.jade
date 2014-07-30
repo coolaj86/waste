@@ -28,15 +28,15 @@
           p(ng-if="'update' == A.accountAction")
             span We're missing a few pieces of information necessary to continue using your account.
 
-          .form-group(ng-if="!A.account.authId")
+          .form-group(ng-if="!A.account.localLoginId")
             label(for="username") Username
-            input.form-control(ng-model="A.delta.authId", type='text', placeholder="ex: johndoe")
+            input.form-control(ng-model="A.delta.localLogin.uid", type='text', placeholder="ex: johndoe")
 
           .form-group(ng-if="!A.account.email")
             label(for="email") Email
             input.form-control(type="email", placeholder="ex: john.doe@gmail.com", ng-model="A.delta.email")
 
-          .form-group(ng-if="!A.account.authId")
+          .form-group(ng-if="!A.account.localLoginId")
             label(for="password") Passphrase
             span &nbsp;&nbsp;&nbsp;
             label.checkbox-inline
@@ -44,16 +44,32 @@
               span Show
             input.form-control(
               ng-if="!A.showSecret"
-              ng-model="A.delta.authSecret"
+              ng-model="A.delta.localLogin.secret"
               type='password'
               placeholder="ex: ************"
             )
             input.form-control(
               ng-if="A.showSecret"
-              ng-model="A.delta.authSecret"
+              ng-model="A.delta.localLogin.secret"
               type='text'
               placeholder="ex: my secret phrase"
             )
+      .row
+        .col-xs-12
+          label This account will be accessible via
+          ul
+            li(ng-repeat="login in A.logins", ng-if="login.link")
+              span {{ login.comment || (login | json) }}
+
+          //-div(ng-repeat="login in A.logins")
+            label.checkbox-inline
+              input.checkbox(
+                type="checkbox"
+                ng-model="login.link"
+                ng-click="login.link = !login.link"
+              )
+              span {{ login.comment || (login | json) }}
+
 
       .modal-footer
         .row
@@ -68,12 +84,12 @@
         .col-xs-12
           p Link your Existing Account
 
-          .form-group(ng-if="!A.account.authId")
+          .form-group(ng-if="!A.account.localLoginId")
             label(for="username") Username
             //- | Email | Phone
-            input.form-control(ng-model="A.delta.authId", type='text', placeholder="ex: john.doe@gmail.com")
+            input.form-control(ng-model="A.delta.localLogin.uid", type='text', placeholder="ex: john.doe@gmail.com")
 
-          .form-group(ng-if="!A.account.authId")
+          .form-group(ng-if="!A.account.localLoginId")
             label(for="password") Passphrase
             span &nbsp;&nbsp;&nbsp;
             label.checkbox-inline
@@ -85,13 +101,13 @@
               span Show
             input.form-control(
               ng-if="!A.showSecret"
-              ng-model="A.delta.authSecret"
+              ng-model="A.delta.localLogin.secret"
               type="password"
               placeholder="ex: ************"
             )
             input.form-control(
               ng-if="A.showSecret"
-              ng-model="A.delta.authSecret"
+              ng-model="A.delta.localLogin.secret"
               type="text"
               placeholder="ex: my secret phrase"
             )
