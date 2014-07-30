@@ -44,6 +44,8 @@ angular.module('yololiumApp')
       ];
 
       if (!session || !session.account || session.guest || 'guest' === session.account.role) {
+        console.log('nav session');
+        console.log(session);
         session = null;
       }
 
@@ -53,9 +55,9 @@ angular.module('yololiumApp')
       if ('root' === role) {
         role = 'admin';
       }
-      console.log('ROLE', role);
 
       scope.session = session;
+      console.log('ROLE', role, scope.session);
       scope.account = session && session.account;
       scope.tabs = allTabs.filter(function (tab) {
         if (!tab.roles || !tab.roles.length) { return true; }
