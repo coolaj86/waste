@@ -4,6 +4,7 @@ var connect = require('connect')
   , path = require('path')
   , app = connect()
   , config = require('./config')
+  , escapeRegexp = require('escape-string-regexp')
   ;
 
 function init(Db) {
@@ -12,6 +13,7 @@ function init(Db) {
   var session = require('./lib/sessionlogic')
     , serveStatic = require('serve-static')
     , urlrouter = require('connect_router')
+    , recase = require('recase').Recase.create({ exceptions: {} })
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
     , sessionLogic
@@ -55,6 +57,34 @@ function init(Db) {
     .use(require('compression')())
     .use(require('./lib/connect-shims/redirect'))
     .use(require('connect-send-json').json())
+    .use(function (req, res, next) {
+      // The webhooks, oauth and such should remain untouched
+      // as to be handled by the appropriate middlewares,
+      // but our own api should be transformed
+      // + '$' /\/api(\/|$)/
+      if (!(new RegExp('^' + escapeRegexp(config.apiPrefix) + '(\\/|$)').test(req.url))) {
+        console.log('[skip] not an api call');
+        next();
+        return;
+      }
+
+      if ('object' === typeof req.body && !(req.body instanceof Buffer)) {
+        console.log('[camel] has incoming body');
+        req.body = recase.camelCopy(req.body);
+      }
+
+      res._oldJson = res.json;
+      res.json = function (data, opts) {
+        if ('object' === typeof data && !(data instanceof Buffer)) {
+          res._oldJson(recase.snakeCopy(data), opts);
+        } else {
+          res._oldJson(data, opts);
+        }
+      };
+      res.send = res.json;
+      next();
+      return;
+    })
     .use(require('./lib/connect-shims/xend'))
     .use(urlrouter(require('./lib/vidurls').route))
     .use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
