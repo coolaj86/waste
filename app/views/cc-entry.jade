@@ -6,15 +6,13 @@
     form.cc-entry-form
       .cc-entry-card
       .cc-entry-fields
-        .row
-          .col-xs-6
-            input.cc-entry-input.col-xs-6(type="text", name="number", placeholder="Card number")
-          .col-xs-6
-            input.cc-entry-input.col-xs-6(type="text", name="name", placeholder="Name on card")
-        .row
-          .col-xs-3
-            input.cc-entry-input.col-xs-3(type="text", name="expiry", placeholder="MM/YY")
-          .col-xs-3
-            input.cc-entry-input.col-xs-3(type="text", name="cvc", placeholder="CVC")
-          .col-xs-6
-            input.btn.col-xs-6(type="submit", value="Submit")
+        .cc-entry-row
+          input.cc-entry-input(type="text", name="number", placeholder="Card number")
+          input.cc-entry-input(type="text", name="name", placeholder="Name on card")
+        .cc-entry-row
+          input.cc-entry-input(type="text", name="expiry", placeholder="MM/YY")
+          input.cc-entry-input(type="text", name="cvc", placeholder="CVC")
+          button.cc-entry-input.btn.btn-primary(type="submit", name="submit") Submit
+  .row
+    .col-xs-12
+      button.btn.btn-default(id="AddCardCancel") Cancel
