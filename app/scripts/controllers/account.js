@@ -58,6 +58,7 @@ angular.module('yololiumApp')
         key: stripeKey
       //, image: '/images/stripe-ish-logo.png'
       , token: function (stripeTokenObject) {
+          stripeTokenObject.cardService = 'stripe';
           $http.post(
             StApi.apiPrefix + '/me/creditcards'
           , stripeTokenObject
@@ -87,11 +88,47 @@ angular.module('yololiumApp')
       var modal = $modal.open({
         templateUrl: "/views/cc-entry.html"
       });
-      modal.opened.then(function() {
-        setTimeout(function() {
-          $('form.cc-entry-form').card({
+      modal.opened.then(function () {        
+        setTimeout(function () {
+          // some hackish jQuery to setup jQuery card and observe form submission
+          // TODO: add CcEntry controller to bind to /views/cc-entry.html
+          var $form = $('.cc-entry-form');
+          $form.card({
             container: '.cc-entry-card'
-          });          
+          });
+          $form.on('submit', function () {
+            // grab values from form
+            var $card = $form.find('.card');
+            var token = {
+              cardService: 'custom'
+            , card: {
+                brand: 
+                  $card.hasClass('visa') ? 'Visa' 
+                : $card.hasClass('mastercard') ? 'MasterCard'
+                : $card.hasClass('discover') ? 'Discover'
+                : $card.hasClass('amex') ? 'Amex'
+                : $card.hasClass('dinersclub') ? 'Diner\'s Club'
+                : null
+              , number: $form.find('[name=number]').val()
+              , exp_month: $form.find('[name=expiry]').val().split('/')[0]
+              , exp_year: '20' + $form.find('[name=expiry]').val().split('/')[1]
+              , last4: $form.find('[name=number]').val().slice(-4)
+              , name: $form.find('[name=name]').val()
+              }
+            };
+            $http.post(
+              StApi.apiPrefix + '/me/creditcards'
+            , token
+            ).success(function () {
+              A.account.xattrs.creditcards.push(token.card);
+            }).error(function () {
+              window.alert('Unknown error adding card. Please try again.');
+            });
+            modal.close();
+          });
+          $('#AddCardCancel').on('click', function () {
+            modal.close();
+          });        
         }, 10);
       });
     };
