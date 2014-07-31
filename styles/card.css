@@ -1,0 +1,25 @@
+.cc-entry-field {
+	font: normal 14px/17px Arial;
+	padding: 8px;
+}
+.cc-entry-field[name=number],
+.cc-entry-field[name=name] {
+	width: 158px;
+	border: 1px solid #ccc;
+}
+.cc-entry-field[name=name] {
+	width: 157px;
+	border-left: none;
+}
+.cc-entry-field[name=expiry],
+.cc-entry-field[name=cvc] {
+	width: 70px;
+	border: 1px solid #ccc;	
+}
+.cc-entry-field[name=cvc] {
+	border-left: none;
+}
+.cc-entry-field[name=submit] {
+	width: 157px;
+	background-color: #008cba;
+}
