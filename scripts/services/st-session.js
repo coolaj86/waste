@@ -39,7 +39,7 @@ angular.module('yololiumApp')
       data.account = data.accountsMap[data.selectedAccountId] || data.accounts[0];
       if (!data.account) {
         data.logins.forEach(function (login) {
-          login.accounts.some(function (account) {
+          data.accounts.some(function (account) {
             if (account.id === login.primaryAccountId) {
               data.account = account;
               return true;
