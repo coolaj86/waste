@@ -260,10 +260,18 @@ angular.module('yololiumApp', [
 
       return {
         'request': function (config) {
+          /*
           if (!/.html/.test(config.url)) {
-            //console.log('[$http] request');
-            //console.log(config);
+            console.log('[$http] request');
+            console.log(config);
             //console.log(config.method, config.url);
+          }
+          */
+          if (config.data
+              && !/^https?:\/\//.test(config.url)
+              && /json/.test(config.headers['Content-Type'])
+          ) {
+            config.data = recase.snakeCopy(config.data);
           }
           return config;
         }
