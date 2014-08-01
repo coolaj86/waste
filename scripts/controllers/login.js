@@ -38,10 +38,9 @@ angular.module('yololiumApp')
     //
     // ID & Secret (User & Pass)
     //
-    scope.authId = "";
-    scope.authSecret = "";
+    scope.auth = {};
     scope.loginWithBasicAuth = function () {
-      var auth = { 'Authorization': 'Basic ' + btoa(scope.authId + ':' + scope.authSecret) }
+      var auth = { 'Authorization': 'Basic ' + btoa(scope.auth.uid + ':' + scope.auth.secret) }
         , form = null
         ;
 
