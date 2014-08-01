@@ -5,14 +5,15 @@
   .modal-body
     form.cc-entry-form
       .cc-entry-card
-      .cc-entry-fields
+      .cc-entry-fields.clearfix
         .cc-entry-row
-          input.cc-entry-input(type="text", name="number", placeholder="Card number")
-          input.cc-entry-input(type="text", name="name", placeholder="Name on card")
+          input.cc-entry-field(type="text", name="number", placeholder="Card number")
+          input.cc-entry-field(type="text", name="name", placeholder="Name on card")
         .cc-entry-row
-          input.cc-entry-input(type="text", name="expiry", placeholder="MM/YY")
-          input.cc-entry-input(type="text", name="cvc", placeholder="CVC")
-          button.cc-entry-input.btn.btn-primary(type="submit", name="submit") Submit
-  .row
-    .col-xs-12
-      button.btn.btn-default(id="AddCardCancel") Cancel
+          input.cc-entry-field(type="text", name="expiry", placeholder="MM/YY")
+          input.cc-entry-field(type="text", name="cvc", placeholder="CVC")
+          button.cc-entry-field(type="submit", name="submit") Submit
+  .modal-footer
+    .row
+      .col-xs-12
+        button.btn.btn-default(id="AddCardCancel") Cancel

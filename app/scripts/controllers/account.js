@@ -110,8 +110,8 @@ angular.module('yololiumApp')
                 : $card.hasClass('dinersclub') ? 'Diner\'s Club'
                 : null
               , number: $form.find('[name=number]').val()
-              , exp_month: $form.find('[name=expiry]').val().split('/')[0]
-              , exp_year: '20' + $form.find('[name=expiry]').val().split('/')[1]
+              , exp_month: $.trim($form.find('[name=expiry]').val().split('/')[0])
+              , exp_year: '20' + $.trim($form.find('[name=expiry]').val().split('/')[1])
               , last4: $form.find('[name=number]').val().slice(-4)
               , name: $form.find('[name=name]').val()
               }
