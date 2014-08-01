@@ -35,7 +35,23 @@ angular.module('yololiumApp')
       data.accounts.forEach(function (a) {
         data.accountsMap[a.id] = a;
       });
-      data.account = data.accountsMap[data.selectedAccountId];
+
+      data.account = data.accountsMap[data.selectedAccountId] || data.accounts[0];
+      if (!data.account) {
+        data.logins.forEach(function (login) {
+          data.accounts.some(function (account) {
+            if (account.id === login.primaryAccountId) {
+              data.account = account;
+              return true;
+            }
+          });
+        });
+      }
+
+      // TODO show a UI to choose an account
+      if (!data.account) {
+        data.account = data.accounts[0];
+      }
       /*
       data.accounts.some(function (a) {
         if (a.id === data.selectedAccountId) {
@@ -46,7 +62,7 @@ angular.module('yololiumApp')
       */
 
       data.account = data.account || {};
-      data.account.role = data.account.role || 'guest';
+      data.account.role = data.account.role || (data.account.id && 'user') || 'guest';
       data.connected = {};
       data.account.loginIds = data.account.loginIds || [];
       data.account.loginIds.forEach(function (typedUid) {
@@ -65,7 +81,7 @@ angular.module('yololiumApp')
         };
       });
 
-      if (data.selectedAccountId && 'guest' === data.account.role) {
+      if (data.account.id && 'guest' === data.account.role) {
         data.account.role = 'user';
       }
 
@@ -128,12 +144,35 @@ angular.module('yololiumApp')
     // external auth (i.e. facebook, twitter)
     function update(session) {
       gettingSession = null;
-      shared.touchedAt = Date.now();
+
       shared.session = mangle(session);
+      shared.touchedAt = Date.now();
       // TODO Object.freeze (Mozilla's deepFreeze example)
       notifier.notify(shared.session);
       return shared.session;
     }
+
+    /*
+    function addAccount() {
+      var account = session && session.account
+        ;
+
+      if (!account || !account.id || account.error) {
+        console.error('ERROR updating account');
+        console.error(account);
+        return;
+      }
+
+      // TODO do these account adjustments in StSession
+      if (!mySession.accounts.some(function (a) {
+        return a.id === account.id;
+      })) {
+        mySession.accounts.push(account);
+      }
+
+      mySession.selectedAccountId = account.id;
+    }
+    */
 
     function subscribe(fn, scope) {
       if (!scope) {
