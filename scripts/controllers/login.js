@@ -38,8 +38,27 @@ angular.module('yololiumApp')
     //
     // ID & Secret (User & Pass)
     //
+    function createSession(resp) {
+      console.log('[Basic Auth] resp.data');
+      console.log(resp.data);
+
+      if (resp.data && resp.data.mostRecentLoginId) {
+        scope.alertType = "";
+        scope.alertMessage = "";
+        scope.authToken = "";
+        $modalInstance.close(resp.data);
+      } else {
+        scope.alertMessage = "Invalid Username & Passphrase";
+        scope.alertType = 'alert-danger';
+      }
+    }
     scope.auth = {};
+    scope.createWithUidSecret = function () {
+      console.log('[login] create uid secret');
+      $http.post(apiPrefix + '/logins', { uid: scope.auth.uid, secret: scope.auth.secret }).then(createSession);
+    };
     scope.loginWithBasicAuth = function () {
+      console.log('[login] login basic');
       var auth = { 'Authorization': 'Basic ' + btoa(scope.auth.uid + ':' + scope.auth.secret) }
         , form = null
         ;
@@ -50,20 +69,7 @@ angular.module('yololiumApp')
       }
 
       // TODO UI needs spinner
-      $http.post(apiPrefix + '/session/basic', form, { headers: auth }).then(function (resp) {
-        console.log('[Basic Auth] resp.data');
-        console.log(resp.data);
-
-        if (resp.data && resp.data.mostRecentLoginId) {
-          scope.alertType = "";
-          scope.alertMessage = "";
-          scope.authToken = "";
-          $modalInstance.close(resp.data);
-        } else {
-          scope.alertMessage = "Invalid Username & Passphrase";
-          scope.alertType = 'alert-danger';
-        }
-      });
+      $http.post(apiPrefix + '/session/basic', form, { headers: auth }).then(createSession);
     };
 
     //
