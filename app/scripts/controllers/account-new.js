@@ -59,7 +59,7 @@ angular.module('yololiumApp')
       }
       if (!scope.delta.email) {
         session.logins.some(function (login) {
-          scope.delta.email = (login.emails[0] || {}).value;
+          scope.delta.email = (login.emails && login.emails[0] || {}).value;
           return scope.delta.email;
         });
       }
