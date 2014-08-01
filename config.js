@@ -39,7 +39,7 @@ var CONFIG = {
     // essential attributes for local account
     uid: 'root'
   , salt: "UdVsog0lLYCV1x2mMAGZa6x+7W41xqtTyR4PLZpE8Pc="
-  , secret: "7e0e7d6fbb948279f204a8a85f1bee10"
+  , shadow: "7e0e7d6fbb948279f204a8a85f1bee10"
   , hashtype: "md5"
     // extra attributes for login
   , login: { public: {} }
