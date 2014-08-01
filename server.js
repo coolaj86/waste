@@ -4,28 +4,26 @@ var connect = require('connect')
   , path = require('path')
   , app = connect()
   , config = require('./config')
+  , escapeRegexp = require('escape-string-regexp')
   ;
 
 function init(Db) {
   // TODO maybe a main DB for core (Accounts) and separate DBs for the modules?
 
-  var auth = require('./lib/sessionlogic')
+  var session = require('./lib/sessionlogic')
     , serveStatic = require('serve-static')
     , urlrouter = require('connect_router')
+    , recase = require('recase').Recase.create({ exceptions: {} })
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
-    , authstuff
+    , sessionLogic
     , ru = config.rootUser
-      // Authn
-    , Users = require('./lib/loginlogic/users').create({ dbfile: path.join(__dirname, 'priv', 'users.priv.json') })
-      // Authz
-    , Accounts = require('./lib/loginlogic/accounts').create({ dbfile: path.join(__dirname, 'priv', 'accounts.priv.json')})
-    , Auth = require('./lib/loginlogic').create(config, Users, Accounts)
+    , Auth = require('./lib/auth-logic').create(Db, config)
     ;
 
   config.apiPrefix = config.apiPrefix || '/api';
 
-  require('./lib/sessionlogic/root-user').init(ru, Auth);
+  require('./lib/fixtures/root-user').create(ru, Auth);
 
   app.api = function (path, fn) {
     if (!fn) {
@@ -59,6 +57,34 @@ function init(Db) {
     .use(require('compression')())
     .use(require('./lib/connect-shims/redirect'))
     .use(require('connect-send-json').json())
+    .use(function (req, res, next) {
+      // The webhooks, oauth and such should remain untouched
+      // as to be handled by the appropriate middlewares,
+      // but our own api should be transformed
+      // + '$' /\/api(\/|$)/
+      if (!(new RegExp('^' + escapeRegexp(config.apiPrefix) + '(\\/|$)').test(req.url))) {
+        console.log('[skip] not an api call');
+        next();
+        return;
+      }
+
+      if ('object' === typeof req.body && !(req.body instanceof Buffer)) {
+        console.log('[camel] has incoming body');
+        req.body = recase.camelCopy(req.body);
+      }
+
+      res._oldJson = res.json;
+      res.json = function (data, opts) {
+        if ('object' === typeof data && !(data instanceof Buffer)) {
+          res._oldJson(recase.snakeCopy(data), opts);
+        } else {
+          res._oldJson(data, opts);
+        }
+      };
+      res.send = res.json;
+      next();
+      return;
+    })
     .use(require('./lib/connect-shims/xend'))
     .use(urlrouter(require('./lib/vidurls').route))
     .use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
@@ -88,8 +114,8 @@ function init(Db) {
   //
   // Generic Template Auth
   //
-  authstuff = auth.init(app, config, Auth);
-  authstuff.routes.forEach(function (fn) {
+  sessionLogic = session.init(app, config, Auth);
+  sessionLogic.routes.forEach(function (fn) {
     // Since the API prefix is sometimes necessary,
     // it's probably better to always require the
     // auth providers to use it manually
@@ -102,12 +128,12 @@ function init(Db) {
   // TODO a way to specify that a database should be attached to /me
   app
     .api(urlrouter(require('./lib/session').create().route))
-    .api(urlrouter(require('./lib/accounts').create(app, config, Auth, authstuff.manualLogin).route))
+    .api(urlrouter(require('./lib/accounts').create(app, config, Auth, sessionLogic.manualLogin).route))
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))
     .api(urlrouter(require('./lib/account-creditcards')
-      .create(app, config, Auth, authstuff.manualLogin).route
+      .create(app, config, Auth, sessionLogic.manualLogin).route
     ))
     .api(urlrouter(require('./lib/public-contact').create(app, { mailer: config.mailer }).route))
     .api(urlrouter(require('./lib/twilio').create(app, config).route))

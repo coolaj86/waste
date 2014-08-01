@@ -37,6 +37,7 @@
       ul.nav.navbar-nav.navbar-right(style="padding-top: 9px;")
         li(ng-show="!N.session")
           a(href="", ng-click="N.showLoginModal()") Login
+          span {{ N.session }}
         li.dropdown(ng-show="N.session")
           a#account.dropdown-toggle(data-toggle='dropdown', href='')
             | Account
