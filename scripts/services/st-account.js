@@ -29,6 +29,9 @@ angular.module('yololiumApp')
         , stAccountOptions: function () {
             return opts;
           }
+        , stAccountRequired: function () {
+            return required;
+          }
         }
       }).result;
     };
@@ -40,12 +43,19 @@ angular.module('yololiumApp')
         return !!session.account[field];
       }
 
+      // TODO remap accounts and logins to eachother on session update
+
       session.account.loginIds.some(function (loginId) {
-        // TODO send more detailed info about logins with each account
-        if (/^local:/.test(loginId)) {
-          session.account.localLoginId = loginId;
-          return true;
-        }
+        return session.logins.some(function (login) {
+          if (loginId !== login.id) {
+            return;
+          }
+
+          if ('local' === (login.type || login.provider)) {
+            session.account.localLoginId = loginId;
+            return true;
+          }
+        });
       });
 
       if (session.account && required.every(hasField)) {
@@ -64,7 +74,7 @@ angular.module('yololiumApp')
         return create(updates);
       }
 
-      return $http.post(StApi.apiPrefix + '/accounts' + id, updates).then(function (resp) {
+      return $http.post(StApi.apiPrefix + '/accounts' + id, { accounts: [updates] }).then(function (resp) {
         console.log('UPDATE account');
         console.log(resp);
         return resp.data;
@@ -72,15 +82,28 @@ angular.module('yololiumApp')
     }
 
     function create(updates) {
+      var logins = updates.logins || []
+        , accounts = []
+        ;
+
       if (updates.id) {
         return update(updates.id, updates);
       }
 
-      return $http.post(StApi.apiPrefix + '/accounts', updates).then(function (resp) {
-        console.log('CREATE account');
-        console.log(resp);
-        return resp.data;
-      });
+      if (updates.localLogin) {
+        logins.push(updates.localLogin);
+        delete updates.localLogin;
+      }
+      delete updates.logins;
+
+      accounts.push(updates);
+
+      return $http.post(StApi.apiPrefix + '/accounts', { logins: logins, accounts: accounts })
+        .then(function (resp) {
+          console.log('CREATE account');
+          console.log(resp);
+          return resp.data;
+        });
     }
 
     me.update = update;
