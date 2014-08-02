@@ -86,6 +86,65 @@ How to do:
 APIs you get for free
 ===
 
+The external API is configurable to output and accept JSON in either `snake_case` or `camelCase`
+with `recase` through middleware in `connect` and `angular`.
+
+The default is to use `snake_case` (ruby style) for JSON.
+
+TODO put option in `./config.js` and `./app/scripts/services/st-api.js`, including exceptions file.
+
+Regardless of how it goes over the wire, both the server-side and browser-side JavaScript
+must be written in `camelCase` and will be stored to the database in `snake_case`.
+
+Payments & Credit Cards
+------
+
+### GET /api/me/creditcards
+
+response
+
+```
+{
+}
+```
+
+### POST /api/me/creditcards
+
+request
+
+```
+{
+}
+```
+
+response
+
+### POST /api/me/creditcards/:cardid
+
+request
+
+```
+{
+}
+```
+
+response
+
+### DELETE /api/me/creditcards/:cardid
+
+response
+
+```
+{
+}
+```
+
+### Errors
+
+  * "Invalid Card Number"
+  * "Card Expired"
+
+
 Logins and Accounts
 ---
 
