@@ -63,7 +63,6 @@ function init(Db) {
       // but our own api should be transformed
       // + '$' /\/api(\/|$)/
       if (!(new RegExp('^' + escapeRegexp(config.apiPrefix) + '(\\/|$)').test(req.url))) {
-//        console.log('[skip] not an api call');
         next();
         return;
       }
