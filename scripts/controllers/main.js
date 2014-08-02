@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('MainCtrl', function ($scope, $state, $stateParams, $timeout, $http, $sce, mySession, StApi, stConfig) {
+  .controller('MainCtrl', ['$scope', '$state', '$stateParams', '$http', '$sce', 'mySession', 'StApi', 'stConfig', function ($scope, $state, $stateParams, $http, $sce, mySession, StApi, stConfig) {
     if ($stateParams.next) {
       $state.go($stateParams.next, $stateParams.nextParams);
     }
@@ -52,4 +52,4 @@ angular.module('yololiumApp')
     StApi.business.slides.forEach(function (img) {
       $scope.addSlide(img);
     });
-  });
+  }]);
