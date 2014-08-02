@@ -10,25 +10,25 @@
       .panel-heading 
         span Your Credit Cards
       table.table
-        tr(ng-show="0 === A.account.xattrs.creditcards.length")
+        tr(ng-show="0 === A.account.creditcards.length")
           th There are no cards on file yet.
-        tr(ng-hide="0 === A.account.xattrs.creditcards.length")
+        tr(ng-hide="0 === A.account.creditcards.length")
           th Type
           th Last 4 Digits
           th Expiration
           th Actions
-        tr(ng-repeat="card in A.account.xattrs.creditcards")
+        tr(ng-repeat="token in A.account.creditcards")
           td
-            span(ng-bind="card.brand")
+            span(ng-bind="token.card.brand")
           td
             span *
-            span(ng-bind="card.last4")
+            span(ng-bind="token.card.last4")
           td
-            span(ng-bind="card.exp_month")
+            span(ng-bind="token.card.expMonth")
             span /
-            span(ng-bind="card.exp_year")
+            span(ng-bind="token.card.expYear")
             span.text-danger(
-                ng-show="A.isExpired(card)"
+                ng-show="A.isExpired(token.card)"
                 title="To update an expired card, click Remove then Add Card"
               ) 
               span &#32;&nbsp;&#32;
@@ -37,17 +37,17 @@
           td
             button.btn.btn-danger.btn-xs(
               type="button" 
-              ng-click="A.removeCard(card)"
+              ng-click="A.removeCard(token)"
             )
               span.glyphicon.glyphicon-remove &#32;
               span &#32;Remove
             button.btn.btn-warning.btn-xs(
               type="button" 
-              ng-click="A.setPreferredCard(card)"
-              ng-hide="card.is_preferred"
+              ng-click="A.setPreferredCard(token)"
+              ng-hide="token.isPreferred"
             ) Set as Preferred
             span.btn.btn-default.disabled.btn-xs(
-              ng-show="card.is_preferred && A.account.xattrs.creditcards.length > 1"
+              ng-show="token.isPreferred"
             ) 
               span.glyphicon.glyphicon-ok &#32;
               span &#32;Preferred Card 
