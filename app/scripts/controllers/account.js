@@ -34,14 +34,10 @@ angular.module('yololiumApp')
       A.session = session;
       A.account = session.account;
 
-      // ensure we have xattrs and creditcards
-      if (!A.account.xattrs) {
-        A.account.xattrs = {};
+      // ensure we have array of creditcards
+      if (!A.account.creditcards) {
+        A.account.creditcards = [];
       }
-      if (!A.account.xattrs.creditcards) {
-        A.account.xattrs.creditcards = [];
-      }
-
     }
 
     // pop up Stripe's add-card dialog
@@ -62,8 +58,16 @@ angular.module('yololiumApp')
           $http.post(
             StApi.apiPrefix + '/me/creditcards'
           , stripeTokenObject
-          ).success(function () {
-            A.account.xattrs.creditcards.push(stripeTokenObject.card);
+          ).success(function (resp) {
+            if (resp.error) {
+              console.log(resp.error);
+              window.alert('System error adding card.');
+              return;
+            }
+            if (0 === A.account.creditcards.length) {
+              stripeTokenObject.isPreferred = true;
+            }
+            A.account.creditcards.push(stripeTokenObject);
           }).error(function () {
             window.alert('Unknown error adding card. Please try again.');
           });
@@ -84,7 +88,6 @@ angular.module('yololiumApp')
     };
 
     A.addCardCustom = function () {
-      console.log('addCardCustom');
       var modal = $modal.open({
         templateUrl: "/views/cc-entry.html"
       });
@@ -110,8 +113,8 @@ angular.module('yololiumApp')
                 : $card.hasClass('dinersclub') ? 'Diner\'s Club'
                 : null
               , number: $form.find('[name=number]').val()
-              , exp_month: $.trim($form.find('[name=expiry]').val().split('/')[0])
-              , exp_year: '20' + $.trim($form.find('[name=expiry]').val().split('/')[1])
+              , expMonth: $.trim($form.find('[name=expiry]').val().split('/')[0])
+              , expYear: '20' + $.trim($form.find('[name=expiry]').val().split('/')[1])
               , last4: $form.find('[name=number]').val().slice(-4)
               , name: $form.find('[name=name]').val()
               }
@@ -119,8 +122,16 @@ angular.module('yololiumApp')
             $http.post(
               StApi.apiPrefix + '/me/creditcards'
             , token
-            ).success(function () {
-              A.account.xattrs.creditcards.push(token.card);
+            ).success(function (resp) {
+              if (resp.error) {
+                console.log(resp.error);
+                window.alert('System error adding card.');
+                return;
+              }
+              if (0 === A.account.creditcards.length) {
+                token.isPreferred = true;
+              }              
+              A.account.creditcards.push(token);
             }).error(function () {
               window.alert('Unknown error adding card. Please try again.');
             });
@@ -140,10 +151,10 @@ angular.module('yololiumApp')
         , year = date.getFullYear()
         , month = date.getMonth() + 1
         ;
-        if (card.exp_year > year) {
+        if (card.expYear > year) {
           return;
         }
-        return card.exp_month < month;
+        return card.expMonth < month;
     };
 
     A.showLoginModal = function () {
@@ -179,7 +190,7 @@ angular.module('yololiumApp')
         , stripeTokenObject
         ).success(function (data) {
           A.account.xattrs = A.account.xattrs || { creditcards: [] };
-          A.account.xattrs.creditcards[0] = A.account.xattrs.creditcards[0] || data.response;
+          A.account.creditcards[0] = A.account.creditcards[0] || data.response;
           console.log('Credit Card result', data);
           cb(data);
         });
@@ -208,39 +219,43 @@ angular.module('yololiumApp')
     // hit DELETE endpoint and remove card from scope
     // on error, restore old card list to scope
     // ^ks
-    A.removeCard = function (card) {
+    A.removeCard = function (tokenToDelete) {
       var currentCards
         , newCards
         ;
-      currentCards = A.account.xattrs.creditcards;
-      newCards = currentCards.filter(function (c) {
-        return (c !== card);
+      currentCards = A.account.creditcards;
+      newCards = currentCards.filter(function (token) {
+        return (token !== tokenToDelete);
       });
-      if (newCards.length && card.is_preferred) {
+      if (newCards.length > 0 && tokenToDelete.isPreferred) {
         // the preferred card was deleted so set the first card to preferred
-        newCards[0].is_preferred = true;
+        newCards[0].isPreferred = true;
       }
-      A.account.xattrs.creditcards = newCards;
-      $http.delete(StApi.apiPrefix + '/me/creditcards/' + card.id)
+      A.account.creditcards = newCards;
+      $http.delete(StApi.apiPrefix + '/me/creditcards/' + tokenToDelete.card.id)
         .error(function () {
           window.alert('Unexpected error removing card.');
           // update dom with array of original cards
-          A.account.xattrs.creditcards = currentCards;
+          A.account.creditcards = currentCards;
         })
       ;
     };
 
     // change preferred status of cards and hit PATCH endpoint
     // ^ks
-    A.setPreferredCard = function (card) {
-      A.account.xattrs.creditcards.forEach(function (c) {
-        c.is_preferred = false;
-      });
-      card.is_preferred = true;
-      $http({
-          method: 'PATCH'
-        , url: StApi.apiPrefix + '/me/creditcards'
-        , data: {preferredCardId: card.id}
+    A.setPreferredCard = function (tokenToPrefer) {
+      $http.post(
+        StApi.apiPrefix + '/me/creditcards/preferred'
+      , {id: tokenToPrefer.card.id}
+      ).success(function () {
+//console.log('setting preferred: ', tokenToPrefer);        
+        A.account.creditcards.forEach(function (token) {
+          token.isPreferred = false;
+        });
+        tokenToPrefer.isPreferred = true;        
+      }).error(function (resp) {
+        console.log(resp);
+        window.alert('System error marking card as preferred.');
       });
     };
 
