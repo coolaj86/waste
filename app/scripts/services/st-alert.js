@@ -8,7 +8,7 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('StAlert', function StAlert($modal) {
+  .service('StAlert', ['$modal', function StAlert($modal) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     
     this.show = function (opts) {
@@ -49,4 +49,4 @@ angular.module('yololiumApp')
       opts.confirm = true;
       return this.show(opts);
     };
-  });
+  }]);
