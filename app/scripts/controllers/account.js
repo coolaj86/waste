@@ -3,7 +3,8 @@
 angular.module('yololiumApp')
   .controller('AccountCtrl', ['$scope', '$state', '$http', 'StLogin', 'StSession', 'StApi', '$modal', function ($scope, $state, $http, StLogin, StSession, StApi, $modal) {
     var A = this
-      , stripeKey = 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
+//      , stripeKey = 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
+      , stripeKey = 'pk_test_hwX1wzG4OMEv9esujApHjxI7'
       ;
 
     function initReject() {
@@ -67,6 +68,7 @@ angular.module('yololiumApp')
             if (0 === A.account.creditcards.length) {
               stripeTokenObject.isPreferred = true;
             }
+            stripeTokenObject = Recase.create({}).camelCopy(stripeTokenObject);
             A.account.creditcards.push(stripeTokenObject);
           }).error(function () {
             window.alert('Unknown error adding card. Please try again.');
