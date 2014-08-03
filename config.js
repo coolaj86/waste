@@ -46,8 +46,8 @@ var CONFIG = {
     // extra attributes for account
   , account: { role: 'root', email: 'root@local.ldsconnect.org' }
   , deleteTheseLinesAfterConfiguring: (function () {
-      console.warn("You should change your webapp root passphrase.");
-      console.warn("run `./bin/generate-root-secret.js` and paste the results into config.js.rootUser");
+      console.log("You should change your webapp root passphrase.");
+      console.log("run `./bin/generate-root-secret.js` and paste the results into config.js.rootUser");
       return true;
     }())
   }
