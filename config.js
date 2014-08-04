@@ -174,5 +174,12 @@ var CONFIG = {
     consumerKey: 'b0ix4BsnbExgzi8zf0mmowj8k9g36YqwP5uBUOLoyxYoqBTlD8'
   , consumerSecret: 'FhnXG8TPhQ3xl4xTtfDaCsgAOHHsg7QHUQzmqPmeMcrSjS4CQU'
   }
+, loopback: {
+    // this is to test the applications oauth with itself (trixy, eh?)
+    // look in ./fixtures to see the default password and such
+    // TODO set url/port at runtime
+    id: "my-awesome-app"
+  , secret: "an awesome private key"
+  }
 };
 module.exports = CONFIG;
