@@ -226,21 +226,17 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
-      .state('lds', {
-        parent: 'main'
-      })
-      .state('weddings', {
-        parent: 'main'
-      , url: 'weddings/'
-      })
+
+      // states that don't change the url
+      /*
       .state('about', {
         parent: 'main'
       })
       .state('privacy', {
         parent: 'main'
       })
-      /*
-      , {
+      */
+      .state('about', {
         url: '/about/'
       , views: {
           nav: nav
@@ -250,7 +246,6 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
-      */
       ;
 
     // alternatively, register the interceptor via an anonymous factory
