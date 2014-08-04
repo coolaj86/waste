@@ -5,6 +5,7 @@ var connect = require('connect')
   , app = connect()
   , config = require('./config')
   , escapeRegexp = require('escape-string-regexp')
+  , Passport = require('passport').Passport
   ;
 
 function init(Db) {
@@ -17,8 +18,10 @@ function init(Db) {
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
     , sessionLogic
+    , oauth2Logic
     , ru = config.rootUser
     , Auth = require('./lib/auth-logic').create(Db, config)
+    , passport
     ;
 
   config.apiPrefix = config.apiPrefix || '/api';
@@ -113,13 +116,21 @@ function init(Db) {
   //
   // Generic Template Auth
   //
-  sessionLogic = session.init(app, config, Auth);
+  passport = new Passport();
+  app
+    .use(passport.initialize())
+    .use(passport.session())
+    ;
+  sessionLogic = session.init(app, passport, config, Auth);
   sessionLogic.routes.forEach(function (fn) {
     // Since the API prefix is sometimes necessary,
     // it's probably better to always require the
     // auth providers to use it manually
     app.use(urlrouter(fn));
   });
+
+  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
+  app.use(urlrouter(oauth2Logic.route));
 
   // 
   // Generic App Routes
