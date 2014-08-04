@@ -24,7 +24,7 @@
   , "timestamps": true
   , "columns": [
       { "primary": true, "name": "login_hashid", "type": "string", "references": ["logins", "hashid"] }
-    , { "primary": true, "name": "account_uuid", "type": "string", "references": ["accounts", "uuid"] }
+    , { "primary": true, "name": "account_uuid", "type": "uuid", "references": ["accounts", "uuid"] }
     ]
   , "xattrs": true
   }
