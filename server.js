@@ -121,13 +121,9 @@ function init(Db) {
     .use(passport.initialize())
     .use(passport.session())
     ;
+
   sessionLogic = session.init(app, passport, config, Auth);
-  sessionLogic.routes.forEach(function (fn) {
-    // Since the API prefix is sometimes necessary,
-    // it's probably better to always require the
-    // auth providers to use it manually
-    app.use(urlrouter(fn));
-  });
+  app.use(urlrouter(sessionLogic.route));
 
   oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
   app.use(urlrouter(oauth2Logic.route));
