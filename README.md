@@ -9,9 +9,8 @@ git clone https://github.com/coolaj86/angular-project-template.git my-project-na
 pushd my-project-name/
 git remote rename origin upstream
 
-npm install -g yo
-npm install -g generator-angular
-npm install -g bower
+npm install -g yo generator-angular bower
+npm install -g jshint jade
 
 npm install
 bower install
