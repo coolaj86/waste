@@ -247,8 +247,7 @@ angular.module('yololiumApp')
     // ^ks
     A.setPreferredCard = function (tokenToPrefer) {
       $http.post(
-        StApi.apiPrefix + '/me/creditcards/preferred'
-      , {id: tokenToPrefer.card.id}
+        StApi.apiPrefix + '/me/creditcards/' + encodeURIComponent(tokenToPrefer.card.id) + '/preferred'
       ).success(function () {
 //console.log('setting preferred: ', tokenToPrefer);        
         A.account.creditcards.forEach(function (token) {
