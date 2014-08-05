@@ -74,7 +74,7 @@ angular.module('yololiumApp')
         return create(updates);
       }
 
-      return $http.post(StApi.apiPrefix + '/accounts' + id, { accounts: [updates] }).then(function (resp) {
+      return $http.post(StApi.apiPrefix + '/accounts/' + id, { accounts: [updates] }).then(function (resp) {
         console.log('UPDATE account');
         console.log(resp);
         return resp.data;
