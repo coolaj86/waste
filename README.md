@@ -9,29 +9,31 @@ git clone https://github.com/coolaj86/angular-project-template.git my-project-na
 pushd my-project-name/
 git remote rename origin upstream
 
-npm install -g yo
-npm install -g generator-angular
-npm install -g bower
+npm install -g yo generator-angular bower
+npm install -g jshint jade
 
 npm install
 bower install
 
-grunt build --force
+# In the world of rainbows and fairies, this would work as is - simple.
+# However, it often requires installing rvm and bundler and modifying environment variables,
+# and the immediately need for FML relief cream applied generously to the affected areas
+# I actually don't even use compass and I'd prefer to use less, but it was in the grunt template
+# and I haven't rooted it out yet, so feel free to pull request.
+sudo gem install compass 
 
-echo '{}' > priv/accounts.priv.json
-echo '{}' > priv/users.priv.json
+grunt build
 ```
 
 Use
 ===
 
 ```bash
-grunt build --force
+grunt build
 grunt serve
 
-# The --force is in case you don't have compass installed
-# If you feel the need for compass, figure out how to install it
-# and immediately apply FML relief cream to the affected areas generously
+# Note that the application source is in ./app
+# but the built version is served from ./dist (and sometimes parts leftover in ./tmp)
 ```
 
 Configure
