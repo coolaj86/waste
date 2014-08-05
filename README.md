@@ -101,41 +101,132 @@ Payments & Credit Cards
 
 ### GET /api/me/creditcards
 
+Get a list of all credit card tokens. The credit cards are attached to the account object
+as creditcards, so this method may not be needed.
+
 response
 
 ```
-{
-}
+[
+  {
+    "cardService": "stripe"
+  , "id": "tok_abc123",
+  , "livemode": false,
+  , "created": 1405813253,
+  , "used": false,
+  , "object": "token",
+  , "type": "card",
+  , "card": 
+    {
+      "id": "card_abc123",
+    , "object": "card",
+    , "last4": "1111",
+    , "brand": "Visa",
+    , "funding": "unknown",
+    , "exp_month": 4,
+    , "exp_year": 2018,
+    , "fingerprint": "abc123",
+    , "country": "US",
+    , "name": "Cardholder Name",
+    , "address_line1": null,
+    , "address_line2": null,
+    , "address_city": null,
+    , "address_state": null,
+    , "address_zip": "12345",
+    , "address_country": null,
+    , "customer": "cus_abc123"
+  }
+  ...
+]
 ```
 
 ### POST /api/me/creditcards
 
-request
-
-```
-{
-}
-```
-
-response
-
-### POST /api/me/creditcards/:cardid
+Add a new credit card
 
 request
 
 ```
+  {
+    "cardService": "stripe"
+  , "card": 
+    {
+      "number": "4111111111111111"
+    , "name": "Cardholder Name"
+    , "exp_month": 4,
+    , "exp_year": 2018,
+    , "cvc": "123",
+    , "address_line1": "123 Anystreet", // optional
+    , "address_line2": "Apt 101", // optional
+    , "address_city": "Anytown", // optional
+    , "address_zip": "12345", // optional
+    , "address_state": "NY", // optional
+    , "address_country": "US", // optional
+  }
+```
+
+response - the card
+
+```javascript
+{ 
+  "id": "card_14NvdC2eZvKYlo2C9zySiKnW"
+, "object": "card"
+, "last4": "4242"
+, "brand": "Visa"
+, "funding": "credit"
+, "exp_month": 5
+, "exp_year": 2017
+, "fingerprint": "Xt5EWLLDS7FJjR1c"
+, "country": "US"
+, "name": null
+, "address_line1": null
+, "address_line2": null
+, "address_city": null
+, "address_state": null
+, "address_zip": null
+, "address_country": null
+, "cvc_check": "pass"
+, "address_line1_check": null
+, "address_zip_check": null
+, "customer": "cus_4WzcnFywIav3jX" 
+}
+// OR
 {
+  error: "Error message here"
 }
 ```
 
+### POST /api/me/creditcards/:cardId/preferred
+
+Set a card as the preferred card given the card id. Note that when you look at an item in the creditcards
+array, it is a token not a card. To access the id, use token.card.id.
+
+request
+
+:cardId - the string id of the card
+
 response
 
-### DELETE /api/me/creditcards/:cardid
-
-response
-
-```
+```javascript
 {
+  "error":"An error message or null"
+}
+```
+
+### DELETE /api/me/creditcards/:cardId
+
+Delete a card token given the card id. Note that when you look at an item in the creditcards
+array, it is a token not a card. To access the id, use token.card.id.
+
+request
+
+:cardId - the string id of the card
+
+response
+
+```javascript
+{
+  "error":"An error message or null"
 }
 ```
 
