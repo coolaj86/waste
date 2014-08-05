@@ -1,0 +1,9 @@
+{ "tablename": "oauth_clients"
+, "columns": {
+    "id": { "type": "string", "nullable": false, "primary": true }
+  , "name": { "type": "string", "nullable": false }
+  }
+, "uuid": true
+, "xattrs": true
+, "timestamps": true
+}
