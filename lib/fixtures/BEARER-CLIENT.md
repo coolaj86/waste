@@ -4,7 +4,7 @@
 
 INSERT INTO logins (hashid, uid, type, xattrs)
   VALUES ('f0bfd96fde1cbabc61694011c58c38c1', 'my-awesome-app', 'app'
-  , '{ "private_key": "an awesome private key" }')
+  , '{ "privateKey": "an awesome private key" }')
   ;
 
 require('./lib/auth-logic/utils-auth.js').md5sum('app-local:my-awesome-app')
