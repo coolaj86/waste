@@ -142,6 +142,20 @@ angular.module('yololiumApp', [
         }
       })
 
+      .state('oauth', {
+        url: '/authorize/:token/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/oauth.html'
+          , controller: 'OauthCtrl as O'
+          , resolve: {
+            }
+          }
+        , footer: footer
+        }
+      })
+
       .state('admin', {
         url: '/admin/'
       , views: {
