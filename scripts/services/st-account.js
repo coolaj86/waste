@@ -8,7 +8,7 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('StAccount', function StAccount($q, $http, $modal, StApi) {
+  .service('StAccount', ['$q', '$http', '$modal', 'StApi', function StAccount($q, $http, $modal, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
 
     var me = this
@@ -117,4 +117,4 @@ angular.module('yololiumApp')
 
     me.update = update;
     me.create = create;
-  });
+  }]);

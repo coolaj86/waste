@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('SplashCtrl', function ($scope, $state, StSession) {
+  .controller('SplashCtrl', ['$scope', '$state', 'StSession', function ($scope, $state, StSession) {
     var firstTime = true;
 
     // We don't want to redirect on page load
@@ -19,4 +19,4 @@ angular.module('yololiumApp')
     }
 
     StSession.subscribe(redirect, $scope);
-  });
+  }]);

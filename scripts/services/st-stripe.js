@@ -13,7 +13,7 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('StStripe', function StStripe($window, $interval, $q, $http, $modal, StSession, StApi, stConfig) {
+  .service('StStripe', ['$window', '$interval', '$q', '$http', '$modal', 'StSession', 'StApi', 'stConfig', function StStripe($window, $interval, $q, $http, $modal, StSession, StApi, stConfig) {
     var S = this
       , intervalToken
       , StripeApi
@@ -303,4 +303,4 @@ angular.module('yololiumApp')
     ];
 
     return S;
-  });
+  }]);
