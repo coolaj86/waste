@@ -3,7 +3,6 @@
 angular.module('yololiumApp')
   .controller('AccountCtrl', ['$scope', '$state', '$http', 'StLogin', 'StSession', 'StApi', '$modal', function ($scope, $state, $http, StLogin, StSession, StApi, $modal) {
     var A = this
-      , stripeKey = 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
       ;
 
     function initReject() {
@@ -51,7 +50,7 @@ angular.module('yololiumApp')
         ;
         
       addCardHandler = window.StripeCheckout.configure({
-        key: stripeKey
+        key: StApi.stripe.publicKey
       //, image: '/images/stripe-ish-logo.png'
       , token: function (stripeTokenObject) {
           stripeTokenObject.cardService = 'stripe';
