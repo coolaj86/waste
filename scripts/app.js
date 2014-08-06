@@ -150,6 +150,13 @@ angular.module('yololiumApp', [
             templateUrl: 'views/oauth.html'
           , controller: 'OauthCtrl as O'
           , resolve: {
+              mySession: ['StSession', function (StSession) {
+                return StSession.get().then(function (session) {
+                  console.log('oauth session');
+                  console.log(session);
+                  return session;
+                });
+              }]
             }
           }
         , footer: footer
