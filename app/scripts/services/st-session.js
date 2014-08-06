@@ -312,7 +312,7 @@ angular.module('yololiumApp')
             d.resolve(session);
           });
         };
-        login.loginWindow = window.open(authUrl);
+        login.loginWindow = login.loginWindow || window.open(authUrl);
         login['poll' + uAbbr + 'Int'] = setInterval(login['poll' + uAbbr + 'Login'], 300);
 
         return d.promise;
