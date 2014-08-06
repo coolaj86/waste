@@ -8,7 +8,7 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('CallCtrl', function ($scope, $http, mySession) {
+  .controller('CallCtrl', ['$http', 'mySession', function ($http, mySession) {
     var scope = this
       ;
 
@@ -39,4 +39,4 @@ angular.module('yololiumApp')
           }
         );
     };
-  });
+  }]);

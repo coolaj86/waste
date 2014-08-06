@@ -104,3 +104,52 @@
     button.btn.btn-tumblr(type="button", ng-click="A.noop()")
       i.fa.fa-tumblr-square
     button.btn.btn-sm.btn-danger(ng-if="A.providers.tumblr", ng-click="A.unlinkLogin(A.providers.tumblr)") &#32;Unlink
+
+
+  h3 Connected Mobile Devices
+
+  .row
+    .panel.panel-info.visible-lg-inline-block
+      .panel-heading 
+        span Authorized Devices
+      table.table
+        tr(ng-show="0 === A.account.devices.length")
+          th There are no devices connected.
+        tr(ng-hide="0 === A.account.devices.length")
+          th Device Token
+          th System
+          th Notifications?
+          th Actions
+        tr(ng-repeat="device in A.account.devices")
+          td
+            span(ng-bind="device.token")
+          td
+            span(ng-bind="device.agent.family")
+            span &#32;
+            span(ng-bind="device.agent.version")        
+            span &#32;on&#32;
+            span(ng-bind="device.agent.os.family")        
+            span &#32;
+            span(ng-bind="device.agent.osversion")        
+          td
+            label
+              input(
+                type="checkbox"
+                ng-model="device.enablePush"
+                ng-change="A.enablePushNotifications(device)"
+              )
+              span &#32; Enable Push Notifications     
+          td
+            button.btn.btn-danger.btn-xs(
+              type="button" 
+              ng-click="A.removeDevice(device)"
+            )
+              span.glyphicon.glyphicon-remove &#32;
+              span &#32;Remove
+
+  .row
+    button.btn.btn-success.btn-sm(
+      ng-click="A.addThisDevice()"
+    )
+      span.glyphicon.glyphicon-plus
+      span &#32;Authorize this device

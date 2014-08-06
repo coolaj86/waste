@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .service('StLogin', function StLogin($timeout, $q, $modal) {
+  .service('StLogin', ['$timeout', '$q', '$modal', function StLogin($timeout, $q, $modal) {
     var me = this
       ;
 
@@ -13,9 +13,9 @@ angular.module('yololiumApp')
       , keyboard: true
       , resolve: {
           // so that we could add an explanation or something
-          stLoginOptions: function () {
+          stLoginOptions: [function () {
             return opts;
-          }
+          }]
         }
       }).result;
     };
@@ -55,4 +55,4 @@ angular.module('yololiumApp')
     };
 
     return me;
-  });
+  }]);
