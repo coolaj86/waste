@@ -11,23 +11,11 @@ angular.module('yololiumApp')
   .controller('OauthClientsCtrl', function (StApi, $http) {
 
     var OA = this
-      , sampleapps = [
-          {
-            id: 'abcdef123'
-          , name: "farmville"
-          , secret: "abcde-defcde-12234abdc0987-0987-1234"
-          , permissions: []
-          }
-        , {
-            id: '123412341'
-          , name: "instagram"
-          , secret: "abcde-defcde-12234abdc0987-0987-1234"
-          , permissions: []
-          }
-      ]
       ;
 
-    OA.clients = sampleapps;
+    $http.get(StApi.apiPrefix + '/me/clients').then(function (clients) {
+      OA.clients = clients.data.clients;
+    });
 
     OA.addApp = function () {
       var app = { name: OA.appName };
