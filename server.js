@@ -161,9 +161,7 @@ function init(Db) {
   app
     //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
     .use(serveStatic(path.join(__dirname, 'priv', 'public')))
-    //.use(serveStatic(path.join(__dirname, 'dist')))
-    //.use(serveStatic(path.join(__dirname, '.tmp', 'concat')))
-    .use(serveStatic(path.join(__dirname, '.tmp')))
+    .use(serveStatic(path.join(__dirname, 'dist')))
     .use(serveStatic(path.join(__dirname, 'app')))
     ;
 }
