@@ -1,0 +1,34 @@
+.container
+  h3 App Settings
+
+  p: small Possible app settings here
+
+  h3 Your Apps
+
+  .row
+    .panel.panel-info.visible-lg-inline-block
+      table.table
+        tr(ng-show="0 === OA.clients.length")
+          th There are no apps on file yet.
+        tr(ng-hide="0 === OA.clients.length")
+          th Name
+          th ID
+          th Secret
+          th Permissions
+
+        tr(ng-repeat="client in OA.clients")
+          td: span(ng-bind="client.name")
+          td: span(ng-bind="client.id")
+          td: span(ng-bind="client.secret")
+          //- TODO: display the arrays fancily
+          td: span(ng-bind="client.permissions")
+
+  .row
+    h3 Register an App
+
+    form(role="form", ng-submit="OA.addApp()")
+      .form-group
+        input.form-control(type="text", placeholder="Name", ng-model="OA.appName")
+      .form-group
+        input.form-control(type="text", placeholder="Secret (Optional)", ng-model="OA.appSecret")
+      button.btn.btn-default(type="submit") Add
