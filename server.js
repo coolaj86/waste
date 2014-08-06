@@ -4,17 +4,14 @@ var connect = require('connect')
   , path = require('path')
   , app = connect()
   , config = require('./config')
-  , escapeRegexp = require('escape-string-regexp')
   , Passport = require('passport').Passport
   ;
 
 function init(Db) {
   // TODO maybe a main DB for core (Accounts) and separate DBs for the modules?
 
-  var session = require('./lib/sessionlogic')
-    , serveStatic = require('serve-static')
+  var serveStatic = require('serve-static')
     , urlrouter = require('connect_router')
-    , recase = require('recase').Recase.create({ exceptions: {} })
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
     , sessionLogic
@@ -60,33 +57,13 @@ function init(Db) {
     .use(require('compression')())
     .use(require('./lib/connect-shims/redirect'))
     .use(require('connect-send-json').json())
-    .use(function (req, res, next) {
-      // The webhooks, oauth and such should remain untouched
-      // as to be handled by the appropriate middlewares,
-      // but our own api should be transformed
-      // + '$' /\/api(\/|$)/
-      if (!(new RegExp('^' + escapeRegexp(config.apiPrefix) + '(\\/|$)').test(req.url))) {
-        next();
-        return;
-      }
+    ;
 
-      if ('object' === typeof req.body && !(req.body instanceof Buffer)) {
-        console.log('[camel] has incoming body');
-        req.body = recase.camelCopy(req.body);
-      }
+  if (config.snakeApi) {
+    app.use(require('./lib/connect-shims/snake')([config.apiPrefix]));
+  }
 
-      res._oldJson = res.json;
-      res.json = function (data, opts) {
-        if ('object' === typeof data && !(data instanceof Buffer)) {
-          res._oldJson(recase.snakeCopy(data), opts);
-        } else {
-          res._oldJson(data, opts);
-        }
-      };
-      res.send = res.json;
-      next();
-      return;
-    })
+  app
     .use(require('./lib/connect-shims/xend'))
     .use(urlrouter(require('./lib/vidurls').route))
     .use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
@@ -117,16 +94,27 @@ function init(Db) {
   // Generic Template Auth
   //
   passport = new Passport();
+  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
+  sessionLogic = require('./lib/sessionlogic').init(app, passport, config, Auth);
+
+  // initialize after all passport.use, but before any passport.authorize
   app
     .use(passport.initialize())
     .use(passport.session())
     ;
 
-  sessionLogic = session.init(app, passport, config, Auth);
-  app.use(urlrouter(sessionLogic.route));
-
-  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
   app.use(urlrouter(oauth2Logic.route));
+
+  app.use(function (req, res, next) {
+    if (/api/.test(req.url)) {
+      console.log("[server] req.isAuthenticated");
+      console.log(req.isAuthenticated());
+      console.log(!!req.user);
+    }
+    next();
+  });
+
+  app.use(urlrouter(sessionLogic.route));
 
   // 
   // Generic App Routes
