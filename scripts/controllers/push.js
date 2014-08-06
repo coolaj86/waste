@@ -8,7 +8,7 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('PushCtrl', function ($scope, $http) {
+  .controller('PushCtrl', ['$scope', '$http', function ($scope, $http) {
     // TODO use var P = this
     // (didn't do that because I copied much of this code from an example)
     // NOTE: A lot of the init stuff is dead code from the example
@@ -217,4 +217,4 @@ angular.module('yololiumApp')
         // (which is defined in config.js.alarms.url)
       });
     };
-  });
+  }]);

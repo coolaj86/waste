@@ -8,7 +8,7 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('TransactionCtrl', function ($scope, $modalInstance, mySession, transactionData) {
+  .controller('TransactionCtrl', ['$modalInstance', 'mySession', 'transactionData', function ($modalInstance, mySession, transactionData) {
     var T = this
       ;
 
@@ -25,4 +25,4 @@ angular.module('yololiumApp')
     T.cancel = function () {
       $modalInstance.dismiss({ ignore: true });
     };
-  });
+  }]);

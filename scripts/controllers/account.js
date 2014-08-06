@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('AccountCtrl', function ($scope, $state, $http, StLogin, StAccount, StSession, mySession, StApi, $modal) {
+  .controller('AccountCtrl', ['$scope', '$state', '$http', 'StLogin', 'StSession', 'StApi', '$modal', function ($scope, $state, $http, StLogin, StSession, StApi, $modal) {
     var A = this
       , stripeKey = 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
       ;
@@ -289,4 +289,4 @@ angular.module('yololiumApp')
     StSession.promiseLoginsInScope(A, 'loginWith', init, initReject);
     StSession.subscribe(init, $scope);
 
-  });
+  }]);
