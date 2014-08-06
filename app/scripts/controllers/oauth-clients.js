@@ -8,21 +8,19 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('OauthClientsCtrl', function (StApi, $http) {
-
+  .controller('OauthClientsCtrl', function (stOauthClients) {
     var OA = this
       ;
 
-    $http.get(StApi.apiPrefix + '/me/clients').then(function (clients) {
-      OA.clients = clients.data.clients;
+    OA.clients = [];
+
+    stOauthClients.fetch().then(function (clients) {
+      OA.clients = clients;
     });
 
     OA.addApp = function () {
-      var app = { name: OA.appName };
-      if (OA.appSecret) app.secret = OA.appSecret;
-
-      $http.post(StApi.apiPrefix + '/me/clients', app).then(function (data) {
-        OA.clients.push(data.data);
+      stOauthClients.create(OA.appName, OA.appSecret).then(function (client) {
+        OA.clients.push(client);
       });
     };
   });
