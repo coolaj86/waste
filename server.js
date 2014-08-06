@@ -10,8 +10,7 @@ var connect = require('connect')
 function init(Db) {
   // TODO maybe a main DB for core (Accounts) and separate DBs for the modules?
 
-  var session = require('./lib/sessionlogic')
-    , serveStatic = require('serve-static')
+  var serveStatic = require('serve-static')
     , urlrouter = require('connect_router')
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
@@ -38,17 +37,6 @@ function init(Db) {
 
   app
     //.use(require('morgan')())
-    .use(function (req, res, next) {
-      if (req.headers.authorization) {
-        console.log(req.url);
-        console.log(req.headers.authorization);
-      } else if (/\/me/.test(req.url)) {
-        console.log(req.url);
-        console.log(req.headers);
-      }
-
-      next();
-    })
     .use(require('errorhandler')({ dumpExceptions: true, showStack: true }))
     .use(require('./lib/connect-shims/query')())
     .use(require('body-parser').json({
@@ -106,16 +94,27 @@ function init(Db) {
   // Generic Template Auth
   //
   passport = new Passport();
+  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
+  sessionLogic = require('./lib/sessionlogic').init(app, passport, config, Auth);
+
+  // initialize after all passport.use, but before any passport.authorize
   app
     .use(passport.initialize())
     .use(passport.session())
     ;
 
-  sessionLogic = session.init(app, passport, config, Auth);
-  app.use(urlrouter(sessionLogic.route));
-
-  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
   app.use(urlrouter(oauth2Logic.route));
+
+  app.use(function (req, res, next) {
+    if (/api/.test(req.url)) {
+      console.log("[server] req.isAuthenticated");
+      console.log(req.isAuthenticated());
+      console.log(!!req.user);
+    }
+    next();
+  });
+
+  app.use(urlrouter(sessionLogic.route));
 
   // 
   // Generic App Routes
