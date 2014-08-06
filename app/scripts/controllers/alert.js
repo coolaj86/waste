@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('AlertCtrl', function ($scope, $modalInstance, myOptions) {
+  .controller('AlertCtrl', ['$modalInstance', 'myOptions', function ($modalInstance, myOptions) {
     var scope = this
       ;
 
@@ -25,4 +25,4 @@ angular.module('yololiumApp')
       console.log('modalInstance.dismiss');
       $modalInstance.dismiss();
     };
-  });
+  }]);

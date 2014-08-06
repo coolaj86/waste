@@ -8,10 +8,10 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('FooterCtrl', function ($scope, stConfig) {
+  .controller('FooterCtrl', ['stConfig', function (stConfig) {
     var scope = this
       ;
 
     scope.tpl = stConfig.business;
     scope.currentYear = new Date().getFullYear();
-  });
+  }]);
