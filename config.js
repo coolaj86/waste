@@ -71,6 +71,7 @@ var CONFIG = {
 , oauthPrefix: '/oauth'
 , sessionPrefix: '/session'
 , apiPrefix: '/api'
+, snakeApi: true // whether or not to snake_case the api over the wire (ruby style)
 , superUserApi: '/api/superuser'
 , adminApi: '/api/admin'
 , userApi: '/api/user'
