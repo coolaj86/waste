@@ -1,13 +1,9 @@
-[
-  { "tablename": "oauth_clients"
-  , "columns": {
-      "id": { "type": "string", "nullable": false, "primary": true }
-    , "name": { "type": "string", "nullable": false }
-    , "secret": { "type": "string", "nullable": false }
-    , "permissions": "string"
-    }
-  , "uuid": false
-  , "timestamps": true
-  , "xattrs": true
+{ "tablename": "oauth_clients"
+, "columns": {
+    "id": { "type": "string", "nullable": false, "primary": true }
+  , "name": { "type": "string", "nullable": false }
   }
-]
+, "uuid": true
+, "xattrs": true
+, "timestamps": true
+}
