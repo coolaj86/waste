@@ -8,7 +8,7 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('StAccount', function StAccount($q, $http, $modal, StApi) {
+  .service('StAccount', ['$q', '$http', '$modal', 'StApi', function StAccount($q, $http, $modal, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
 
     var me = this
@@ -74,7 +74,7 @@ angular.module('yololiumApp')
         return create(updates);
       }
 
-      return $http.post(StApi.apiPrefix + '/accounts/' + id, { accounts: [updates] }).then(function (resp) {
+      return $http.post(StApi.apiPrefix + '/accounts/' + id, updates).then(function (resp) {
         console.log('UPDATE account');
         console.log(resp);
         return resp.data;
@@ -83,7 +83,7 @@ angular.module('yololiumApp')
 
     function create(updates) {
       var logins = updates.logins || []
-        , accounts = []
+        , loginsMap = {}
         ;
 
       if (updates.id) {
@@ -92,13 +92,22 @@ angular.module('yololiumApp')
 
       if (updates.localLogin) {
         logins.push(updates.localLogin);
+        updates.localLoginId = updates.localLogin.id;
         delete updates.localLogin;
       }
-      delete updates.logins;
 
-      accounts.push(updates);
+      logins.filter(function (login) {
+        if (!login.id) {
+          return true;
+        }
+        if (!loginsMap[login.id]) {
+          loginsMap[login.id] = true;
+          return true;
+        }
+        return false;
+      });
 
-      return $http.post(StApi.apiPrefix + '/accounts', { logins: logins, accounts: accounts })
+      return $http.post(StApi.apiPrefix + '/accounts', updates)
         .then(function (resp) {
           console.log('CREATE account');
           console.log(resp);
@@ -108,4 +117,4 @@ angular.module('yololiumApp')
 
     me.update = update;
     me.create = create;
-  });
+  }]);
