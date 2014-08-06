@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('AccountNewCtrl', function ($scope, $modalInstance, StAccount, StSession, mySession, stAccountOptions, stAccountRequired) {
+  .controller('AccountNewCtrl', ['$scope', '$modalInstance', 'StAccount', 'StSession', 'mySession', 'stAccountRequired', function ($scope, $modalInstance, StAccount, StSession, mySession, stAccountRequired) {
     var scope = this
       ;
 
@@ -90,4 +90,4 @@ angular.module('yololiumApp')
         $modalInstance.close(session);
       });
     };
-  });
+  }]);
