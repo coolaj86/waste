@@ -121,13 +121,14 @@ function init(Db) {
     app.use(urlrouter(fn));
   });
 
-  // 
+  //
   // Generic App Routes
   //
   // TODO a way to specify that a database should be attached to /me
   app
     .api(urlrouter(require('./lib/session').create().route))
     .api(urlrouter(require('./lib/accounts').create(app, config, Auth, sessionLogic.manualLogin).route))
+    .api(urlrouter(require('./lib/oauth-clients').create(app, config, Auth).route))
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))

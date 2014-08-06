@@ -8,7 +8,8 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('OauthClientsCtrl', function () {
+  .controller('OauthClientsCtrl', function (StApi, $http) {
+
     var OA = this
       , sampleapps = [
           {
@@ -28,13 +29,16 @@ angular.module('yololiumApp')
 
     OA.clients = sampleapps;
 
-    OA.addApp = function() {
-      OA.clients.push({
+    OA.addApp = function () {
+      console.log('asdf');
+      $http.post(StApi.apiPrefix + '/me/clients', {
         id: OA.appID
       , name: OA.appName
       , secret: "12345-12345-12345-12345"
       , permissions: []
+      }).then(function (data) {
+        console.log('data stuff');
+        console.log(data.data);
       });
-      console.log(OA.clients);
     };
   });
