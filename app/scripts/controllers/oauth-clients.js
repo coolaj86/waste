@@ -30,15 +30,11 @@ angular.module('yololiumApp')
     OA.clients = sampleapps;
 
     OA.addApp = function () {
-      console.log('asdf');
-      $http.post(StApi.apiPrefix + '/me/clients', {
-        id: OA.appID
-      , name: OA.appName
-      , secret: "12345-12345-12345-12345"
-      , permissions: []
-      }).then(function (data) {
-        console.log('data stuff');
-        console.log(data.data);
+      var app = { name: OA.appName };
+      if (OA.appSecret) app.secret = OA.appSecret;
+
+      $http.post(StApi.apiPrefix + '/me/clients', app).then(function (data) {
+        OA.clients.push(data.data);
       });
     };
   });
