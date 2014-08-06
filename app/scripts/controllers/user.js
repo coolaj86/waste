@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('UserCtrl', function ($scope, mySession) {
+  .controller('UserCtrl', ['mySession', function (mySession) {
     var scope = this
       ;
 
     scope.session = mySession;
-  });
+  }]);
