@@ -8,7 +8,7 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('StPayInvoice', function StPayInvoice($modal) {
+  .service('StPayInvoice', ['$modal', function StPayInvoice($modal) {
     // AngularJS will instantiate a singleton by calling "new" on this function
 
     this.show = function (opts) {
@@ -39,4 +39,4 @@ angular.module('yololiumApp')
         .catch(function () {})
         ;
     };
-  });
+  }]);

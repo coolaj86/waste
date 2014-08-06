@@ -8,7 +8,7 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('PayInvoiceCtrl', function ($scope, $modalInstance, StStripe, StAlert, stConfig) {
+  .controller('PayInvoiceCtrl', ['$modalInstance', 'StStripe', 'StAlert', 'stConfig', function ($modalInstance, StStripe, StAlert, stConfig) {
     console.log('Pay Invoice');
 
     var P = this
@@ -124,4 +124,4 @@ angular.module('yololiumApp')
       $modalInstance.dismiss({ ignore: true });
     };
 
-  });
+  }]);

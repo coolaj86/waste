@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('LoginCtrl', function ($http, $modalInstance, StSession, StApi) {
+  .controller('LoginCtrl', ['$http', '$modalInstance', 'StSession', 'StApi', function ($http, $modalInstance, StSession, StApi) {
     var scope = this
       // TODO this is a code smell $http and apiPrefix should move to a service
       , apiPrefix = StApi.apiPrefix
@@ -102,4 +102,4 @@ angular.module('yololiumApp')
         }
       });
     };
-  });
+  }]);
