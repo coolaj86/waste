@@ -40,6 +40,17 @@ function init(Db) {
 
   app
     //.use(require('morgan')())
+    .use(function (req, res, next) {
+      if (req.headers.authorization) {
+        console.log(req.url);
+        console.log(req.headers.authorization);
+      } else if (/\/me/.test(req.url)) {
+        console.log(req.url);
+        console.log(req.headers);
+      }
+
+      next();
+    })
     .use(require('errorhandler')({ dumpExceptions: true, showStack: true }))
     .use(require('./lib/connect-shims/query')())
     .use(require('body-parser').json({
