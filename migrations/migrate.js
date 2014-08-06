@@ -76,6 +76,9 @@ module.exports.create = function (knex) {
             col.length = col.length || 255;
             cur = t.string(col.name, col.length);
             break;
+          case 'uuid':
+            cur = t.uuid(col.name);
+            break;
         }
 
         cur = cur || t;
