@@ -9,7 +9,7 @@ angular.module('yololiumApp', [
   'ui.bootstrap',
   'steve'
 ])
-  .config(function ($stateProvider, $urlRouterProvider, $httpProvider/*, stConfig*/) {
+  .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $httpProvider/*, stConfig*/) {
     var nav
       , footer
       ;
@@ -68,7 +68,7 @@ angular.module('yololiumApp', [
       , views: {
           body: {
             template: '<div></div>'
-          , controller: function ($state, mySession, stConfig) {
+          , controller: ['$state', 'mySession', 'stConfig', function ($state, mySession, stConfig) {
               if (!stConfig.useSplash) {
                 $state.go('home');
                 return;
@@ -79,7 +79,7 @@ angular.module('yololiumApp', [
               } else {
                 $state.go('home');
               }
-            }
+            }]
           , resolve: {
               mySession: ['StSession', function (StSession) {
                 console.log('hello world');
@@ -315,8 +315,8 @@ angular.module('yololiumApp', [
 
       };
     });
-  })
-  .run(function ($rootScope, $state, StSession) {
+  }])
+  .run(['$rootScope', '$state', 'StSession', function ($rootScope, $state, StSession) {
     var currentSession
       ;
 
@@ -352,5 +352,5 @@ angular.module('yololiumApp', [
       console.error(to);
       // TODO if login is rejected, don't finish the state change
     });
-  })
+  }])
   ;

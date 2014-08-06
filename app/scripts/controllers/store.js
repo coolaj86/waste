@@ -8,7 +8,7 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('StoreCtrl', function ($scope, $http, StStripe, StAlert, StApi) {
+  .controller('StoreCtrl', ['$http', 'StStripe', 'StAlert', 'StApi', function ($http, StStripe, StAlert, StApi) {
     var S = this
       ;
 
@@ -49,4 +49,4 @@ angular.module('yololiumApp')
         }
       );
     };
-  });
+  }]);
