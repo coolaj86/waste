@@ -258,6 +258,33 @@ angular.module('yololiumApp')
         window.alert('System error marking card as preferred.');
       });
     };
+    
+    A.addThisDevice = function () {
+      $http.post(
+        StApi.apiPrefix + '/me/devices'
+      , {token: 'tok_' + (+new Date())}
+      ).success(function (devices) {
+        A.account.devices = devices;
+      });
+    };
+    
+    A.enablePushNotifications = function (device) {
+      device.enableDeviceNotifications = !device.enableDeviceNotifications;
+      $http.post(
+        StApi.apiPrefix + '/me/devices'
+      , device
+      ).success(function (devices) {
+        A.account.devices = devices;
+      });
+    };
+    
+    A.removeDevice = function (device) {
+      $http.delete(
+        StApi.apiPrefix + '/me/devices/' + device.token
+      ).success(function (devices) {
+        A.account.devices = devices;
+      });
+    };
 
     StSession.promiseLoginsInScope(A, 'loginWith', init, initReject);
     StSession.subscribe(init, $scope);
