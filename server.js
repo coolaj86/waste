@@ -134,6 +134,7 @@ function init(Db) {
     .api(urlrouter(require('./lib/account-creditcards')
       .create(app, config, Auth, sessionLogic.manualLogin).route
     ))
+    .api(urlrouter(require('./lib/account-devices').create(app, config).route))
     .api(urlrouter(require('./lib/public-contact').create(app, { mailer: config.mailer }).route))
     .api(urlrouter(require('./lib/twilio').create(app, config).route))
     ;
@@ -160,9 +161,7 @@ function init(Db) {
   app
     //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
     .use(serveStatic(path.join(__dirname, 'priv', 'public')))
-    //.use(serveStatic(path.join(__dirname, 'dist')))
-    //.use(serveStatic(path.join(__dirname, '.tmp', 'concat')))
-    .use(serveStatic(path.join(__dirname, '.tmp')))
+    .use(serveStatic(path.join(__dirname, 'dist')))
     .use(serveStatic(path.join(__dirname, 'app')))
     ;
 }
