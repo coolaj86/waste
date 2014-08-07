@@ -73,7 +73,7 @@ angular.module('yololiumApp', [
                 $state.go('home');
                 return;
               }
-              
+
               if (!mySession || !mySession.account || 'guest' === mySession.account.role) {
                 $state.go('splash');
               } else {
@@ -265,6 +265,28 @@ angular.module('yololiumApp', [
             templateUrl: 'views/about.html'
           }
         , footer: footer
+        }
+      })
+      .state('oauth-clients', {
+        url: '/apps/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/oauth-clients.html'
+          , controller: 'OauthClientsCtrl as OA'
+          }
+        , footer: footer
+        }
+      })
+      .state('contacts', {
+          url: '/contacts/'
+        , views: {
+            nav: nav
+          , body: {
+              templateUrl: 'views/contacts.html'
+            , controller: 'ContactsCtrl as C'
+            }
+          , footer: footer
         }
       })
       ;

@@ -14,7 +14,6 @@ function init(Db) {
     , urlrouter = require('connect_router')
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
-    , sessionLogic
     , oauth2Logic
     , ru = config.rootUser
     , Auth = require('./lib/auth-logic').create(Db, config)
@@ -114,9 +113,7 @@ function init(Db) {
     next();
   });
 
-  app.use(urlrouter(sessionLogic.route));
-
-  // 
+  //
   // Generic App Routes
   //
   // TODO a way to specify that a database should be attached to /me
@@ -125,6 +122,8 @@ function init(Db) {
     .api(urlrouter(require('./lib/accounts').create(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/logins').create(app, config, Db, Auth, sessionLogic.manualLogin).route))
     .api(urlrouter(require('./lib/me').create(app, config, Db, Auth).route))
+    .api(urlrouter(require('./lib/oauth-clients').create(app, config, Db, Auth).route))
+    .api(urlrouter(require('./lib/contacts').create(app, config, Db).route))
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))
