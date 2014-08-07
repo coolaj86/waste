@@ -19,6 +19,10 @@ angular.module('yololiumApp')
         , title: 'Home'
         , href: $state.href('root')
         }
+      , { active: $state.includes('oauth-clients')
+        , title: 'Apps'
+        , href: $state.href('oauth-clients')
+        }
       , { active: $state.includes('store')
         , title: 'Store'
         , href: $state.href('store')
@@ -36,6 +40,10 @@ angular.module('yololiumApp')
         , title: 'User'
         , href: $state.href('user')
         , roles: ['user']
+        }
+      , { active: $state.includes('contacts')
+        , title: 'Contacts'
+        , href: $state.href('contacts')
         }
       , { active: $state.includes('about')
         , title: 'About'
