@@ -15,6 +15,7 @@ function init(Db) {
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
     , oauth2Logic
+    , sessionLogic
     , ru = config.rootUser
     , Auth = require('./lib/auth-logic').create(Db, config)
     , passport
