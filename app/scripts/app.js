@@ -142,6 +142,27 @@ angular.module('yololiumApp', [
         }
       })
 
+      .state('oauth', {
+        url: '/authorize/:token/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/oauth.html'
+          , controller: 'OauthCtrl as O'
+          , resolve: {
+              mySession: ['StSession', function (StSession) {
+                return StSession.get().then(function (session) {
+                  console.log('oauth session');
+                  console.log(session);
+                  return session;
+                });
+              }]
+            }
+          }
+        , footer: footer
+        }
+      })
+
       .state('admin', {
         url: '/admin/'
       , views: {
@@ -255,6 +276,17 @@ angular.module('yololiumApp', [
           , controller: 'OauthClientsCtrl as OA'
           }
         , footer: footer
+        }
+      })
+      .state('contacts', {
+          url: '/contacts/'
+        , views: {
+            nav: nav
+          , body: {
+              templateUrl: 'views/contacts.html'
+            , controller: 'ContactsCtrl as C'
+            }
+          , footer: footer
         }
       })
       ;
