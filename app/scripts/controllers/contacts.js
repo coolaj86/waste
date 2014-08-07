@@ -7,7 +7,7 @@ angular.module('yololiumApp')
 
     C.nodes = [];
 
-    StContacts.fetch(function (nodes) {
+    StContacts.fetch().then(function (nodes) {
       C.nodes = nodes;
     });
 
