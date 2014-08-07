@@ -257,6 +257,17 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
+      .state('contacts', {
+          url: '/contacts/'
+        , views: {
+            nav: nav
+          , body: {
+              templateUrl: 'views/contacts.html'
+            , controller: 'ContactsCtrl as C'
+            }
+          , footer: footer
+        }
+      })
       ;
 
     // alternatively, register the interceptor via an anonymous factory

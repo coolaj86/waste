@@ -41,6 +41,10 @@ angular.module('yololiumApp')
         , href: $state.href('user')
         , roles: ['user']
         }
+      , { active: $state.includes('contacts')
+        , title: 'Contacts'
+        , href: $state.href('contacts')
+        }
       , { active: $state.includes('about')
         , title: 'About'
         , href: $state.href('about')
