@@ -1,0 +1,20 @@
+[
+  { "tablename": "contacts"
+  , "columns": {
+      "name": { "type": "string", "nullable": false }
+    }
+  , "uuid": true
+  , "timestamps": true
+  , "xattrs": true
+  }
+, { "tablename": "contact_nodes"
+  , "columns": {
+      "node": { "type": "string", "nullable": false }
+    , "type": { "type": "string", "nullable": false }
+    , "contact_id": { "type": "uuid", "references": ["contacts", "uuid"] }
+    }
+  , "uuid": true
+  , "timestamps": true
+  , "xattrs": true
+  }
+]
