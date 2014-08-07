@@ -129,6 +129,7 @@ function init(Db) {
     .api(urlrouter(require('./lib/session').create().route))
     .api(urlrouter(require('./lib/accounts').create(app, config, Auth, sessionLogic.manualLogin).route))
     .api(urlrouter(require('./lib/oauth-clients').create(app, config, Db, Auth).route))
+    .api(urlrouter(require('./lib/contacts').create(app, config, Db).route))
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))
