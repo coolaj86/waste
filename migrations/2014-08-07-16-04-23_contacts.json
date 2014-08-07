@@ -12,8 +12,9 @@
       "node": { "type": "string", "nullable": false }
     , "type": { "type": "string", "nullable": false }
     , "contact_id": { "type": "uuid", "references": ["contacts", "uuid"] }
+    }
+  , "uuid": true
+  , "timestamps": true
+  , "xattrs": true
   }
-, "uuid": true
-, "timestamps": true
-, "xattrs": true
 ]
