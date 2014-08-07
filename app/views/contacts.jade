@@ -1,0 +1,31 @@
+.container
+  h3(ng-bind="C.name")
+
+  .row
+    .panel.panel-info.visible-lg-inline-block
+      table.table
+        tr(ng-show="0 === C.nodes.length")
+          th You have no contact information.
+        tr(ng-hide="0 === C.nodes.length")
+          th Type
+          th Value
+          //- Possibly put timestamps here
+
+        tr(ng-repeat="node in C.nodes")
+          td: span(ng-bind="node.type")
+          td: span(ng-bind="node.node", contenteditable="true", ng-change="C.updateNode(node)")
+          td: button.close: span(aria-hidden, ng-click="C.removeNode(node)") &times;
+
+  .row
+    h3 Add Info
+
+    form(role="form", ng-submit="C.addNode()")
+      .form-group
+        select.form-control(ng-model="C.nodeType", required)
+          option Email
+          option Phone
+          option Address
+          option Whatever
+
+      .form-group
+        input.form-control(type="text", ng-model="C.nodeValue", required)
