@@ -105,6 +105,7 @@ function init(Db) {
   oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
   sessionLogic = require('./lib/sessionlogic').init(app, passport, config, Auth);
 
+  app.use(urlrouter(sessionLogic.route));
   app.use(urlrouter(oauth2Logic.route));
 
   app.use(function (req, res, next) {
