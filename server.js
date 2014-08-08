@@ -95,14 +95,15 @@ function init(Db) {
   // Generic Template Auth
   //
   passport = new Passport();
-  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
-  sessionLogic = require('./lib/sessionlogic').init(app, passport, config, Auth);
 
   // initialize after all passport.use, but before any passport.authorize
   app
     .use(passport.initialize())
     .use(passport.session())
     ;
+
+  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
+  sessionLogic = require('./lib/sessionlogic').init(app, passport, config, Auth);
 
   app.use(urlrouter(oauth2Logic.route));
 
