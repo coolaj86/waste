@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('ContactsCtrl', function (StContacts) {
+  .controller('ContactsCtrl', ['StContacts', function (StContacts) {
     var C = this
       ;
 
@@ -35,4 +35,4 @@ angular.module('yololiumApp')
         });
       });
     };
-  });
+  }]);
