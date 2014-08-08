@@ -19,9 +19,6 @@ angular.module('yololiumApp')
     });
 
     OA.addApp = function () {
-      delete OA.appName;
-      delete OA.appSecret;
-
       stOauthClients.create(OA.appName, OA.appSecret).then(function (client) {
         OA.clients.push(client);
       });
