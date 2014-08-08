@@ -1,4 +1,5 @@
 .*.sw*
+migrations/migrations.js
 
 dist
 .tmp
