@@ -8,7 +8,7 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('OauthClientsCtrl', function (stOauthClients) {
+  .controller('OauthClientsCtrl', ['stOauthClients', function (stOauthClients) {
     var OA = this
       ;
 
@@ -19,8 +19,11 @@ angular.module('yololiumApp')
     });
 
     OA.addApp = function () {
+      delete OA.appName;
+      delete OA.appSecret;
+
       stOauthClients.create(OA.appName, OA.appSecret).then(function (client) {
         OA.clients.push(client);
       });
     };
-  });
+  }]);
