@@ -56,6 +56,7 @@ function init(Db) {
     }))
     .use(require('compression')())
     .use(require('./lib/connect-shims/redirect'))
+    .use(require('connect-send-error').error())
     .use(require('connect-send-json').json())
     ;
 
