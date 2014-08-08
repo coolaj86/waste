@@ -8,7 +8,7 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('stOauthClients', function stOauthClients(StApi, $http) {
+  .service('stOauthClients', ['StApi', '$http', function stOauthClients(StApi, $http) {
     var me = this
       , apiPrefix = StApi.apiPrefix
       ;
@@ -30,4 +30,4 @@ angular.module('yololiumApp')
 
     me.fetch = fetch;
     me.create = create;
-  });
+  }]);
