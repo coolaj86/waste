@@ -15,7 +15,6 @@ angular.module('yololiumApp')
 
     function fetch() {
       return $http.get(apiPrefix + '/me/clients').then(function (resp) {
-        console.log(resp.data);
         return resp.data.clients;
       });
     }
