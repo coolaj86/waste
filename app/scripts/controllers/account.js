@@ -66,6 +66,7 @@ angular.module('yololiumApp')
             if (0 === A.account.creditcards.length) {
               stripeTokenObject.isPreferred = true;
             }
+            stripeTokenObject = Recase.create({}).camelCopy(stripeTokenObject);
             A.account.creditcards.push(stripeTokenObject);
           }).error(function () {
             window.alert('Unknown error adding card. Please try again.');
@@ -244,8 +245,7 @@ angular.module('yololiumApp')
     // ^ks
     A.setPreferredCard = function (tokenToPrefer) {
       $http.post(
-        StApi.apiPrefix + '/me/creditcards/preferred'
-      , {id: tokenToPrefer.card.id}
+        StApi.apiPrefix + '/me/creditcards/' + encodeURIComponent(tokenToPrefer.card.id) + '/preferred'
       ).success(function () {
 //console.log('setting preferred: ', tokenToPrefer);        
         A.account.creditcards.forEach(function (token) {
