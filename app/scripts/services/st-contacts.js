@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .service('StContacts', function StContacts(StApi, $http) {
+  .service('StContacts', ['StApi', '$http', function StContacts(StApi, $http) {
     var me = this
       , apiPrefix = StApi.apiPrefix
       ;
@@ -27,4 +27,4 @@ angular.module('yololiumApp')
     me.fetch = fetch;
     me.update = update;
     me.create = create;
-  });
+  }]);

@@ -8,7 +8,7 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('OauthClientsCtrl', function (stOauthClients) {
+  .controller('OauthClientsCtrl', ['stOauthClients', function (stOauthClients) {
     var OA = this
       ;
 
@@ -23,4 +23,4 @@ angular.module('yololiumApp')
         OA.clients.push(client);
       });
     };
-  });
+  }]);
