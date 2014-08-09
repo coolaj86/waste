@@ -68,10 +68,9 @@
       .row
         .col-md-6
           .option
-            button.btn.btn-block.btn-social.btn-lg.btn-ldsconnect(type="button", ng-click="L.loginWithLdsconnect()")
-              i.fa
-                img(src="/images/moroni.png")
-              span.signin Sign In with LDS.org
+            button.btn.btn-block.btn-social.btn-lg.btn-openid(type="button", ng-click="L.loginWithLoopback()")
+              i.fa.fa-openid
+              span.signin Sign In with Loopback
         .col-md-6
           .option
             button.btn.btn-block.btn-social.btn-lg.btn-facebook(type="button", ng-click="L.loginWithFacebook()")
@@ -87,14 +86,18 @@
             button.btn.btn-block.btn-social.btn-lg.btn-google-plus(type="button", ng-click="L.loginWithGplus()")
               i.fa.fa-google-plus
               span.signin Sign In with Google
+        .col-md-6
+          .option
+            button.btn.btn-block.btn-social.btn-lg.btn-ldsconnect(type="button", ng-click="L.loginWithLdsconnect()")
+              i.fa
+                img(src="/images/moroni.png")
+              span.signin Sign In with LDS.org
         //-.col-md-6
           .option
             button.btn.btn-block.btn-social.btn-lg.btn-envelope(type="button", ng-click="L.loginWithEmail()")
               i.fa.fa-envelope
               span.signin Sign In with Email
               //- TODO open self oauth popup
-
-
 
     .developer.signin-option(ng-if="'token' == L.authType")
       .row

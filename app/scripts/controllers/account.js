@@ -3,8 +3,6 @@
 angular.module('yololiumApp')
   .controller('AccountCtrl', ['$scope', '$state', '$http', 'StLogin', 'StSession', 'StApi', '$modal', function ($scope, $state, $http, StLogin, StSession, StApi, $modal) {
     var A = this
-//      , stripeKey = 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
-      , stripeKey = 'pk_test_hwX1wzG4OMEv9esujApHjxI7'
       ;
 
     function initReject() {
@@ -52,7 +50,7 @@ angular.module('yololiumApp')
         ;
         
       addCardHandler = window.StripeCheckout.configure({
-        key: stripeKey
+        key: StApi.stripe.publicKey
       //, image: '/images/stripe-ish-logo.png'
       , token: function (stripeTokenObject) {
           stripeTokenObject.cardService = 'stripe';
@@ -257,6 +255,33 @@ angular.module('yololiumApp')
       }).error(function (resp) {
         console.log(resp);
         window.alert('System error marking card as preferred.');
+      });
+    };
+    
+    A.addThisDevice = function () {
+      $http.post(
+        StApi.apiPrefix + '/me/devices'
+      , {token: 'tok_' + (+new Date())}
+      ).success(function (devices) {
+        A.account.devices = devices;
+      });
+    };
+    
+    A.enablePushNotifications = function (device) {
+      device.enableDeviceNotifications = !device.enableDeviceNotifications;
+      $http.post(
+        StApi.apiPrefix + '/me/devices'
+      , device
+      ).success(function (devices) {
+        A.account.devices = devices;
+      });
+    };
+    
+    A.removeDevice = function (device) {
+      $http.delete(
+        StApi.apiPrefix + '/me/devices/' + device.token
+      ).success(function (devices) {
+        A.account.devices = devices;
       });
     };
 

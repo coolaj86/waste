@@ -32,7 +32,7 @@
       ]
     , useSplash: false // if non-logged in users should get a different page at /
     , stripe: {
-        publicKey: 'pk_test_526DRmZwEOiMxTigV5fX52ti'
+        publicKey: 'pk_test_hwX1wzG4OMEv9esujApHjxI7'
       , storeName: 'Business Name Here'
       , storeLogo: null
       }
@@ -42,6 +42,7 @@
       , twitter: '/twitter/authn/connect'
       , tumblr: '/tumblr/connect'
       , ldsconnect: '/ldsconnect/connect'
+      , loopback: '/loopback/connect'
       }
     , business: {
         title: "ACME Crop"

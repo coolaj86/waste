@@ -9,29 +9,31 @@ git clone https://github.com/coolaj86/angular-project-template.git my-project-na
 pushd my-project-name/
 git remote rename origin upstream
 
-npm install -g yo
-npm install -g generator-angular
-npm install -g bower
+npm install -g yo generator-angular bower
+npm install -g jshint jade
 
 npm install
 bower install
 
-grunt build --force
+# In the world of rainbows and fairies, this would work as is - simple.
+# However, it often requires installing rvm and bundler and modifying environment variables,
+# and the immediately need for FML relief cream applied generously to the affected areas
+# I actually don't even use compass and I'd prefer to use less, but it was in the grunt template
+# and I haven't rooted it out yet, so feel free to pull request.
+sudo gem install compass 
 
-echo '{}' > priv/accounts.priv.json
-echo '{}' > priv/users.priv.json
+grunt build
 ```
 
 Use
 ===
 
 ```bash
-grunt build --force
+grunt build
 grunt serve
 
-# The --force is in case you don't have compass installed
-# If you feel the need for compass, figure out how to install it
-# and immediately apply FML relief cream to the affected areas generously
+# Note that the application source is in ./app
+# but the built version is served from ./dist (and sometimes parts leftover in ./tmp)
 ```
 
 Configure
@@ -343,6 +345,54 @@ Some providers only require authorization once (facebook) and will self-close ev
 * GET `/oauth/twitter/authz/connect` redirects to twitter authorization (every time)
 * GET `/oauth/tumblr/connect` redirects to tumblr authorization (every time)
 * GET `/oauth/ldsconnect/connect` redirects to ldsconnect (same process as facebook)
+
+OAuth Scope
+---------------
+
+Since OAuth scope has no standardization, I decided to standardize it.
+
+Scope is setup in the fashion of
+
+```
+# group           readable    writeable   executable
+<group.subgroup>:[field,...]:[field,...]:[action,...]
+```
+
+For Example
+
+```
+me.contact:phone,email:email:phone,email,push
+me.friends:id::
+```
+
+* `group` and `group.subgroup` are contexts of the application
+* `readable` means you have access to see the property value (see the real - as opposed to proxied - email address)
+* `writable` means you may update the property value (change the email)
+* `executable` means you may use the property even if you can read it (a proxied email, or an sms token)
+
+In the first directive I can read actual phone numbers and email addresses, but only update email.
+I can't get the device registration id, but I can set a push notification.
+
+In the second I can see the ids of friends, but I can't add new friends (write) or message a friend (execute)
+
+The implementation of how you specify groups and what permissions mean and such is up to you,
+but all of the parse and delta logic (showing the user a permission dialog when needing more permissions)
+is taken care of.
+
+After much thought and a little bit of implementation,
+it seems that this methodology addresses all of the current implementations of scope that are in the wild
+and all of my use cases.
+
+If some extension were needed I could see allowing some sort of `xattrs` that my parser ignores and passes
+to your own, something like this:
+
+```
+xattrs:a-string-for-which-you-implement-your-own-parse-logic
+```
+
+But as it stands I don't believe there are any use cases of scope that aren't easy to implement using my
+current standard.
+
 
 Extending
 ===

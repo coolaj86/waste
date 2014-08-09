@@ -71,6 +71,7 @@ var CONFIG = {
 , oauthPrefix: '/oauth'
 , sessionPrefix: '/session'
 , apiPrefix: '/api'
+, snakeApi: true // whether or not to snake_case the api over the wire (ruby style)
 , superUserApi: '/api/superuser'
 , adminApi: '/api/admin'
 , userApi: '/api/user'
@@ -164,8 +165,6 @@ var CONFIG = {
   }
 , stripe: {
     // https://manage.stripe.com/account/apikeys
-//    id: "pk_live_SSBLW1rVlYjOsMI75IMM1Zjz"
-//  , secret: "sk_live_x9Y4AXFZrFZyFJobhnCK2iiP"
     id: "pk_test_hwX1wzG4OMEv9esujApHjxI7"
   , secret: "sk_test_o1DfpT64SMt54nC8NIhQDk72"
   }
@@ -175,6 +174,13 @@ var CONFIG = {
     // default callback /auth/tumblr/callback
     consumerKey: 'b0ix4BsnbExgzi8zf0mmowj8k9g36YqwP5uBUOLoyxYoqBTlD8'
   , consumerSecret: 'FhnXG8TPhQ3xl4xTtfDaCsgAOHHsg7QHUQzmqPmeMcrSjS4CQU'
+  }
+, loopback: {
+    // this is to test the applications oauth with itself (trixy, eh?)
+    // look in ./fixtures to see the default password and such
+    // TODO set url/port at runtime
+    id: "my-awesome-app"
+  , secret: "an awesome private key"
   }
 };
 module.exports = CONFIG;

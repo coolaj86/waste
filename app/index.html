@@ -58,7 +58,7 @@
           padding-bottom: 56.25%;
           padding-top: 30px; height: 0; overflow: hidden;
       }
-       
+
       .video-container video,
       .video-container .aj-carousel,
       .video-container iframe,
@@ -84,7 +84,7 @@
       }
     </style>
   </head>
-  <body ng-app="yololiumApp", style="padding-top: 1px;">
+  <body ng-app="yololiumApp" ng-strict-di style="padding-top: 1px;">
   <!--body ng-app="yololiumApp" style="padding-top: 50px;"-->
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -135,6 +135,8 @@
     <script src="scripts/controllers/user.js"></script>
     <script src="scripts/controllers/admin.js"></script>
     <script src="scripts/controllers/splash.js"></script>
+    <script src="scripts/controllers/oauth-clients.js"></script>
+    <script src="scripts/services/st-oauth-clients.js"></script>
     <script src="scripts/services/st-stripe.js"></script>
     <script src="scripts/controllers/store.js"></script>
     <script src="scripts/controllers/transaction.js"></script>
@@ -147,8 +149,9 @@
     <script src="scripts/services/st-contacts.js"></script>
     <script src="scripts/controllers/footer.js"></script>
     <script src="scripts/controllers/push.js"></script>
+    <script src="scripts/controllers/oauth.js"></script>
     <!-- endbuild -->
-    
+
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
