@@ -42,6 +42,7 @@
       , twitter: '/twitter/authn/connect'
       , tumblr: '/tumblr/connect'
       , ldsconnect: '/ldsconnect/connect'
+      , loopback: '/loopback/connect'
       }
     , business: {
         title: "ACME Crop"
