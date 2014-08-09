@@ -142,7 +142,7 @@ angular.module('yololiumApp')
     // A.account.xattrs.creditcards[0] = A.account.xattrs.creditcards[0] || data.response;
     S.addCard = promisify(function (resolve, reject, user) {
       askForCard({
-        url: StApi.apiPrefix + '/me/creditcards'
+        url: StApi.apiPrefix + '/me/payment-methods'
       , email: user.email
       , description: 'Add Credit Card to Account'
       , amount: 0
