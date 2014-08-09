@@ -29,7 +29,6 @@ angular.module('yololiumApp')
         , targetZoneTime
         ;
 
-      console.log(P.msg);
       function pad(str, len) {
         str = str.toString();
 
@@ -100,8 +99,6 @@ angular.module('yololiumApp')
       }
 
       if ('custom' === msg.timetype) {
-        console.log(P.datetest);
-        console.log(P.timetest);
         return;
         if ('zoneless' === msg.relativeZone) {
           targetZoneTime = targetStartTime.replace(/-\d{4}$/, ''); // the GMT offset
@@ -138,7 +135,6 @@ angular.module('yololiumApp')
       }
 
       rules.data = { body: P.msg.body };
-      console.log(rules);
       $http.post('/api/alarms', rules, function () {
         // post this to the backend,
         // which will then post it to the alarms service
