@@ -42,10 +42,10 @@ module.exports = function (grunt) {
         files: ['test/spec/{,*/}*.js'],
         tasks: ['newer:jshint:test', 'karma']
       },
-      compass: {
-        files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
-        tasks: ['compass:server', 'autoprefixer']
-      },
+      // compass: {
+      //    files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
+      //   tasks: ['compass:server', 'autoprefixer']
+      // },
       styles: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
         tasks: ['newer:copy:styles', 'autoprefixer']
@@ -184,11 +184,11 @@ module.exports = function (grunt) {
       }
     },
 
-    
 
-    
+
+
     // Compiles Sass to CSS and generates necessary files if requested
-    compass: {
+    /* compass: {
       options: {
         sassDir: '<%= yeoman.app %>/styles',
         cssDir: '.tmp/styles',
@@ -213,7 +213,7 @@ module.exports = function (grunt) {
           debugInfo: true
         }
       }
-    },
+    }, */
 
     // Renames files for browser caching purposes
     rev: {
@@ -353,17 +353,17 @@ module.exports = function (grunt) {
     concurrent: {
       server: [
         'jade',
-        'compass:server',
+        // 'compass:server',
         'copy:styles'
       ],
       test: [
         'jade',
-        'compass',
+        // 'compass',
         'copy:styles'
       ],
       dist: [
         'jade',
-        'compass:dist',
+        // 'compass:dist',
         'copy:styles',
         'imagemin',
         'svgmin',
