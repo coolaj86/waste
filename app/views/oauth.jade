@@ -1,0 +1,43 @@
+.container
+  .row
+    .col-xs-12
+      form.form-horizontal(method="POST" action="/oauth/dialog/authorize/decision")
+        fieldset
+          legend Allow Application {{ O.appName }}
+
+          div(ng-if="O.error.message")
+            .alert.alert-danger {{ O.error.message }}
+            .alert.alert-danger
+              pre
+                code {{ O.rawResponse | json }}
+          div(ng-if="O.invalids.length")
+            .alert.alert-danger
+              span The application provided invalid scope.
+              ul
+                li(ng-repeat="invalid in O.invalids")
+                  pre
+                    code {{ invalid | json }}
+
+          //- TODO auto-update on change
+          input(type="hidden" name="transaction_id" ng-value="O.transactionId")
+          input(type="hidden" name="json" ng-model="O.responseText")
+          .form-group
+            .col-xs-12
+              .checkbox(ng-repeat="scope in O.scope")
+                label
+                  input(ng-model="scope.accepted" type="checkbox")
+                  |  {{ scope.name }}
+
+            .form-group
+              .col-lg-offset-10.col-lg-offset-2
+                .col-xs-6
+                  button.btn.btn-default(
+                    name="cancel"
+                    type="submit"
+                    ng-disabled="O.invalids.length || !O.redirectUrl"
+                  ) Cancel
+                .col-xs-6
+                  button.btn.btn-primary(
+                    type="submit"
+                    ng-disabled="O.invalids.length || !O.redirectUrl"
+                  ) Allow
