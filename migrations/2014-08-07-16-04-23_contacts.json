@@ -2,6 +2,7 @@
   { "tablename": "contacts"
   , "columns": {
       "name": { "type": "string", "nullable": false }
+    , "account_uuid": { "type": "uuid", "references": ["accounts", "uuid"] }
     }
   , "uuid": true
   , "timestamps": true
@@ -11,7 +12,7 @@
   , "columns": {
       "node": { "type": "string", "nullable": false }
     , "type": { "type": "string", "nullable": false }
-    , "contact_id": { "type": "uuid", "references": ["contacts", "uuid"] }
+    , "contact_uuid": { "type": "uuid", "references": ["contacts", "uuid"] }
     }
   , "uuid": true
   , "timestamps": true
