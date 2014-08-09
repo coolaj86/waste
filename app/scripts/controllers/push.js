@@ -8,103 +8,28 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('PushCtrl', ['$scope', '$http', function ($scope, $http) {
+  .controller('PushCtrl', ['$http', function ($http) {
+    var P = this
+      ;
     // TODO use var P = this
     // (didn't do that because I copied much of this code from an example)
     // NOTE: A lot of the init stuff is dead code from the example
 
-    $scope.msg = $scope.msg || {};
-    $scope.msg.date = new Date();
-    $scope.msg.time = new Date();
-    $scope.msg.timetype = 'soon';
-
-    function initDatepicker() {
-      $scope.msg = $scope.msg || {};
-      $scope.dtp = $scope.dtp || {};
-
-      $scope.today = function() {
-        $scope.msg.date = new Date();
-      };
-      $scope.today();
-
-      $scope.clear = function () {
-        $scope.msg.time = null;
-      };
-
-      // Disable weekend selection
-      $scope.disabled = function(date, mode) {
-        return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
-      };
-
-      $scope.toggleMin = function() {
-        $scope.minDate = $scope.minDate ? null : new Date();
-      };
-      $scope.toggleMin();
-
-      $scope.open = function($event) {
-        console.log($event);
-        $scope.dtp.opened = true;
-
-        $event.preventDefault();
-        $event.stopPropagation();
-      };
-
-      $scope.dateOptions = {
-        formatYear: 'yy',
-        startingDay: 1
-      };
-
-      $scope.initDate = new Date('2016-15-20');
-      $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-      $scope.format = $scope.formats[0];
-    }
-
-    function initTimepicker() {
-      $scope.msg = $scope.msg || {};
-      $scope.msg.time = new Date();
-
-      $scope.hstep = 1;
-      $scope.mstep = 15;
-
-      $scope.options = {
-        hstep: [1, 2, 3],
-        mstep: [1, 5, 10, 15, 25, 30]
-      };
-
-      $scope.ismeridian = true;
-      $scope.toggleMode = function() {
-        $scope.ismeridian = ! $scope.ismeridian;
-      };
-
-      $scope.update = function() {
-        var d = new Date();
-        d.setHours( 14 );
-        d.setMinutes( 0 );
-        $scope.msg.time = d;
-      };
-
-      $scope.changed = function () {
-        console.log('Time changed to: ' + $scope.msg.time);
-      };
-
-      $scope.clear = function() {
-        $scope.msg.time = null;
-      };
-    }
-
-    initDatepicker();
-    initTimepicker();
+    P.msg = P.msg || {};
+    P.msg.date = new Date();
+    P.msg.time = P.msg.date;
+    P.msg.timetype = 'soon';
 
     // This is where the magic happens
-    $scope.scheduleMessage = function () {
+    P.scheduleMessage = function () {
       var rules = {}
         , day = 24 * 60 * 60 * 1000
-        , msg = $scope.msg
+        , msg = P.msg
         , targetStartTime
         , targetZoneTime
         ;
 
-      console.log($scope.msg);
+      console.log(P.msg);
       function pad(str, len) {
         str = str.toString();
 
@@ -146,7 +71,7 @@ angular.module('yololiumApp')
         rules = {
           dtstart: {
             utc: new Date(
-              new Date(mergeLocaleZoneless(msg.date, msg.time)).now() + (60 * 1000)
+              new Date(mergeLocaleZoneless(msg.date, msg.time)).getTime() + (60 * 1000)
             ).toISOString()
           , locale: 'GMT-0000 (UTC)'
           }
@@ -175,6 +100,9 @@ angular.module('yololiumApp')
       }
 
       if ('custom' === msg.timetype) {
+        console.log(P.datetest);
+        console.log(P.timetest);
+        return;
         if ('zoneless' === msg.relativeZone) {
           targetZoneTime = targetStartTime.replace(/-\d{4}$/, ''); // the GMT offset
           // at many times
@@ -209,7 +137,7 @@ angular.module('yololiumApp')
         }
       }
 
-      rules.data = { body: $scope.msg.body };
+      rules.data = { body: P.msg.body };
       console.log(rules);
       $http.post('/api/alarms', rules, function () {
         // post this to the backend,
