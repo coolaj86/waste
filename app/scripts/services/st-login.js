@@ -13,9 +13,9 @@ angular.module('yololiumApp')
       , keyboard: true
       , resolve: {
           // so that we could add an explanation or something
-          stLoginOptions: function () {
+          stLoginOptions: [function () {
             return opts;
-          }
+          }]
         }
       }).result;
     };

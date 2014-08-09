@@ -73,7 +73,7 @@ angular.module('yololiumApp', [
                 $state.go('home');
                 return;
               }
-              
+
               if (!mySession || !mySession.account || 'guest' === mySession.account.role) {
                 $state.go('splash');
               } else {
@@ -135,6 +135,27 @@ angular.module('yololiumApp', [
           , resolve: {
               mySession: ['StSession', function (StSession) {
                 return StSession.get();
+              }]
+            }
+          }
+        , footer: footer
+        }
+      })
+
+      .state('oauth', {
+        url: '/authorize/:token/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/oauth.html'
+          , controller: 'OauthCtrl as O'
+          , resolve: {
+              mySession: ['StSession', function (StSession) {
+                return StSession.get().then(function (session) {
+                  console.log('oauth session');
+                  console.log(session);
+                  return session;
+                });
               }]
             }
           }
@@ -226,21 +247,17 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
-      .state('lds', {
-        parent: 'main'
-      })
-      .state('weddings', {
-        parent: 'main'
-      , url: 'weddings/'
-      })
+
+      // states that don't change the url
+      /*
       .state('about', {
         parent: 'main'
       })
       .state('privacy', {
         parent: 'main'
       })
-      /*
-      , {
+      */
+      .state('about', {
         url: '/about/'
       , views: {
           nav: nav
@@ -250,7 +267,28 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
-      */
+      .state('oauth-clients', {
+        url: '/apps/'
+      , views: {
+          nav: nav
+        , body: {
+            templateUrl: 'views/oauth-clients.html'
+          , controller: 'OauthClientsCtrl as OA'
+          }
+        , footer: footer
+        }
+      })
+      .state('contacts', {
+          url: '/contacts/'
+        , views: {
+            nav: nav
+          , body: {
+              templateUrl: 'views/contacts.html'
+            , controller: 'ContactsCtrl as C'
+            }
+          , footer: footer
+        }
+      })
       ;
 
     // alternatively, register the interceptor via an anonymous factory
