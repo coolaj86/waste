@@ -12,7 +12,7 @@ angular.module('yololiumApp')
     var OA = this
       ;
 
-    OA.clients = [];
+    OA.clients = OA.clients || [];
 
     stOauthClients.fetch().then(function (clients) {
       OA.clients = clients;
