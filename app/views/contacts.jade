@@ -1,8 +1,8 @@
 .container
-  h3(ng-bind="C.name")
+  h3 Contact
 
   .row
-    .panel.panel-info.visible-lg-inline-block
+    .panel.panel-info(style="display: inline: block;")
       table.table
         tr(ng-show="0 === C.nodes.length")
           th You have no contact information.
@@ -13,7 +13,7 @@
 
         tr(ng-repeat="node in C.nodes")
           td: span(ng-bind="node.type")
-          td: span(ng-bind="node.node", contenteditable="true", ng-change="C.updateNode(node)")
+          td: span(ng-bind="node.node")
           td: button.close: span(aria-hidden, ng-click="C.removeNode(node)") &times;
 
   .row
