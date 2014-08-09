@@ -7,24 +7,24 @@ angular.module('yololiumApp')
       ;
 
     function fetch() {
-      return $http.get(apiPrefix + '/me/contacts').then(function (resp) {
+      return $http.get(apiPrefix + '/me/contact').then(function (resp) {
         return resp.data.nodes;
       });
     }
 
-    function update(node) {
-      return $http.post(apiPrefix + '/me/contacts/' + node.uuid, node).then(function (resp) {
+    function remove(node) {
+      return $http.delete(apiPrefix + '/me/contact/' + node.uuid, node).then(function (resp) {
         return resp.data;
       });
     }
 
     function create(node) {
-      return $http.post(apiPrefix + '/me/contacts', node).then(function(resp) {
+      return $http.post(apiPrefix + '/me/contact', node).then(function(resp) {
         return resp.data;
       });
     }
 
     me.fetch = fetch;
-    me.update = update;
+    me.remove = remove;
     me.create = create;
   }]);
