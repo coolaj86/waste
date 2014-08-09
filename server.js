@@ -4,21 +4,21 @@ var connect = require('connect')
   , path = require('path')
   , app = connect()
   , config = require('./config')
-  , escapeRegexp = require('escape-string-regexp')
+  , Passport = require('passport').Passport
   ;
 
 function init(Db) {
   // TODO maybe a main DB for core (Accounts) and separate DBs for the modules?
 
-  var session = require('./lib/sessionlogic')
-    , serveStatic = require('serve-static')
+  var serveStatic = require('serve-static')
     , urlrouter = require('connect_router')
-    , recase = require('recase').Recase.create({ exceptions: {} })
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
+    , oauth2Logic
     , sessionLogic
     , ru = config.rootUser
     , Auth = require('./lib/auth-logic').create(Db, config)
+    , passport
     ;
 
   config.apiPrefix = config.apiPrefix || '/api';
@@ -56,34 +56,15 @@ function init(Db) {
     }))
     .use(require('compression')())
     .use(require('./lib/connect-shims/redirect'))
+    .use(require('connect-send-error').error())
     .use(require('connect-send-json').json())
-    .use(function (req, res, next) {
-      // The webhooks, oauth and such should remain untouched
-      // as to be handled by the appropriate middlewares,
-      // but our own api should be transformed
-      // + '$' /\/api(\/|$)/
-      if (!(new RegExp('^' + escapeRegexp(config.apiPrefix) + '(\\/|$)').test(req.url))) {
-        next();
-        return;
-      }
+    ;
 
-      if ('object' === typeof req.body && !(req.body instanceof Buffer)) {
-        console.log('[camel] has incoming body');
-        req.body = recase.camelCopy(req.body);
-      }
+  if (config.snakeApi) {
+    app.use(require('./lib/connect-shims/snake')([config.apiPrefix]));
+  }
 
-      res._oldJson = res.json;
-      res.json = function (data, opts) {
-        if ('object' === typeof data && !(data instanceof Buffer)) {
-          res._oldJson(recase.snakeCopy(data), opts);
-        } else {
-          res._oldJson(data, opts);
-        }
-      };
-      res.send = res.json;
-      next();
-      return;
-    })
+  app
     .use(require('./lib/connect-shims/xend'))
     .use(urlrouter(require('./lib/vidurls').route))
     .use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
@@ -113,21 +94,40 @@ function init(Db) {
   //
   // Generic Template Auth
   //
-  sessionLogic = session.init(app, config, Auth);
-  sessionLogic.routes.forEach(function (fn) {
-    // Since the API prefix is sometimes necessary,
-    // it's probably better to always require the
-    // auth providers to use it manually
-    app.use(urlrouter(fn));
+  passport = new Passport();
+
+  // initialize after all passport.use, but before any passport.authorize
+  app
+    .use(passport.initialize())
+    .use(passport.session())
+    ;
+
+  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
+  sessionLogic = require('./lib/sessionlogic').init(app, passport, config, Auth);
+
+  app.use(urlrouter(sessionLogic.route));
+  app.use(urlrouter(oauth2Logic.route));
+
+  app.use(function (req, res, next) {
+    if (/api/.test(req.url)) {
+      console.log("[server] req.isAuthenticated");
+      console.log(req.isAuthenticated());
+      console.log(!!req.user);
+    }
+    next();
   });
 
-  // 
+  //
   // Generic App Routes
   //
   // TODO a way to specify that a database should be attached to /me
   app
     .api(urlrouter(require('./lib/session').create().route))
-    .api(urlrouter(require('./lib/accounts').create(app, config, Auth, sessionLogic.manualLogin).route))
+    .api(urlrouter(require('./lib/accounts').create(app, config, Db, Auth).route))
+    .api(urlrouter(require('./lib/logins').create(app, config, Db, Auth, sessionLogic.manualLogin).route))
+    .api(urlrouter(require('./lib/me').create(app, config, Db, Auth).route))
+    .api(urlrouter(require('./lib/oauth-clients').create(app, config, Db, Auth).route))
+    .api(urlrouter(require('./lib/contacts').create(app, config, Db).route))
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))
@@ -161,9 +161,7 @@ function init(Db) {
   app
     //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
     .use(serveStatic(path.join(__dirname, 'priv', 'public')))
-    //.use(serveStatic(path.join(__dirname, 'dist')))
-    //.use(serveStatic(path.join(__dirname, '.tmp', 'concat')))
-    .use(serveStatic(path.join(__dirname, '.tmp')))
+    .use(serveStatic(path.join(__dirname, 'dist')))
     .use(serveStatic(path.join(__dirname, 'app')))
     ;
 }

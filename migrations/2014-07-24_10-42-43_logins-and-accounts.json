@@ -16,6 +16,9 @@
     ]
   }
 , { "tablename": "accounts"
+  , "columns": {
+      "contacts_id": { "type": "uuid", "references": ["contacts", "uuid"] }
+    }
   , "uuid": true
   , "timestamps": true
   , "xattrs": true

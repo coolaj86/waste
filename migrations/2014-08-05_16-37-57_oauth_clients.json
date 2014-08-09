@@ -1,0 +1,14 @@
+[
+  { "tablename": "oauth_clients"
+  , "columns": {
+      "id": { "type": "string", "nullable": false, "primary": true }
+    , "name": { "type": "string", "nullable": false }
+    , "secret": { "type": "string", "nullable": false }
+    , "permissions": "string"
+    , "account_id": { "type": "uuid", "references": ["accounts", "uuid"] }
+    }
+  , "uuid": false
+  , "timestamps": true
+  , "xattrs": true
+  }
+]
