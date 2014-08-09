@@ -24,7 +24,7 @@ angular.module('yololiumApp')
     };
 
     C.removeNode = function (node) {
-      StContacts.delete(node).then(function () {
+      StContacts.remove(node).then(function () {
         // remove the node from the list
         // in the future we should setup an efficient system for just fetching
         // and re-rendering the table... but that's too much to setup right now
