@@ -108,6 +108,7 @@ function init(Db) {
   app.use(urlrouter(sessionLogic.route));
   app.use(urlrouter(oauth2Logic.route));
 
+  // TODO move attaching the account into a subsequent middleware?
   app.use(function (req, res, next) {
     if (/api/.test(req.url)) {
       console.log("[server] req.isAuthenticated");
@@ -131,7 +132,7 @@ function init(Db) {
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))
-    .api(urlrouter(require('./lib/account-creditcards')
+    .api(urlrouter(require('./lib/account-payment-methods')
       .create(app, config, Auth, sessionLogic.manualLogin).route
     ))
     .api(urlrouter(require('./lib/account-devices').create(app, config).route))
@@ -169,6 +170,6 @@ function init(Db) {
 module.exports = app;
 module.exports.create = function () {
   config.knexInst = require('./lib/knex-connector').create(config.knex);
-  require('./lib/bookshelf-models').create(config.knexInst).then(init);
+  require('./lib/bookshelf-models').create(config, config.knexInst).then(init);
 };
 module.exports.create();

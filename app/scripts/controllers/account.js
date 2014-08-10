@@ -55,7 +55,7 @@ angular.module('yololiumApp')
       , token: function (stripeTokenObject) {
           stripeTokenObject.cardService = 'stripe';
           $http.post(
-            StApi.apiPrefix + '/me/creditcards'
+            StApi.apiPrefix + '/me/payment-methods'
           , stripeTokenObject
           ).success(function (resp) {
             if (resp.error) {
@@ -66,6 +66,8 @@ angular.module('yololiumApp')
             if (0 === A.account.creditcards.length) {
               stripeTokenObject.isPreferred = true;
             }
+            // recase exp_year to expYear and exp_month to expMonth
+            stripeTokenObject = window.Recase.create({}).camelCopy(stripeTokenObject);
             A.account.creditcards.push(stripeTokenObject);
           }).error(function () {
             window.alert('Unknown error adding card. Please try again.');
@@ -98,43 +100,45 @@ angular.module('yololiumApp')
           $form.card({
             container: '.cc-entry-card'
           });
-          $form.on('submit', function () {
+          $form.on('submit', function (evt) {
+            evt.preventDefault();
             // grab values from form
-            var $card = $form.find('.card');
-            var token = {
-              cardService: 'custom'
-            , card: {
-                brand: 
-                  $card.hasClass('visa') ? 'Visa' 
-                : $card.hasClass('mastercard') ? 'MasterCard'
-                : $card.hasClass('discover') ? 'Discover'
-                : $card.hasClass('amex') ? 'Amex'
-                : $card.hasClass('dinersclub') ? 'Diner\'s Club'
-                : null
-              , number: $form.find('[name=number]').val()
-              , expMonth: $.trim($form.find('[name=expiry]').val().split('/')[0])
-              , expYear: '20' + $.trim($form.find('[name=expiry]').val().split('/')[1])
-              , last4: $form.find('[name=number]').val().slice(-4)
-              , name: $form.find('[name=name]').val()
-              }
-            };
-            $http.post(
-              StApi.apiPrefix + '/me/creditcards'
-            , token
-            ).success(function (resp) {
-              if (resp.error) {
-                console.log(resp.error);
-                window.alert('System error adding card.');
+            window.Stripe.setPublishableKey(StApi.stripe.publicKey);
+            window.Stripe.card.createToken({
+              number: $form.find('[name=number]').val()
+            , exp_month: $.trim($form.find('[name=expiry]').val().split('/')[0])
+            , exp_year: '20' + $.trim($form.find('[name=expiry]').val().split('/')[1])
+            , cvc: $form.find('[name=cvc]').val()
+            , name: $form.find('[name=name]').val()
+            }
+            ,
+            function (status, token) {
+              if (token.error) {
+                window.alert(token.error.message);
                 return;
               }
-              if (0 === A.account.creditcards.length) {
-                token.isPreferred = true;
-              }              
-              A.account.creditcards.push(token);
-            }).error(function () {
-              window.alert('Unknown error adding card. Please try again.');
+              token.cardService = 'stripe';
+              $http.post(
+                StApi.apiPrefix + '/me/payment-methods'
+              , token
+              ).success(function (resp) {
+                if (resp.error) {
+                  console.log(resp.error);
+                  window.alert('System error adding card.');
+                  return;
+                }
+                if (0 === A.account.creditcards.length) {
+                  token.isPreferred = true;
+                }              
+                // recase exp_year to expYear and exp_month to expMonth
+                token = window.Recase.create({}).camelCopy(token);
+                A.account.creditcards.push(token);
+              }).error(function () {
+                window.alert('Unknown error adding card. Please try again.');
+              });
+              modal.close();            
             });
-            modal.close();
+            
           });
           $('#AddCardCancel').on('click', function () {
             modal.close();
@@ -185,7 +189,7 @@ angular.module('yololiumApp')
         console.log('stripeTokenObject');
         console.log(code, stripeTokenObject);
         $http.post(
-          StApi.apiPrefix + '/me/creditcards'
+          StApi.apiPrefix + '/me/payment-methods'
         , stripeTokenObject
         ).success(function (data) {
           A.account.xattrs = A.account.xattrs || { creditcards: [] };
@@ -231,7 +235,7 @@ angular.module('yololiumApp')
         newCards[0].isPreferred = true;
       }
       A.account.creditcards = newCards;
-      $http.delete(StApi.apiPrefix + '/me/creditcards/' + tokenToDelete.card.id)
+      $http.delete(StApi.apiPrefix + '/me/payment-methods/' + tokenToDelete.card.id)
         .error(function () {
           window.alert('Unexpected error removing card.');
           // update dom with array of original cards
@@ -244,8 +248,7 @@ angular.module('yololiumApp')
     // ^ks
     A.setPreferredCard = function (tokenToPrefer) {
       $http.post(
-        StApi.apiPrefix + '/me/creditcards/preferred'
-      , {id: tokenToPrefer.card.id}
+        StApi.apiPrefix + '/me/payment-methods/' + encodeURIComponent(tokenToPrefer.card.id) + '/preferred'
       ).success(function () {
 //console.log('setting preferred: ', tokenToPrefer);        
         A.account.creditcards.forEach(function (token) {
