@@ -4,6 +4,7 @@
   , "columns": {
       "id": { "type": "string", "nullable": false, "primary": true }
     , "account_id": { "type": "string", "references": ["accounts", "uuid"], "nullable": false }
+    , "addressee": { "type": "string" }
     , "comment": { "type": "string" }
     , "type": { "type": "string", "nullable": false }
     , "active": { "type": "boolean" }
