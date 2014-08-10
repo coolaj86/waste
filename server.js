@@ -129,6 +129,7 @@ function init(Db) {
     .api(urlrouter(require('./lib/me').create(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/oauth-clients').create(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/contacts').create(app, config, Db).route))
+    .api(urlrouter(require('./lib/account-addresses').create(app, config).route))
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))
