@@ -44,18 +44,12 @@ angular.module('yololiumApp')
       }
 
       // TODO remap accounts and logins to eachother on session update
-
-      session.account.loginIds.some(function (loginId) {
-        return session.logins.some(function (login) {
-          if (loginId !== login.id) {
-            return;
-          }
-
-          if ('local' === (login.type || login.provider)) {
-            session.account.localLoginId = loginId;
-            return true;
-          }
-        });
+      session.account.logins.some(function (login) {
+        // TODO make configurable
+        if ('local' === (login.type || login.provider)) {
+          session.account.localLoginId = login.id || login.uuid;
+          return true;
+        }
       });
 
       if (session.account && required.every(hasField)) {
