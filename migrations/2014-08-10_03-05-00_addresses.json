@@ -3,7 +3,7 @@
   , "uuid": false
   , "columns": {
       "id": { "type": "string", "nullable": false, "primary": true }
-    , "account_id": { "type": "string", "references": ["accounts", "uuid"], "nullable": false }
+    , "account_uuid": { "type": "string", "references": ["accounts", "uuid"], "nullable": false }
     , "addressee": { "type": "string" }
     , "comment": { "type": "string" }
     , "type": { "type": "string", "nullable": false }
