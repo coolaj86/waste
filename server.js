@@ -170,6 +170,6 @@ function init(Db) {
 module.exports = app;
 module.exports.create = function () {
   config.knexInst = require('./lib/knex-connector').create(config.knex);
-  require('./lib/bookshelf-models').create(config.knexInst).then(init);
+  require('./lib/bookshelf-models').create(config, config.knexInst).then(init);
 };
 module.exports.create();
