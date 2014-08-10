@@ -47,7 +47,7 @@ angular.module('yololiumApp')
       session.account.logins.some(function (login) {
         // TODO make configurable
         if ('local' === (login.type || login.provider)) {
-          session.account.localLoginId = login.id || login.uuid;
+          session.account.localLoginId = login.id || login.hashid;
           return true;
         }
       });
