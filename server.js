@@ -132,7 +132,7 @@ function init(Db) {
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))
-    .api(urlrouter(require('./lib/account-creditcards')
+    .api(urlrouter(require('./lib/account-payment-methods')
       .create(app, config, Auth, sessionLogic.manualLogin).route
     ))
     .api(urlrouter(require('./lib/account-devices').create(app, config).route))
