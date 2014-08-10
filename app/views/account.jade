@@ -63,49 +63,6 @@
       span.glyphicon.glyphicon-plus
       span &#32;Add Card (Custom)
 
-
-  h3 Linked Accounts
-  div
-    button.btn.btn-link(ng-click="A.showLoginModal()") Link another account
-
-  div(ng-if="!A.providers.ldsconnect")
-    button.btn.btn-ldsconnect(type="button", ng-click="A.loginWithLdsconnect()")
-      i.fa
-        img(src="/images/moroni.png", style="position: relative; left: -3px; height: 16px;")
-      span.signin | Connect with LDS.org
-  div(ng-if="A.providers.ldsconnect")
-    button.btn.btn-ldsconnect(type="button", ng-click="A.noop()")
-      i.fa.fa-ldsconnect-square
-    button.btn.btn-sm.btn-danger(ng-if="A.providers.ldsconnect", ng-click="A.unlinkLogin(A.providers.ldsconnect)") &#32;Unlink
-
-  div(ng-if="!A.providers.facebook")
-    button.btn.btn-facebook(type="button", ng-click="A.loginWithFacebook()")
-      i.fa.fa-facebook-square
-      span &#32;| Connect with Facebook
-  div(ng-if="A.providers.facebook")
-    button.btn.btn-facebook(type="button", ng-click="A.noop()")
-      i.fa.fa-facebook-square
-    button.btn.btn-sm.btn-danger(ng-if="A.providers.facebook", ng-click="A.unlinkLogin(A.providers.facebook)") &#32;Unlink
-
-  div(ng-if="!A.providers.twitter")
-    button.btn.btn-twitter(type="button", ng-click="A.loginWithTwitter()")
-      i.fa.fa-twitter-square
-      span &#32;| Connect with Twitter
-  div(ng-if="A.providers.twitter")
-    button.btn.btn-twitter(type="button", ng-click="A.noop()")
-      i.fa.fa-twitter-square
-    button.btn.btn-sm.btn-danger(ng-if="A.providers.twitter", ng-click="A.unlinkLogin(A.providers.twitter)") &#32;Unlink
-
-  div(ng-if="!A.providers.tumblr")
-    button.btn.btn-tumblr(type="button", ng-click="A.loginWithTumblr()")
-      i.fa.fa-tumblr-square
-      span &#32;| Connect with Tumblr
-  div(ng-if="A.providers.tumblr")
-    button.btn.btn-tumblr(type="button", ng-click="A.noop()")
-      i.fa.fa-tumblr-square
-    button.btn.btn-sm.btn-danger(ng-if="A.providers.tumblr", ng-click="A.unlinkLogin(A.providers.tumblr)") &#32;Unlink
-
-
   h3 Connected Mobile Devices
 
   .row
@@ -153,3 +110,45 @@
     )
       span.glyphicon.glyphicon-plus
       span &#32;Authorize this device
+
+
+  h3 Linked Accounts
+  div
+    button.btn.btn-link(ng-click="A.showLoginModal()") Link another account
+
+  div(ng-if="!A.providers.facebook")
+    button.btn.btn-facebook(type="button", ng-click="A.loginWithFacebook()")
+      i.fa.fa-facebook-square
+      span &#32;| Connect with Facebook
+  div(ng-if="A.providers.facebook")
+    button.btn.btn-facebook(type="button", ng-click="A.noop()")
+      i.fa.fa-facebook-square
+    button.btn.btn-sm.btn-danger(ng-if="A.providers.facebook", ng-click="A.unlinkLogin(A.providers.facebook)") &#32;Unlink
+
+  div(ng-if="!A.providers.twitter")
+    button.btn.btn-twitter(type="button", ng-click="A.loginWithTwitter()")
+      i.fa.fa-twitter-square
+      span &#32;| Connect with Twitter
+  div(ng-if="A.providers.twitter")
+    button.btn.btn-twitter(type="button", ng-click="A.noop()")
+      i.fa.fa-twitter-square
+    button.btn.btn-sm.btn-danger(ng-if="A.providers.twitter", ng-click="A.unlinkLogin(A.providers.twitter)") &#32;Unlink
+
+  div(ng-if="!A.providers.tumblr")
+    button.btn.btn-tumblr(type="button", ng-click="A.loginWithTumblr()")
+      i.fa.fa-tumblr-square
+      span &#32;| Connect with Tumblr
+  div(ng-if="A.providers.tumblr")
+    button.btn.btn-tumblr(type="button", ng-click="A.noop()")
+      i.fa.fa-tumblr-square
+    button.btn.btn-sm.btn-danger(ng-if="A.providers.tumblr", ng-click="A.unlinkLogin(A.providers.tumblr)") &#32;Unlink
+
+  div(ng-if="!A.providers.ldsconnect")
+    button.btn.btn-ldsconnect(type="button", ng-click="A.loginWithLdsconnect()")
+      i.fa
+        img(src="/images/moroni.png", style="position: relative; left: -3px; height: 16px;")
+      span.signin | Connect with LDS.org
+  div(ng-if="A.providers.ldsconnect")
+    button.btn.btn-ldsconnect(type="button", ng-click="A.noop()")
+      i.fa.fa-ldsconnect-square
+    button.btn.btn-sm.btn-danger(ng-if="A.providers.ldsconnect", ng-click="A.unlinkLogin(A.providers.ldsconnect)") &#32;Unlink
