@@ -98,10 +98,145 @@ TODO put option in `./config.js` and `./app/scripts/services/st-api.js`, includi
 Regardless of how it goes over the wire, both the server-side and browser-side JavaScript
 must be written in `camelCase` and will be stored to the database in `snake_case`.
 
+Device Registration
+------
+
+### POST /api/me/devices
+
+request
+
+```javascript
+{
+  "token": "tok_abc123" // the device's uuid or leave blank to auto assign 
+, "agent": {
+      "family": "Firefox"
+    , "major": "31"
+    , "minor": "0"
+    , "patch": "0"
+    , "device": {
+        "family": "Other"
+      , "major": ""
+      , "minor": ""
+      , "patch": ""
+    }
+    , "os": {
+        "family": "Mac OS X"
+      , "major": "10"
+      , "minor": "9"
+      , "patch": ""
+      , "version": "10.9"
+    }
+    , "version": "31.0.0"
+    , "osversion": "10.9"
+    , "enable_device_notifications": true
+  }
+}
+```
+
+response
+
+```javascript
+// an array of all devices in the format above
+```
+
+try it
+
+```bash
+curl http://local.ldsconnect.org:4004/api/me/devices \
+  -X POST
+  -H "Authorization: Bearer 1-7T2" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -d '{"agent":{"family":"Firefox","major":"31","minor":"0","patch":"0","device":{"family":"Other","major":"","minor":"","patch":""},"os":{"family":"Mac OS X","major":"10","minor":"9","patch":"","version":"10.9"},"version":"31.0.0","osversion":"10.9"},"enable_push":true}'
+```
+
+### POST /api/me/devices/:token
+
+request
+
+:token The device's uuid
+
+Then any updates to the device
+
+```javascript
+{
+, "agent": {
+      "family": "Firefox"
+    , "major": "31"
+    , "minor": "0"
+    , "patch": "0"
+    , "device": {
+        "family": "Other"
+      , "major": ""
+      , "minor": ""
+      , "patch": ""
+    }
+    , "os": {
+        "family": "Mac OS X"
+      , "major": "10"
+      , "minor": "9"
+      , "patch": ""
+      , "version": "10.9"
+    }
+    , "version": "31.0.0"
+    , "osversion": "10.9"
+    , "enable_device_notifications": false
+  }
+}
+```
+
+response
+
+```javascript
+// an array of all devices in the format above
+```
+
+try it
+
+```bash
+curl http://local.ldsconnect.org:4004/api/me/devices/card_abc123 \
+  -H "Authorization: Bearer 1-7T2" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -d '{"agent":{"family":"Firefox","major":"31","minor":"0","patch":"0","device":{"family":"Other","major":"","minor":"","patch":""},"os":{"family":"Mac OS X","major":"10","minor":"9","patch":"","version":"10.9"},"version":"31.0.0","osversion":"10.9"},"enable_push":false}'
+```
+
+### GET /api/me/devices/
+
+response
+
+```javascript
+// an array of all devices in the format above
+```
+
+try it
+
+```bash
+curl http://local.ldsconnect.org:4004/api/me/devices/ \
+  -H "Authorization: Bearer 1-7T2"
+```
+
+### GET /api/me/devices/:token
+
+request
+
+:token  The uuid of the device to fetch
+
+response
+
+```javascript
+// a single device in the format above
+```
+
+try it
+
+```bash
+curl http://local.ldsconnect.org:4004/api/me/devices/tok_abc123 \
+  -H "Authorization: Bearer 1-7T2"
+```
+
 Payments & Credit Cards
 ------
 
-### GET /api/me/creditcards
+### GET /api/me/payment-methods
 
 Get a list of all credit card tokens. The credit cards are attached to the account object
 as creditcards, so this method may not be needed.
@@ -142,28 +277,48 @@ response
 ]
 ```
 
-### POST /api/me/creditcards
+try it
 
-Add a new credit card
+```bash
+curl http://local.ldsconnect.org:4004/api/me/payment-methods \
+  -H "Authorization: Bearer 1-7T2"
+```
+
+### POST /api/me/payment-methods
+
+Add a new payment method (currently only supports Stripe credit card tokens)
 
 request
 
 ```
   {
     "cardService": "stripe"
+  , "id": "tok_abc123"
+  , "livemode": false
+  , "created": 1405813253
+  , "used": false
+  , "object": "token"
+  , "type": "card"
   , "card": 
     {
-      "number": "4111111111111111"
+      "id": "card_abc123"
+    , "object": "card"
+    , "last4": "1111"
+    , "brand": "Visa"
+    , "funding": "unknown"
+    , "exp_month": 4
+    , "exp_year": 2018
+    , "fingerprint": "abc123"
+    , "country": "US"
     , "name": "Cardholder Name"
-    , "exp_month": 4,
-    , "exp_year": 2018,
-    , "cvc": "123",
-    , "address_line1": "123 Anystreet", // optional
-    , "address_line2": "Apt 101", // optional
-    , "address_city": "Anytown", // optional
-    , "address_zip": "12345", // optional
-    , "address_state": "NY", // optional
-    , "address_country": "US", // optional
+    , "address_line1": null
+    , "address_line2": null
+    , "address_city": null
+    , "address_state": null
+    , "address_zip": "12345"
+    , "address_country": null
+    , "customer": "cus_abc123"
+    }
   }
 ```
 
@@ -171,14 +326,14 @@ response - the card
 
 ```javascript
 { 
-  "id": "card_14NvdC2eZvKYlo2C9zySiKnW"
+  "id": "card_abc123"
 , "object": "card"
 , "last4": "4242"
 , "brand": "Visa"
 , "funding": "credit"
 , "exp_month": 5
 , "exp_year": 2017
-, "fingerprint": "Xt5EWLLDS7FJjR1c"
+, "fingerprint": "abc123"
 , "country": "US"
 , "name": null
 , "address_line1": null
@@ -190,15 +345,25 @@ response - the card
 , "cvc_check": "pass"
 , "address_line1_check": null
 , "address_zip_check": null
-, "customer": "cus_4WzcnFywIav3jX" 
+, "customer": "cus_abc123" 
 }
 // OR
 {
-  error: "Error message here"
+  "error": { "message": "Error message here" }
 }
 ```
 
-### POST /api/me/creditcards/:cardId/preferred
+try it
+
+```bash
+curl http://local.ldsconnect.org:4004/api/me/payment-methods \
+  -X POST
+  -H "Authorization: Bearer 1-7T2" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -d '{"cardService":"stripe","id":"tok_abc123","livemode":false,"created":1405813253,"used":false,"object":"token","type":"card","card":{"id":"card_abc123","object":"card","last4":"1111","brand":"Visa","funding":"unknown","exp_month":4,"exp_year":2018,"fingerprint":"abc123","country":"US","name":"Cardholder Name","address_line1":null,"address_line2":null,"address_city":null,"address_state":null,"address_zip":"12345","address_country":null,"customer":"cus_abc123"}}'
+```
+
+### POST /api/me/payment-methods/:cardId/preferred
 
 Set a card as the preferred card given the card id. Note that when you look at an item in the creditcards
 array, it is a token not a card. To access the id, use token.card.id.
@@ -211,11 +376,24 @@ response
 
 ```javascript
 {
-  "error":"An error message or null"
+  "success": true
+}
+// OR
+{
+  "error": { "message": "Error message here" }
 }
 ```
 
-### DELETE /api/me/creditcards/:cardId
+try it
+
+```bash
+curl http://local.ldsconnect.org:4004/api/me/payment-methods/card_abc123/preferred \
+  -X POST
+  -H "Authorization: Bearer 1-7T2"
+```
+
+
+### DELETE /api/me/payment-methods/:cardId
 
 Delete a card token given the card id. Note that when you look at an item in the creditcards
 array, it is a token not a card. To access the id, use token.card.id.
@@ -228,8 +406,16 @@ response
 
 ```javascript
 {
-  "error":"An error message or null"
+  "error": { "message": "Error message here" }
 }
+```
+
+try it
+
+```bash
+curl http://local.ldsconnect.org:4004/api/me/payment-methods/card_abc123 \
+  -X DELETE
+  -H "Authorization: Bearer 1-7T2"
 ```
 
 ### Errors
