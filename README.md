@@ -92,6 +92,7 @@ The external API is configurable to output and accept JSON in either `snake_case
 with `recase` through middleware in `connect` and `angular`.
 
 The default is to use `snake_case` (ruby style) for JSON.
+Use `?camel=true` to prevent conversion to snake case.
 
 TODO put option in `./config.js` and `./app/scripts/services/st-api.js`, including exceptions file.
 
