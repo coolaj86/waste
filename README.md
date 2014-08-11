@@ -17,7 +17,7 @@ bower install
 
 # In the world of rainbows and fairies, this would work as is - simple.
 # However, it often requires installing rvm and bundler and modifying environment variables,
-# and the immediately need for FML relief cream applied generously to the affected areas
+# and the immediate need for FML relief cream applied generously to the affected areas
 # I actually don't even use compass and I'd prefer to use less, but it was in the grunt template
 # and I haven't rooted it out yet, so feel free to pull request.
 sudo gem install compass 
