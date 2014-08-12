@@ -14,7 +14,7 @@
     , "extended_address": { "type": "text", "nullable": true }
     , "locality": { "type": "text", "nullable": false }
     , "region": { "type": "text", "nullable": false }
-    , "country_name": { "type": "text", "nullable": false }
+    , "country_code": { "type": "text", "nullable": false }
     , "postal_code": { "type": "text", "nullable": true }
     }
   , "timestamps": true
