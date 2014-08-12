@@ -12,7 +12,7 @@ angular.module('yololiumApp')
     var scope = this
       ;
 
-    console.log("$stateParams");
+    console.log('$stateParams');
     console.log($stateParams);
 
     StSession.ensureSession(
@@ -33,10 +33,10 @@ angular.module('yololiumApp')
       // get token from url param
       scope.token = $stateParams.token;
       $http.get(StApi.oauthPrefix + '/scope/' + $stateParams.token).then(function (resp) {
-        console.log("resp.data");
+        console.log('resp.data');
         console.log(resp.data);
         if (scope.error || !scope.scope) {
-          scope.error = scope.error || { message: "missing scope request" };
+          scope.error = scope.error || { message: 'missing scope request' };
           scope.rawResponse = resp.data;
           return;
         }
