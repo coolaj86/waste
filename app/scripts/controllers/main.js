@@ -35,7 +35,7 @@ angular.module('yololiumApp')
         M.pending = false;
         M.submitted = true;
       }, function () {
-        window.alert("There was an error sending your message.");
+        window.alert('There was an error sending your message.');
       });
     };
 
@@ -44,7 +44,7 @@ angular.module('yololiumApp')
     $scope.addSlide = function(img) {
       // var newWidth = 600 + slides.length;
       slides.push({
-        image: "http://images.coolaj86.com/api/resize/width/350?url=" + img,
+        image: 'http://images.coolaj86.com/api/resize/width/350?url=' + img,
         text: ['Social', 'Classy', 'Fun'][slides.length % 3]
       });
     };
