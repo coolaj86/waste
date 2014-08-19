@@ -121,6 +121,7 @@ module.exports.create = function (knex) {
       */
       return { name: props.tablename, meta: info };
     }, function (err) {
+      console.error('[ERROR] migrate.js');
       console.error(err);
       props._errorCount = props._errorCount || 0;
       if (props.errorCount > 3) {
