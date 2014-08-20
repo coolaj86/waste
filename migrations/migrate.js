@@ -86,6 +86,10 @@ module.exports.create = function (knex) {
           cur.references(col.references[1]).inTable(col.references[0]);
         }
 
+        if (col.unique) {
+          cur.unique();
+        }
+
         // TODO maybe this is best elswhere so that it isn't done twice?
         if (col.primary) {
           primaries.push(col.name);
