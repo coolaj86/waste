@@ -1,0 +1,11 @@
+[
+  { "tablename": "authcodes"
+  , "uuid": true
+  , "columns": {
+      "code": { "type": "text" }
+    , "expires_at": { "type": "timestamp" }
+    }
+  , "timestamps": true
+  , "xattrs": true
+  }
+]
