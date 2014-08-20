@@ -18,11 +18,12 @@ function init(DB) {
   var Codes = require('../lib/authcodes').create(DB)
     , $code
     , tests
+    , testsCheckId
     , count = 0
     ;
 
-  function setup() {
-    return Codes.create().then(function (_$code) {
+  function setup(opts) {
+    return Codes.create(opts).then(function (_$code) {
       $code = _$code;
       return $code;
     });
@@ -43,6 +44,15 @@ function init(DB) {
         if (true !== correct) {
           throw new Error('expected true to be the promised value');
         }
+
+        return Codes.validate($code.get('uuid'), $code.get('code')).then(function () {
+          throw new Error('expected the code to have been deleted');
+        }, function (err) {
+          if (!/not exist/.test(err.message)) {
+            console.error(err);
+            throw new Error('Got the wrong error');
+          }
+        });
       });
     }
   , function ($code) {
@@ -67,6 +77,21 @@ function init(DB) {
     }
   ];
 
+  testsCheckId = [
+    function ($code) {
+      return Codes.validate($code.get('uuid'), $code.get('code')).then(function () {
+        throw new Error('Should have had checkId error');
+      }, function (err) {
+        if (!/wrong account/.test(err.message)) {
+          console.error(err);
+          throw new Error('Got the wrong error');
+        }
+      }).then(function () {
+        return Codes.validate($code.get('uuid'), $code.get('code'), { checkId: 'abc123' });
+      });
+    }
+  ];
+
   forEachAsync(tests, function (next, fn) {
     setup().then(fn).then(teardown).then(function () {
       count += 1;
@@ -78,8 +103,20 @@ function init(DB) {
       return teardown();
     });
   }).then(function () {
-    console.log('%d of %d tests complete', count, tests.length);
-    process.exit();
+    forEachAsync(testsCheckId, function (next, fn) {
+      setup({ checkId: 'abc123' }).then(fn).then(teardown).then(function () {
+        count += 1;
+        next();
+      }, function (err) {
+        console.error('[ERROR] failure');
+        console.error(err);
+        console.error(fn.toString());
+        return teardown();
+      });
+    }).then(function () {
+      console.log('%d of %d tests complete', count, tests.length + testsCheckId.length);
+      process.exit();
+    });
   });
 }
 
