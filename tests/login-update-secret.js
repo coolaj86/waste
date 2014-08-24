@@ -1,5 +1,6 @@
 'use strict';
 
+// TODO test that none of secret, newSecret, oldSecret are accidentally exposed
 var config = require('../config')
   , path = require('path')
   , forEachAsync = require('forEachAsync').forEachAsync
