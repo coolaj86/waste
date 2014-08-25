@@ -50,28 +50,18 @@ function init(DB) {
   }
 
   function setup() {
-    console.log('setup');
     stripe = createStripe(stripeTest.secret);
     return Auth.LocalLogin.create(getFooAuth()).then(function (_$login) {
       $login = _$login;
-      console.log('$login');
-      console.log(!!$login);
 
       if ($login.related('accounts').length) {
         return $login.related('accounts').filter(getFirst)[0];
       }
 
       return Auth.Accounts.create({ role: 'test'/*, email: ''*/ }).then(function (_$account) {
-        console.log('[pm] linking account...');
         return Auth.Logins.linkAccounts(_$login, [_$account]).then(function () {
-          console.log('[root-user] setting primary account...');
           return Auth.Logins.setPrimaryAccount(_$login, _$account).then(function () {
-            console.log("[pm] created account");
-            console.log("[pm] login.get('primaryAccountId')", _$login.get('primaryAccountId'));
-            console.log("[pm] login.related('accounts').length", _$login.related('accounts').length);
             $account = _$account;
-            console.log('$account');
-            console.log(!!$account);
             return $account;
           });
         });
@@ -80,19 +70,11 @@ function init(DB) {
   }
 
   function teardown() {
-    console.log('teardown');
-    var _$account = $account
-      , _$login = $login
-      , $accounts
+    var $accounts
       , ps = []
       ;
 
     $accounts = $login.related('accounts');
-
-    console.log('_$account');
-    console.log(!!_$account);
-    console.log('_$login');
-    console.log(!!_$login);
 
     return $login.related('accounts').detach().then(function () {
       $accounts.forEach(function ($a) {
@@ -103,6 +85,7 @@ function init(DB) {
 
       $account = null;
       $login = null;
+
       return PromiseA.all(ps);
     });
   }
@@ -110,15 +93,57 @@ function init(DB) {
   tests = [
     function () {
       return stripe.tokens.create(getSampleCard(0)).then(function (stripeToken) {
-        console.log('stripeToken', stripeToken);
-/*
-        return PaymentMethods.getBids({ lotId: 'acme-lot-1' }).then(function (bidz) {
+        if (!stripeToken) {
+          throw new Error('No stripe token');
+        }
+
+        if ('string' !== typeof stripeToken.id) {
+          console.error(stripeToken);
+          console.error(typeof stripeToken.id);
+          console.error(stripeToken.id);
+          throw new Error('no token.id');
+        }
+
+        return stripeToken.id;
+      });
+    }
+  , function () {
+      return stripe.tokens.create(getSampleCard(0)).then(function (stripeToken) {
+        var tokenId = stripeToken.id
+          ;
+
+        return PaymentMethods.addCard(
+          $account
+        , { service: 'stripe', token: tokenId }
+        , { stripe: stripeTest /*, authAmount: 1000000, captureRefundAmount: 100*/ } // config
+        ).then(function (card) {
           // NOTE: this may return a bookshelf array or a JavaScript array of bookshelf objects
-          console.log(JSON.stringify(bidz, null, '  '));
-          //console.log(bidz);
+
+          var customers = $account.get('cardcustomers')
+            , methods = $account.get('paymentMethods')
+            , foundCust = 0
+            ;
+
+          customers.forEach(function (cust) {
+            if ('stripe' === cust.service) {
+              foundCust += 1;
+            }
+          });
+
+          if (1 !== foundCust) {
+            console.error(customers);
+            throw new Error('Did not find customer');
+          }
+
+          if (!methods.some(function (method) {
+            return method.id === card.id;
+          })) {
+            console.error(methods);
+            throw new Error('Did not find customer');
+          }
+
+          return null;
         });
-*/
-        return null;
       });
     }
   ];
@@ -135,7 +160,7 @@ function init(DB) {
       return teardown();
     });
   }).then(function () {
-    console.log('%d of %d tests complete', count, tests.length);
+    console.info('%d of %d tests complete', count, tests.length);
     process.exit();
   });
 }
