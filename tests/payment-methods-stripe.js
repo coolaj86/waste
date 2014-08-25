@@ -117,11 +117,10 @@ function init(DB) {
         , { service: 'stripe', token: tokenId }
         , { stripe: stripeTest /*, authAmount: 1000000, captureRefundAmount: 100*/ } // config
         ).then(function (card) {
-          // NOTE: this may return a bookshelf array or a JavaScript array of bookshelf objects
-
           var customers = $account.get('cardcustomers')
-            , methods = $account.get('paymentMethods')
             , foundCust = 0
+            , methods = $account.get('paymentMethods')
+            , m
             ;
 
           customers.forEach(function (cust) {
@@ -136,10 +135,53 @@ function init(DB) {
           }
 
           if (!methods.some(function (method) {
-            return method.id === card.id;
+            if (method.id === card.id) {
+              m = method;
+              return true;
+            }
           })) {
             console.error(methods);
-            throw new Error('Did not find customer');
+            throw new Error('Did not find payment method');
+          }
+
+          if (!m.createdAt) {
+            throw new Error('no idea how old this payment method is');
+          }
+
+          return null;
+        });
+      });
+    }
+  , function () {
+      return stripe.tokens.create(getSampleCard(0)).then(function (stripeToken) {
+        var tokenId = stripeToken.id
+          ;
+
+        return PaymentMethods.addCard(
+          $account
+        , { service: 'stripe', token: tokenId }
+        , { stripe: stripeTest, authAmount: 1000000, captureRefundAmount: 100 } // config
+        ).then(function (card) {
+          var methods = $account.get('paymentMethods')
+            , m
+            ;
+
+          if (!methods.some(function (method) {
+            if (method.id === card.id) {
+              m = method;
+              return true;
+            }
+          })) {
+            console.error(methods);
+            throw new Error('Did not find payment method');
+          }
+
+          if (!m.authAmount) {
+            throw new Error('no idea how much this card is good for');
+          }
+
+          if (!m.updatedAt) {
+            throw new Error('no idea when this card was last authorized');
           }
 
           return null;
@@ -157,7 +199,9 @@ function init(DB) {
       console.error(err);
       console.error(fn.toString());
 
-      return teardown();
+      return teardown().then(function () {
+        throw err;
+      });
     });
   }).then(function () {
     console.info('%d of %d tests complete', count, tests.length);
