@@ -114,8 +114,8 @@ function init(DB) {
 
         return PaymentMethods.addCard(
           $account
-        , { service: 'stripe', token: tokenId }
-        , { stripe: stripeTest /*, authAmount: 1000000, captureRefundAmount: 100*/ } // config
+        , { service: 'stripe', tokenId: tokenId }
+        , { stripe: stripeTest } // config
         ).then(function (card) {
           var customers = $account.get('cardcustomers')
             , foundCust = 0
@@ -159,7 +159,7 @@ function init(DB) {
 
         return PaymentMethods.addCard(
           $account
-        , { service: 'stripe', token: tokenId }
+        , { service: 'stripe', tokenId: tokenId }
         , { stripe: stripeTest, authAmount: 1000000, captureRefundAmount: 100 } // config
         ).then(function (card) {
           var methods = $account.get('paymentMethods')
