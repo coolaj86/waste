@@ -9,7 +9,7 @@ angular.module('yololiumApp')
 
     // Crazy window open/close hacks and mobile chrome on iOS workarounds
 
-    scope.title = "Sign in or Create account";
+    scope.title = 'Sign in or Create account';
     function closeWithSession(err, session) {
       console.log('[login.js] closeWithSession');
       $modalInstance.close(session);
@@ -43,12 +43,12 @@ angular.module('yololiumApp')
       console.log(resp.data);
 
       if (resp.data && resp.data.mostRecentLoginId) {
-        scope.alertType = "";
-        scope.alertMessage = "";
-        scope.authToken = "";
+        scope.alertType = '';
+        scope.alertMessage = '';
+        scope.authToken = '';
         $modalInstance.close(resp.data);
       } else {
-        scope.alertMessage = "Invalid Username & Passphrase";
+        scope.alertMessage = 'Invalid Username & Passphrase';
         scope.alertType = 'alert-danger';
       }
     }
@@ -76,13 +76,13 @@ angular.module('yololiumApp')
     // Access Token
     //
     scope.demoProfiles = StApi.testProfiles;
-    scope.authToken = "";
+    scope.authToken = '';
     scope.loginWithToken = function () {
       var auth = { 'Authorization': 'Bearer ' + scope.authToken }
         ;
 
       scope.alertType = 'alert-info';
-      scope.alertMessage = "Logging in...";
+      scope.alertMessage = 'Logging in...';
 
       // TODO allow use of token in place of session cookies
       // TODO XSRF-TOKEN in cookie and X-XSRF-TOKEN in header
@@ -92,12 +92,12 @@ angular.module('yololiumApp')
         console.log(resp.data);
 
         if (resp.data && resp.data.mostRecentLoginId) {
-          scope.alertType = "";
-          scope.alertMessage = "";
-          scope.authToken = "";
+          scope.alertType = '';
+          scope.alertMessage = '';
+          scope.authToken = '';
           $modalInstance.close(resp.data);
         } else {
-          scope.alertMessage = "Invalid Access Token";
+          scope.alertMessage = 'Invalid Access Token';
           scope.alertType = 'alert-danger';
         }
       });

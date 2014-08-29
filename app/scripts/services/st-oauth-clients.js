@@ -21,7 +21,9 @@ angular.module('yololiumApp')
 
     function create(name, secret) {
       var app = { name: name };
-      if (secret) app.secret = secret;
+      if (secret) {
+        app.secret = secret;
+      }
 
       return $http.post(apiPrefix + '/me/clients', app).then(function (resp) {
         return resp.data;
