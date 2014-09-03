@@ -7,7 +7,6 @@ var config = require('../config')
   ;
 
 config.port = process.argv[2] || config.port;
-config.wsport = process.argv[3] || config.wsport;
 
 server = http.createServer(require('../server')).listen(config.port, function () {
   console.log('Listening on ' + config.protocol + '://127.0.0.1:' + server.address().port);

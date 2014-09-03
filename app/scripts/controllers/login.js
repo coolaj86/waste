@@ -10,8 +10,10 @@ angular.module('yololiumApp')
     // Crazy window open/close hacks and mobile chrome on iOS workarounds
 
     scope.title = "Sign in or Create account";
+
     function closeWithSession(err, session) {
       console.log('[login.js] closeWithSession');
+      console.log(session);
       $modalInstance.close(session);
     }
 
@@ -39,26 +41,21 @@ angular.module('yololiumApp')
     // ID & Secret (User & Pass)
     //
     function createSession(resp) {
-      console.log('[Basic Auth] resp.data');
-      console.log(resp.data);
-
       if (resp.data && resp.data.mostRecentLoginId) {
-        scope.alertType = "";
-        scope.alertMessage = "";
-        scope.authToken = "";
+        scope.alertType = '';
+        scope.alertMessage = '';
+        scope.authToken = '';
         $modalInstance.close(resp.data);
       } else {
-        scope.alertMessage = "Invalid Username & Passphrase";
+        scope.alertMessage = 'Invalid Username & Passphrase';
         scope.alertType = 'alert-danger';
       }
     }
     scope.auth = {};
     scope.createWithUidSecret = function () {
-      console.log('[login] create uid secret');
       $http.post(apiPrefix + '/logins', { uid: scope.auth.uid, secret: scope.auth.secret }).then(createSession);
     };
     scope.loginWithBasicAuth = function () {
-      console.log('[login] login basic');
       var auth = { 'Authorization': 'Basic ' + btoa(scope.auth.uid + ':' + scope.auth.secret) }
         , form = null
         ;
@@ -76,13 +73,13 @@ angular.module('yololiumApp')
     // Access Token
     //
     scope.demoProfiles = StApi.testProfiles;
-    scope.authToken = "";
+    scope.authToken = '';
     scope.loginWithToken = function () {
       var auth = { 'Authorization': 'Bearer ' + scope.authToken }
         ;
 
       scope.alertType = 'alert-info';
-      scope.alertMessage = "Logging in...";
+      scope.alertMessage = 'Logging in...';
 
       // TODO allow use of token in place of session cookies
       // TODO XSRF-TOKEN in cookie and X-XSRF-TOKEN in header
@@ -92,12 +89,12 @@ angular.module('yololiumApp')
         console.log(resp.data);
 
         if (resp.data && resp.data.mostRecentLoginId) {
-          scope.alertType = "";
-          scope.alertMessage = "";
-          scope.authToken = "";
+          scope.alertType = '';
+          scope.alertMessage = '';
+          scope.authToken = '';
           $modalInstance.close(resp.data);
         } else {
-          scope.alertMessage = "Invalid Access Token";
+          scope.alertMessage = 'Invalid Access Token';
           scope.alertType = 'alert-danger';
         }
       });

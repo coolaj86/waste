@@ -203,7 +203,7 @@ angular.module('yololiumApp', [
           nav: nav
         , body: {
             templateUrl: 'views/account.html'
-          , controller: "AccountCtrl as A"
+          , controller: 'AccountCtrl as A'
           , resolve: {
               mySession: ['StSession', function (StSession) {
                 return StSession.get();
@@ -220,7 +220,7 @@ angular.module('yololiumApp', [
           nav: nav
         , body: {
             templateUrl: 'views/push.html'
-          , controller: "PushCtrl as P"
+          , controller: 'PushCtrl as P'
           , resolve: {
               mySession: ['StSession', function (StSession) {
                 return StSession.get();
@@ -237,7 +237,7 @@ angular.module('yololiumApp', [
           nav: nav
         , body: {
             templateUrl: 'views/store.html'
-          , controller: "StoreCtrl as S"
+          , controller: 'StoreCtrl as S'
           , resolve: {
               mySession: ['StSession', function (StSession) {
                 return StSession.get();
@@ -351,7 +351,7 @@ angular.module('yololiumApp', [
     $rootScope.$on('$stateChangeStart', function (e, to, params, from) {
       // TODO https://github.com/angular-ui/ui-router/issues/92 @christopherthielen (at the very bottom)
       $rootScope.stStateHack.to = to && to.name;
-      $rootScope.stStateHack.from = from && "" !== from.name && from.name;
+      $rootScope.stStateHack.from = from && '' !== from.name && from.name;
       $rootScope.stStateHack.params = params;
 
       console.log('change start', to, from);
