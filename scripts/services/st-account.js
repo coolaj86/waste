@@ -44,6 +44,7 @@ angular.module('yololiumApp')
       }
 
       // TODO remap accounts and logins to eachother on session update
+      session.account.logins = session.account.logins || [];
       session.account.logins.some(function (login) {
         // TODO make configurable
         if ('local' === (login.type || login.provider)) {
@@ -62,16 +63,34 @@ angular.module('yololiumApp')
       console.log(session.account);
       return me.showAccountModal(session, opts);
     };
+
+    function ensureLocalLogin(updates) {
+      var d = $q.defer()
+        ;
+
+      updates.logins = updates.logins || [];
+      updates.logins.some(function (login) {
+        // TODO make configurable
+        if ('local' === (login.type || login.provider)) {
+          updates.account.localLoginId = login.id || login.hashid;
+          return true;
+        }
+      });
+
+      return d.promise;
+    }
     
     function update(id, updates) {
       if (!id) {
         return create(updates);
       }
 
-      return $http.post(StApi.apiPrefix + '/accounts/' + id, updates).then(function (resp) {
-        console.log('UPDATE account');
-        console.log(resp);
-        return resp.data;
+      return ensureLocalLogin(updates).then(function () {
+        return $http.post(StApi.apiPrefix + '/accounts/' + id, updates).then(function (resp) {
+          console.log('UPDATE account');
+          console.log(resp);
+          return resp.data;
+        });
       });
     }
 
@@ -84,29 +103,31 @@ angular.module('yololiumApp')
         return update(updates.id, updates);
       }
 
-      if (updates.localLogin) {
-        logins.push(updates.localLogin);
-        updates.localLoginId = updates.localLogin.id;
-        delete updates.localLogin;
-      }
-
-      logins.filter(function (login) {
-        if (!login.id) {
-          return true;
+      return ensureLocalLogin(updates).then(function () {
+        if (updates.localLogin) {
+          logins.push(updates.localLogin);
+          updates.localLoginId = updates.localLogin.id;
+          delete updates.localLogin;
         }
-        if (!loginsMap[login.id]) {
-          loginsMap[login.id] = true;
-          return true;
-        }
-        return false;
-      });
 
-      return $http.post(StApi.apiPrefix + '/accounts', updates)
-        .then(function (resp) {
-          console.log('CREATE account');
-          console.log(resp);
-          return resp.data;
+        logins.filter(function (login) {
+          if (!login.id) {
+            return true;
+          }
+          if (!loginsMap[login.id]) {
+            loginsMap[login.id] = true;
+            return true;
+          }
+          return false;
         });
+
+        return $http.post(StApi.apiPrefix + '/accounts', updates)
+          .then(function (resp) {
+            console.log('CREATE account');
+            console.log(resp);
+            return resp.data;
+          });
+      });
     }
 
     me.update = update;
