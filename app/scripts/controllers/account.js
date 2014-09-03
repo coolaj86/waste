@@ -90,7 +90,7 @@ angular.module('yololiumApp')
 
     A.addCardCustom = function () {
       var modal = $modal.open({
-        templateUrl: "/views/cc-entry.html"
+        templateUrl: '/views/cc-entry.html'
       });
       modal.opened.then(function () {        
         setTimeout(function () {
@@ -166,7 +166,7 @@ angular.module('yololiumApp')
         console.log(data);
         init(data);
       }, function (err) {
-        console.error("Couldn't show login window???");
+        console.error('Couldn\'t show login window???');
         console.error(err);
         // nada
       });
