@@ -88,6 +88,7 @@ angular.module('yololiumApp')
     };
 
     scope.logout = function () {
+      console.info("You logged out. Sad day. :-/");
       StSession.destroy().then(function () {
         updateSession(null);
       }, function () {
