@@ -193,6 +193,8 @@ angular.module('yololiumApp')
       var d = $q.defer()
         ;
 
+      console.log('DESTROYING SESSION');
+      console.log(shared);
       shared.session = null;
       gettingSession = null;
       $http.delete(apiPrefix + '/session').success(function (resp) {
@@ -294,7 +296,7 @@ angular.module('yololiumApp')
       };
 
       //scope['loginWith' + uAbbr + ''] = 
-      return function () {
+      function tryToLogin() {
         console.log('[debug]', 'loginWith' + uAbbr + '');
         login.loginCallback = function (err) {
           console.log('[st-session.js] promiseLogin loginCallback');
@@ -307,6 +309,8 @@ angular.module('yololiumApp')
           read({ expire: true }).then(function (session) {
             console.log('[st-session.js] promiseLogin StSession.read() callback');
             if (session.error) {
+              console.error('error in session');
+              console.error(session);
               destroy();
             }
             d.resolve(session);
@@ -316,7 +320,9 @@ angular.module('yololiumApp')
         login['poll' + uAbbr + 'Int'] = setInterval(login['poll' + uAbbr + 'Login'], 300);
 
         return d.promise;
-      };
+      }
+
+      return tryToLogin;
     }
 
     function ensureSession(opts) {
