@@ -52,8 +52,6 @@ angular.module('yololiumApp')
       ];
 
       if (!session || !session.account || session.guest || 'guest' === session.account.role) {
-        console.log('nav session');
-        console.log(session);
         session = null;
       }
 
@@ -65,7 +63,6 @@ angular.module('yololiumApp')
       }
 
       scope.session = session;
-      console.log('ROLE', role, scope.session);
       scope.account = session && session.account;
       scope.tabs = allTabs.filter(function (tab) {
         if (!tab.roles || !tab.roles.length) { return true; }
@@ -84,7 +81,6 @@ angular.module('yololiumApp')
 
     scope.showLoginModal = function () {
       StSession.ensureSession().then(function (session) {
-        console.log('NAV ENSURE SESSION', session);
         updateSession(session);
       }, function () {
         // nada
@@ -92,6 +88,7 @@ angular.module('yololiumApp')
     };
 
     scope.logout = function () {
+      console.info("You logged out. Sad day. :-/");
       StSession.destroy().then(function () {
         updateSession(null);
       }, function () {
