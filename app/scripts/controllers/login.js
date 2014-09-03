@@ -10,8 +10,10 @@ angular.module('yololiumApp')
     // Crazy window open/close hacks and mobile chrome on iOS workarounds
 
     scope.title = "Sign in or Create account";
+
     function closeWithSession(err, session) {
       console.log('[login.js] closeWithSession');
+      console.log(session);
       $modalInstance.close(session);
     }
 
@@ -39,9 +41,6 @@ angular.module('yololiumApp')
     // ID & Secret (User & Pass)
     //
     function createSession(resp) {
-      console.log('[Basic Auth] resp.data');
-      console.log(resp.data);
-
       if (resp.data && resp.data.mostRecentLoginId) {
         scope.alertType = "";
         scope.alertMessage = "";
@@ -54,11 +53,9 @@ angular.module('yololiumApp')
     }
     scope.auth = {};
     scope.createWithUidSecret = function () {
-      console.log('[login] create uid secret');
       $http.post(apiPrefix + '/logins', { uid: scope.auth.uid, secret: scope.auth.secret }).then(createSession);
     };
     scope.loginWithBasicAuth = function () {
-      console.log('[login] login basic');
       var auth = { 'Authorization': 'Basic ' + btoa(scope.auth.uid + ':' + scope.auth.secret) }
         , form = null
         ;
