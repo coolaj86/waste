@@ -18,8 +18,8 @@
 */
 var CONFIG = {
   protocol: 'http'
-, hostname: 'local.ldsconnect.org'
-, port: 4004
+, hostname: 'local.foobar3000.com'
+, port: 4005
 , get host() {
     if (
         'http' === this.protocol && '80' === this.port.toString()
