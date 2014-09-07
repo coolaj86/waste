@@ -35,8 +35,25 @@ function init(Db) {
     return app;
   };
 
+
+  //
+  // Generic Template API
+  //
+  app
+    //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
+    .use(serveStatic(path.join(__dirname, 'priv', 'public')))
+    .use(serveStatic(path.join(__dirname, 'dist')))
+    .use(serveStatic(path.join(__dirname, 'app')))
+    ;
+
   app
     //.use(require('morgan')())
+    /*
+    .use(function (req, res, next) {
+      console.log(req.url, req.headers.authorization);
+      next();
+    })
+    */
     .use(require('errorhandler')({ dumpExceptions: true, showStack: true }))
     .use(require('./lib/connect-shims/query')())
     .use(require('body-parser').json({
@@ -105,18 +122,9 @@ function init(Db) {
   oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
   sessionLogic = require('./lib/sessionlogic').init(app, passport, config, Auth);
 
+  // TODO move attaching the account into a subsequent middleware?
   app.use(urlrouter(sessionLogic.route));
   app.use(urlrouter(oauth2Logic.route));
-
-  // TODO move attaching the account into a subsequent middleware?
-  app.use(function (req, res, next) {
-    if (/api/.test(req.url)) {
-      console.log("[server] req.isAuthenticated");
-      console.log(req.isAuthenticated());
-      console.log(!!req.user);
-    }
-    next();
-  });
 
   //
   // Generic App Routes
@@ -156,16 +164,6 @@ function init(Db) {
     .use(urlrouter(ws.create(app, config, wsport, [])))
     ;
   */
-
-  //
-  // Generic Template API
-  //
-  app
-    //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
-    .use(serveStatic(path.join(__dirname, 'priv', 'public')))
-    .use(serveStatic(path.join(__dirname, 'dist')))
-    .use(serveStatic(path.join(__dirname, 'app')))
-    ;
 }
 
 module.exports = app;
