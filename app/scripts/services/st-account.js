@@ -72,10 +72,12 @@ angular.module('yololiumApp')
       updates.logins.some(function (login) {
         // TODO make configurable
         if ('local' === (login.type || login.provider)) {
-          updates.account.localLoginId = login.id || login.hashid;
+          updates.localLoginId = login.id || login.hashid;
           return true;
         }
       });
+
+      d.resolve();
 
       return d.promise;
     }
@@ -103,6 +105,8 @@ angular.module('yololiumApp')
         return update(updates.id, updates);
       }
 
+      console.log('st-account.create updates');
+      console.log(updates);
       return ensureLocalLogin(updates).then(function () {
         if (updates.localLogin) {
           logins.push(updates.localLogin);
@@ -110,7 +114,7 @@ angular.module('yololiumApp')
           delete updates.localLogin;
         }
 
-        logins.filter(function (login) {
+        updates.logins = logins.filter(function (login) {
           if (!login.id) {
             return true;
           }
