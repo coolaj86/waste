@@ -46,6 +46,15 @@ function init(DB) {
       }
     });
 
+    cards.push({
+      card: {
+        "number": '4242424242424242',
+        "exp_month": 1,
+        "exp_year": 2017,
+        "cvc": '777'
+      }
+    });
+
     return cards[i];
   }
 
@@ -61,11 +70,13 @@ function init(DB) {
       return Auth.Accounts.create({ role: 'test'/*, email: ''*/ }).then(function (_$account) {
         return Auth.Logins.linkAccounts(_$login, [_$account]).then(function () {
           return Auth.Logins.setPrimaryAccount(_$login, _$account).then(function () {
-            $account = _$account;
-            return $account;
+            return _$account;
           });
         });
       });
+    }).then(function (_$account) {
+      $account = _$account;
+      return $account;
     });
   }
 
@@ -91,6 +102,7 @@ function init(DB) {
   }
 
   tests = [
+    /*
     function () {
       return stripe.tokens.create(getSampleCard(0)).then(function (stripeToken) {
         if (!stripeToken) {
@@ -186,6 +198,41 @@ function init(DB) {
 
           return null;
         });
+      });
+    }
+  , 
+    */
+    function () {
+      var ps = []
+        ;
+
+      ps.push(stripe.tokens.create(getSampleCard(0)));
+      ps.push(stripe.tokens.create(getSampleCard(1)));
+
+      return PromiseA.all(ps).then(function (tokens) {
+        var ps1 = []
+          ;
+
+        tokens.forEach(function (stripeToken) {
+          ps1.push(PaymentMethods.addCard(
+            $account
+          , { service: 'stripe', tokenId: stripeToken.id }
+          , { stripe: stripeTest, authAmount: 1000000, captureRefundAmount: 100 } // config
+          ));
+        });
+
+        return PromiseA.all(ps1);
+      }).then(function () {
+        var ps2 = []
+          ;
+
+        console.log('blah blah');
+        $account.get('paymentMethods').forEach(function (pm) {
+          console.log(pm);
+          ps2.push(PaymentMethods.removeCard($account, pm.id, { stripe: stripeTest }));
+        });
+
+        return PromiseA.all(ps2);
       });
     }
   ];
