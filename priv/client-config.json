@@ -27,7 +27,6 @@
   , "storeName": "Business Name Here"
   , "storeLogo": null
   }
-, "payInvoiceTitle": "Pay Part or All of your Invoice"
 , "loginProviders": {
     "facebook": "/facebook/connect"
   , "twitter": "/twitter/authn/connect"
