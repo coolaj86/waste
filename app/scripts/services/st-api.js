@@ -44,32 +44,17 @@
     , "http://home.roadrunner.com/~tuco/looney/acme/doit.jpg"
     ]
   };
+  x.payInvoiceTitle = "Pay Part or All of your Invoice";
 
   angular.module('steve', [])
     .constant('stConfig', x)
-//
-/*
-  .provider('StConfigProvider', function StConfigProvider() {
-    var me = this || {}
-      ;
+    .service('StApi', function StApi() {
+      // AngularJS will instantiate a singleton by calling "new" on this function
+      var me = this
+        ;
 
-    Object.keys(x).forEach(function (k) {
-      me[k] = x[k];
+      Object.keys(x).forEach(function (k) {
+        me[k] = x[k];
+      });
     });
-
-    
-    // return x;
-  })
-// */
-  .service('StApi', function StApi() {
-    // AngularJS will instantiate a singleton by calling "new" on this function
-    var me = this
-      ;
-
-    Object.keys(x).forEach(function (k) {
-      me[k] = x[k];
-    });
-
-    //return me;
-  });
 }());
