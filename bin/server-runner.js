@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-var config = require('../config')
+var config = require('../priv/config')
   , http = require('http')
   , server
   ;
