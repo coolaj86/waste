@@ -53,7 +53,10 @@ angular.module('yololiumApp')
     }
     scope.auth = {};
     scope.createWithUidSecret = function () {
-      $http.post(apiPrefix + '/logins', { uid: scope.auth.uid, secret: scope.auth.secret }).then(createSession);
+      $http.post(apiPrefix + '/logins', {
+        uid: scope.auth.uid
+      , secret: scope.auth.secret
+      }).then(createSession);
     };
     scope.loginWithBasicAuth = function () {
       var auth = { 'Authorization': 'Basic ' + btoa(scope.auth.uid + ':' + scope.auth.secret) }
