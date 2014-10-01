@@ -1,7 +1,26 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('MainCtrl', ['$scope', '$state', '$stateParams', '$http', '$sce', 'mySession', 'StApi', 'stConfig', function ($scope, $state, $stateParams, $http, $sce, mySession, StApi, stConfig) {
+  .controller(
+    'MainCtrl'
+  , [ '$scope'
+    , '$state'
+    , '$stateParams'
+    , '$http'
+    , '$sce'
+    , 'mySession'
+    , 'StApi'
+    , 'stConfig'
+    , function (
+        $scope
+      , $state
+      , $stateParams
+      , $http
+      , $sce
+      , mySession
+      , StApi
+      , stConfig
+    ) {
     if ($stateParams.next) {
       $state.go($stateParams.next, $stateParams.nextParams);
     }
