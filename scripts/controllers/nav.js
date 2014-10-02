@@ -19,9 +19,9 @@ angular.module('yololiumApp')
         , title: 'Home'
         , href: $state.href('root')
         }
-      , { active: $state.includes('oauth-clients')
+      , { active: $state.includes('oauthclients')
         , title: 'Apps'
-        , href: $state.href('oauth-clients')
+        , href: $state.href('oauthclients')
         }
       , { active: $state.includes('store')
         , title: 'Store'
