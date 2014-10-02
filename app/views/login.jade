@@ -22,7 +22,7 @@
 
     .account.signin-option(ng-if="'login' == L.authType || 'create-account' == L.authType")
       .row
-        form
+        form(ng-submit="L.loginOrCreate()")
           .col-md-6
             .form-group
               //- or user or app id
@@ -37,21 +37,19 @@
               label(for='password') Passphrase
               span &nbsp;&nbsp;&nbsp;
               label.checkbox-inline
-                input.checkbox(type="checkbox", ng-model="L.showSecret", ng-click="L.showSecret = !L.showSecret", tabindex="-1")
+                input.checkbox(type="checkbox" ng-model="L.showSecret", ng-click="L.showSecret = !L.showSecret", tabindex="-1")
                 span Show
               input.form-control(ng-if="!L.showSecret", ng-model="L.auth.secret", type='password', placeholder="ex: ************")
               input.form-control(ng-if="L.showSecret", ng-model="L.auth.secret", type='text', placeholder="ex: my secret phrase")
           .col-md-12
             .form-group
               button.btn.btn-primary(
-                ng-click="L.createWithUidSecret()"
                 ng-if="'create-account' == L.authType"
-                type="button"
+                type="submit"
               ) Create Account
               button.btn.btn-primary(
-                ng-click="L.loginWithBasicAuth()"
                 ng-if="'create-account' != L.authType"
-                type="button"
+                type="submit"
               ) Sign In
               span(ng-if="'create-account' == L.authType")
                 span &nbsp;Have an account?
