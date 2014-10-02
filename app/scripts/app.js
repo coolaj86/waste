@@ -267,13 +267,13 @@ angular.module('yololiumApp', [
         , footer: footer
         }
       })
-      .state('oauth-clients', {
+      .state('oauthclients', {
         url: '/apps/'
       , views: {
           nav: nav
         , body: {
-            templateUrl: 'views/oauth-clients.html'
-          , controller: 'OauthClientsCtrl as OA'
+            templateUrl: 'views/oauthclients.html'
+          , controller: 'OauthclientsCtrl as OA'
           }
         , footer: footer
         }
