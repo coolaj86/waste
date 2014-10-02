@@ -54,9 +54,9 @@ angular.module('yololiumApp')
     scope.auth = {};
     scope.loginOrCreate = function () {
       if ('login' === scope.authType) {
-        scope.createWithUidSecret();
-      } else {
         scope.loginWithBasicAuth();
+      } else {
+        scope.createWithUidSecret();
       }
     };
     scope.createWithUidSecret = function () {
