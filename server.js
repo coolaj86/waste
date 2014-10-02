@@ -4,7 +4,8 @@ var connect = require('connect')
   , app = connect()
   , path = require('path')
   , serveStatic = require('serve-static')
-  , urlrouter = require('urlrouter')
+  , urlrouter = require('connect_router')
+  //, urlrouter = require('urlrouter')
   ;
 
 function initApi(config, Db, app) {
@@ -104,7 +105,7 @@ function initApi(config, Db, app) {
     .api(urlrouter(require('./lib/accounts').create(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/logins').create(app, config, Db, Auth, sessionLogic.manualLogin).route))
     .api(urlrouter(require('./lib/me').create(app, config, Db, Auth).route))
-    .api(urlrouter(require('./lib/oauth-clients').create(app, config, Db, Auth).route))
+    .api(urlrouter(require('./lib/oauthclients').create(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/contacts').create(app, config, Db).route))
     .api(urlrouter(require('./lib/account-addresses').create(app, config).route))
     .api(urlrouter(require('./lib/account/contacts')
