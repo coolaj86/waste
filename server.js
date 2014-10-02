@@ -4,8 +4,8 @@ var connect = require('connect')
   , app = connect()
   , path = require('path')
   , serveStatic = require('serve-static')
-  , urlrouter = require('connect_router')
-  //, urlrouter = require('urlrouter')
+  //, urlrouter = require('connect_router')
+  , urlrouter = require('urlrouter')
   ;
 
 function initApi(config, Db, app) {
