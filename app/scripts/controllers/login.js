@@ -47,11 +47,18 @@ angular.module('yololiumApp')
         scope.authToken = '';
         $modalInstance.close(resp.data);
       } else {
-        scope.alertMessage = 'Invalid Username & Passphrase';
+        scope.alertMessage = resp.data.error && resp.data.error.message || 'Invalid Username & Passphrase';
         scope.alertType = 'alert-danger';
       }
     }
     scope.auth = {};
+    scope.loginOrCreate = function () {
+      if ('login' === scope.authType) {
+        scope.createWithUidSecret();
+      } else {
+        scope.loginWithBasicAuth();
+      }
+    };
     scope.createWithUidSecret = function () {
       $http.post(apiPrefix + '/logins', {
         uid: scope.auth.uid
