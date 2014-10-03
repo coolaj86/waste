@@ -14,7 +14,6 @@ function init(config, DB) {
 
     //shared.accId = '310b4365-4359-434f-9224-5421158d7502';
     if (shared.accId) {
-      console.log('get account');
       p = Accounts.get(null, shared.accId);
     } else {
       p = Accounts.create(config, {});
@@ -100,9 +99,6 @@ function init(config, DB) {
       });
     }
   , function addShippingAddress($account) {
-      console.log('[4]');
-      console.log('shared.addrId');
-      console.log(shared.addrId);
       return Addrs.upsertShipping(
         null
       , $account
