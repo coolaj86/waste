@@ -106,7 +106,7 @@ function initApi(config, Db, app) {
     .api(urlrouter(require('./lib/me').create(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/oauthclients').create(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/contacts').create(app, config, Db).route))
-    .api(urlrouter(require('./lib/account-addresses').create(app, config).route))
+    .api(urlrouter(require('./lib/account-addresses').createRouter(app, config).route))
     .api(urlrouter(require('./lib/account/contacts')
       .create(app, config, Db).route
     ))

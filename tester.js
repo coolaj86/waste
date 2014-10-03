@@ -2,6 +2,7 @@
 'use strict';
 
 var config = require('./priv/config')
+  //, PromiseA = require('bluebird').Promise
   , path = require('path')
   , forEachAsync = require('forEachAsync').forEachAsync
   , testpath
@@ -39,7 +40,7 @@ function init(DB) {
       console.log('PASS', getFnName(fn).replace(/\n[\s\S]*/, ''));
       console.log();
       next();
-    }, function (err) {
+    }).catch(function (err) {
       console.error('[ERROR] failure 1');
       console.error(err);
       console.error('');
@@ -48,13 +49,24 @@ function init(DB) {
       console.error('');
       console.error('');
       test.teardown().then(function () {
-        throw err;
+        test.finalTeardown().then(function () {
+          throw err;
+        });
       });
     });
   }).then(function () {
-    console.log('%d of %d tests complete', count, test.tests.length);
-    process.exit();
+    console.info('%d of %d tests complete', count, test.tests.length);
+    test.finalTeardown().then(function () {
+      process.exit();
+    });
   });
+  /*.catch(function (err) {
+    process.nextTick(function () {
+      process.exit();
+    });
+    throw err;
+  });
+  */
 }
 
 module.exports.create = function (_testpath) {
