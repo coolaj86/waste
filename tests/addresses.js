@@ -8,6 +8,42 @@ function init(config, DB) {
     , shared = {}
     ;
 
+  function getMaryAddr() {
+    return {
+      addressee: "Mary Jane"
+    , streetAddress: "000 Nowhere Ave"
+    , extendedAddress: null
+    , locality: "Burlington"
+    , region: "Vermont"
+    , pastalCode: "05401"
+    , countryCode: "US"
+    };
+  }
+  
+  function getJohnAddr() {
+    return {
+      addressee: "John Doe"
+    , streetAddress: "123 Sesame St"
+    , extendedAddress: ["Claims Office", "Bldg 1 Ste B"]
+    , locality: "Baywatch"
+    , region: "California"
+    , pastalCode: "90210"
+    , countryCode: "US"
+    };
+  }
+
+  function getBobAddr() {
+    return {
+      addressee: "Bob"
+    , streetAddress: "Mario Circuit"
+    , extendedAddress: ["Finance"]
+    , locality: "Boston"
+    , region: "Massachusetts"
+    , pastalCode: "02128"
+    , countryCode: "US"
+    };
+  }
+
   function setup() {
     var p
       ;
@@ -45,88 +81,176 @@ function init(config, DB) {
     });
   }
 
-  // TODO test that setting home sets shipping_address_id
   tests = [
+    //
+    //
     function addAddresses($account) {
-      return Addrs.add(null, $account, $account.related('addresses'), {
-        addressee: "John Doe"
-      , streetAddress: "123 Sesame St"
-      , extendedAddress: ["Claims Office", "Bldg 1 Ste B"]
-      , locality: "Baywatch"
-      , region: "California"
-      , pastalCode: "90210"
-      , countryCode: "US"
-      }).then(function ($addr) {
-        if (1 !== $account.related('addresses').length) {
-          console.error("$account.related('addresses').length");
-          console.error($account.related('addresses').length);
-          throw new Error("should be exactly one address");
-        }
+      Promise.all(Addrs.add(
+          null
+        , $account
+        , $account.related('addresses')
+        , getJohnAddr()
+        ).then(function ($addr) {
+          shared.johnDoeAddr = $addr.id;
 
-        if ("John Doe" !== $addr.get('addressee')) {
-          throw new Error("Didn't properly create address");
+          if (1 !== $account.related('addresses').length) {
+            throw new Error("should be exactly 1 address, not " + $account.related('addresses').length);
+          }
+
+          if ("John Doe" !== $addr.get('addressee')) {
+            throw new Error("Didn't properly create address");
+          }
+        })
+      , Addrs.add(
+          null
+        , $account
+        , $account.related('addresses')
+        , getBobAddr()
+        ).then(function ($addr) {
+          shared.bobAddr = $addr.id;
+
+          if (2 !== $account.related('addresses').length) {
+            throw new Error("should be exactly 2 addresses not " + $account.related('addresses').length);
+          }
+
+          if ("John Doe" !== $addr.get('addressee')) {
+            throw new Error("Didn't properly create address");
+          }
+        })
+      ).then(function () {
+        if (2 !== $account.related('addresses').length) {
+          throw new Error("should be exactly 2 addresses, instead has " + $account.related('addresses').length);
         }
       });
     }
-  , function addBillingAddress($account) {
-      return Addrs.upsertBilling(null, $account, $account.related('addresses'), {
-        addressee: "Mary Jane"
-      , streetAddress: "000 Nowhere Ave"
-      , extendedAddress: null
-      , locality: "Burlington"
-      , region: "Vermont"
-      , pastalCode: "05401"
-      , countryCode: "US"
-      , type: "home"            // should get deleted? or also applied to shipping_address_id?
-      }).then(function ($addr) {
-        if (2 !== $account.related('addresses').length) {
-          console.error("$account.related('addresses').length");
-          console.error($account.related('addresses').length);
-          throw new Error("should be exactly two addresses");
+
+    //
+    //
+  , function addShippingAddress($account) {
+      return Addrs.upsertShipping(
+        null
+      , $account
+      , $account.related('addresses')
+      , getMaryAddr()
+      ).then(function ($addr) {
+        shared.maryJaneAddr = $addr.id; // $addr.get('uuid');
+
+        if (shared.maryJaneAddr !== $account.get("shippingAddressId")) {
+          throw new Error("Should have a shipping address on account");
         }
 
-        if ($addr.get("type")) {
-          console.error('$addr.get("type")');
-          console.error($addr.get("type"));
-          throw new Error("Shouldn't have a type");
+        if (shared.maryJaneAddr === $account.get("billingAddressId")) {
+          throw new Error("Shouldn't yet have a billing address on account");
+        }
+      });
+    }
+
+    //
+    //
+  , function addBillingAddress($account) {
+      return Addrs.upsertBilling(
+        null, $account
+      , $account.related('addresses')
+      , {}
+      , shared.maryJaneAddr
+      ).then(function (/*$addr*/) {
+
+        if (3 !== $account.related('addresses').length) {
+          throw new Error("should be exactly 3 addresses, instead has " + $account.related('addresses').length);
         }
 
         if (!$account.get("billingAddressId")) {
           throw new Error("Should have a billing address id on account");
         }
 
-        shared.addrId = $addr.id; // $addr.get('uuid');
+        if (shared.maryJaneAddr !== $account.get("shippingAddressId")) {
+          throw new Error("Should still have a shipping address id on account");
+        }
       });
     }
-  , function addShippingAddress($account) {
+
+    //
+    //
+  , function deleteImportantAddress($account) {
       return Addrs.upsertShipping(
         null
       , $account
       , $account.related('addresses')
       , {}
-      , shared.addrId
-      ).then(function ($addr) {
-        if ("home" !== $addr.get("type")) {
-          console.error('$addr.get("type")');
-          console.error($addr.get("type"));
-          throw new Error("Shouldn't have the type home");
-        }
+      , shared.maryJaneAddr
+      ).then(function () {
+        return Addrs.remove(
+          null
+        , $account
+        , $account.related('addresses')
+        , shared.maryJaneAddr
+        ).then(function () {
+          throw new Error("should have thrown an error");
+        }).catch(function (err) {
+          if (!/cannot/.test(err.message)) {
+            throw new Error("error should have been 'cannot delete'");
+          }
 
-        if (shared.addrId !== $account.get("shippingAddressId")) {
-          throw new Error("Should have a billing address id on account");
-        }
-
-        delete shared.addrId;
+          return null;
+        });
       });
     }
-  , function updateBillingAddress() {
-      return PromiseA.reject(new Error("update billing not implemented"));
+
+    //
+    //
+  , function deleteAddress($account) {
+      console.log("DELETE");
+      console.log('billingAddressId', $account.get('billingAddressId'));
+      console.log('shippingAddressId', $account.get('shippingAddressId'));
+      console.log('MJ', shared.maryJaneAddr);
+      console.log('JD', shared.johnDoeAddr);
+      return Addrs.remove(
+        null
+      , $account
+      , $account.related('addresses')
+      , shared.johnDoeAddr
+      ).then(function (addr) {
+        if (!addr) {
+          throw new Error("should return deleted address");
+        }
+
+        if (!addr.addressee) {
+          throw new Error("returned address should be plain json");
+        }
+      });
     }
-  , function deleteShippingAddress() {
-      return PromiseA.reject(new Error("delete shipping not implemented"));
+
+    //
+    //
+  , function updateBillingAddress($account) {
+      console.log("UPDATE");
+      console.log('billingAddressId', $account.get('billingAddressId'));
+      console.log('shippingAddressId', $account.get('shippingAddressId'));
+      return Addrs.upsertBilling(
+        null
+      , $account
+      , $account.related('addresses')
+      , {}
+      , shared.bobAddr
+      ).then(function ($addr) {
+        if (!$addr) {
+          throw new Error("Should return existing john doe address");
+        }
+
+        if ($account.get('billingAddressId') !== shared.bobAddr) {
+          throw new Error("Billing address should have been updated to bob");
+        }
+
+        if ($account.get('shippingAddressId') !== shared.maryJaneAddr) {
+          throw new Error("Shipping address should have been updated");
+        }
+      });
     }
-  , function rejectAddress() {
-      return PromiseA.reject(new Error("reject address not implemented"));
+
+    //
+    //
+  , function rejectInvalidAddress() {
+      return PromiseA.reject(new Error("validations not implemented"));
     }
   ];
 

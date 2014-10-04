@@ -22,7 +22,7 @@ function getFnName(fn) {
     ;
 
   if (str) {
-    return "In test " + str;
+    return " --- " + str;
   }
 
   return fn.toString();
@@ -41,12 +41,9 @@ function init(DB) {
       console.log();
       next();
     }).catch(function (err) {
-      console.error('[ERROR] failure 1');
-      console.error(err);
       console.error('');
       console.error('');
-      console.error(getFnName(fn));
-      console.error('');
+      console.error('ERROR', getFnName(fn));
       console.error('');
       test.teardown().then(function () {
         test.finalTeardown().then(function () {
