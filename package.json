@@ -52,6 +52,7 @@
     "twilio": "^1.6.0",
     "underscore.string": "^2.3.3",
     "urlrouter": "^0.5.4",
+    "urlsafe-base64": "0.0.2",
     "useragent": "^2.0.9",
     "validator": "^3.16.1",
     "ws": "^0.4.31"
