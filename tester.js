@@ -45,17 +45,25 @@ function init(DB) {
       console.error('');
       console.error('ERROR', getFnName(fn));
       console.error('');
-      test.teardown().then(function () {
-        test.finalTeardown().then(function () {
-          throw err;
-        });
+      return test.teardown().then(function () {
+        if (test.finalTeardown) {
+          return test.finalTeardown().then(function () {
+            throw err;
+          });
+        }
+
+        throw err;
       });
     });
   }).then(function () {
     console.info('%d of %d tests complete', count, test.tests.length);
-    test.finalTeardown().then(function () {
-      process.exit();
-    });
+    if (test.finalTeardown) {
+      return test.finalTeardown().then(function () {
+        process.exit();
+      });
+    }
+
+    process.exit();
   });
   /*.catch(function (err) {
     process.nextTick(function () {
