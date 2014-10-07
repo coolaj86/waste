@@ -2,24 +2,24 @@
 
 /**
  * @ngdoc function
- * @name yololiumApp.controller:OauthClientsCtrl
+ * @name yololiumApp.controller:OauthclientsCtrl
  * @description
- * # OauthClientsCtrl
+ * # OauthclientsCtrl
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('OauthClientsCtrl', ['stOauthClients', function (stOauthClients) {
+  .controller('OauthclientsCtrl', ['stOauthclients', function (stOauthclients) {
     var OA = this
       ;
 
     OA.clients = OA.clients || [];
 
-    stOauthClients.fetch().then(function (clients) {
+    stOauthclients.fetch().then(function (clients) {
       OA.clients = clients;
     });
 
     OA.addApp = function () {
-      stOauthClients.create(OA.appName, OA.appSecret).then(function (client) {
+      stOauthclients.create(OA.appName, OA.appSecret).then(function (client) {
         OA.clients.push(client);
       });
 
