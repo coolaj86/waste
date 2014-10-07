@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc service
- * @name yololiumApp.stOauthClients
+ * @name yololiumApp.stOauthclients
  * @description
- * # stOauthClients
+ * # stOauthclients
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('stOauthClients', ['StApi', '$http', function stOauthClients(StApi, $http) {
+  .service('stOauthclients', ['StApi', '$http', function stOauthclients(StApi, $http) {
     var me = this
       , apiPrefix = StApi.apiPrefix
       ;

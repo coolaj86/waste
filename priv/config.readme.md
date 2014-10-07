@@ -1,9 +1,6 @@
-'use strict';
 // All of these keys are valid working keys registered to
 // "Hogwarts Test Application" at http://local.ldsconnect.org,
 // which points to 127.0.0.1 for your testing pleasure.
-//
-// NOTE: grunt automatically serves pages from localhost:9003 which WILL NOT WORK
 //
 // YOU MUST point your browser to local.ldsconnect.org:9003 or YOU WILL HATE YOUR LIFE
 // and spend hours debugging a problem that doesn't exist
@@ -16,23 +13,12 @@
       , protocol = 'http' + (req.connection.encrypted ? 's' : '') + '://'
       , href = protocol + host + req.url
 */
+
+'use strict';
 var CONFIG = {
   protocol: 'http'
-, hostname: 'local.foobar3000.com'
-, port: 4005
-, get host() {
-    if (
-        'http' === this.protocol && '80' === this.port.toString()
-      ||'https' === this.protocol && '443' === this.port.toString()
-    ) {
-      return this.hostname;
-    }
-
-    return this.hostname + ':' + this.port;
-  }
-, get href() {
-    return this.protocol + '://' + this.host;
-  }
+, hostname: 'local.ldsconnect.org'
+, port: 4004
 , wsport: 4204
   // the default secret is 'super secret',
 , rootUser: {
@@ -45,11 +31,6 @@ var CONFIG = {
   , login: { public: {} }
     // extra attributes for account
   , account: { role: 'root', email: 'root@local.ldsconnect.org' }
-  , deleteTheseLinesAfterConfiguring: (function () {
-      console.log("You should change your webapp root passphrase.");
-      console.log("run `./bin/generate-root-secret.js` and paste the results into config.js.rootUser");
-      return true;
-    }())
   }
 , webhooks: {
     voice: {
@@ -120,10 +101,7 @@ var CONFIG = {
   , auth: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   , number: '(555) 678-1234'
   , forwardIncomingCallsTo: '(555) 222-0123'
-  //, voicemailWav: '/media/voicemail.wav' // from web root
-  , get voicemailWav() {
-      return CONFIG.href + '/media/voicemail.wav'; // from web root
-    }
+  , voicemailWav: '/media/voicemail.wav' // from web root
   }
 , google: {
     gcm: {

@@ -100,8 +100,6 @@
     <div ui-view="body" autoscroll="false"></div>
     <span ui-view="footer" autoscroll="false"></span>
 
-    <script src="https://checkout.stripe.com/checkout.js"></script>
-    <script src="https://js.stripe.com/v2/"></script>
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
 
@@ -119,11 +117,12 @@
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="bower_components/angular-scroll/angular-scroll.min.js"></script>
-    <script src="scripts/services/st-api.js"></script>
+    <script src="scripts/client-config.js"></script>
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
+    <script src="scripts/services/st-api.js"></script>
     <script src="scripts/services/st-session.js"></script>
     <script src="scripts/services/st-login.js"></script>
     <script src="scripts/services/st-account.js"></script>
@@ -135,8 +134,8 @@
     <script src="scripts/controllers/user.js"></script>
     <script src="scripts/controllers/admin.js"></script>
     <script src="scripts/controllers/splash.js"></script>
-    <script src="scripts/controllers/oauth-clients.js"></script>
-    <script src="scripts/services/st-oauth-clients.js"></script>
+    <script src="scripts/controllers/oauthclients.js"></script>
+    <script src="scripts/services/st-oauthclients.js"></script>
     <script src="scripts/services/st-stripe.js"></script>
     <script src="scripts/controllers/store.js"></script>
     <script src="scripts/controllers/transaction.js"></script>
