@@ -266,6 +266,61 @@ function init(config, DB) {
         }
       });
     }
+
+  , function createDummy() {
+      return Oauthclients.create(
+        null
+      , shared.$acc
+      , { name: "Awesome ACME App (Production)"
+        , desc: "This app is just a test app, but we'll treat it like a real app, yay!"
+        , urls: ["http://example.com", "http://sample.net"]
+        , ips: ["127.0.0.1", "172.60.10.243"]
+        , logo: "http://example.com/logo.png"
+        , repo: "git@github.com/example/whatever.git"
+        , keywords: ["ACME", "App", "Awesome"]
+        , insecure: false // haha, that's a lie
+        , test: false     // also a lie
+        //, status: ''    // published / blocked / active?
+        //, scope: ''     // the max scope the app will want
+        , apikeys: [
+            { key: "key_1"
+            , secret: "secret"
+            , test: true
+            , insecure: false
+            }
+          , { key: "key_2"
+            , test: true
+            , insecure: true
+            }
+          ]
+        }
+      ).then(function ($client) {
+        var client = $client.toJSON()
+          , key1 = client.apikeys[0]
+          , key2 = client.apikeys[1]
+          ;
+
+        if (2 !== client.apikeys.length) {
+          throw new Error("should have had exactly 2 predefined keys");
+        }
+
+        if ('pub_test_key_1' !== key1.key) {
+          throw new Error("key_1 should be named as such");
+        }
+
+        if ('sec_test_secret' !== key1.secret) {
+          throw new Error("key_1 secret should be secret");
+        }
+
+        if ('pub_test_key_2' !== key2.key) {
+          throw new Error("key_2 should be named as such");
+        }
+
+        if ('sec_test_secret' !== key1.secret) {
+          throw new Error("key_2 secret should be secret");
+        }
+      });
+    }
   ];
 
   return {
