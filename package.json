@@ -38,6 +38,7 @@
     "passport-local": "^1.0.0",
     "passport-oauth": "^1.0.0",
     "passport-oauth2-client-password": "^0.1.1",
+    "passport-oauth2-resource-owner-password": "^1.0.0",
     "passport-tumblr": "~0.1.2",
     "passport-twitter": "~1.0.2",
     "pouchdb": "~2.0.1",
