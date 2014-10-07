@@ -316,7 +316,7 @@ function init(config, DB) {
           throw new Error("key_2 should be named as such");
         }
 
-        if ('sec_test_secret' !== key1.secret) {
+        if ('anonymous' !== key2.secret) {
           throw new Error("key_2 secret should be secret");
         }
       });
