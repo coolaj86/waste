@@ -5,8 +5,8 @@ var Oauth2 = require('./aj-oauth2')
   ;
 
 oauth2 = Oauth2.create({
-  clientId: '19c88c7d-0009-4feb-abeb-7bf0a67c25bd'
-, clientSecret: '59281e76-6895-48ee-afc9-f69e9d6e384b'
+  clientId: 'pub_test_key_1'
+, clientSecret: 'sec_test_secret'
 , baseSite: 'http://local.foobar3000.com:4004'
 //, authorizePath: '/oauth2/authorize' // null in example
 , authorizePath: null

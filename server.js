@@ -101,10 +101,10 @@ function initApi(config, Db, app) {
   // TODO a way to specify that a database should be attached to /me
   app
     .api(urlrouter(require('./lib/session').create().route))
-    .api(urlrouter(require('./lib/accounts').create(app, config, Db, Auth).route))
+    .api(urlrouter(require('./lib/accounts').createRouter(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/logins').create(app, config, Db, Auth, sessionLogic.manualLogin).route))
     .api(urlrouter(require('./lib/me').create(app, config, Db, Auth).route))
-    .api(urlrouter(require('./lib/oauthclients').create(app, config, Db, Auth).route))
+    .api(urlrouter(require('./lib/oauthclients').createRouter(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/contacts').create(app, config, Db).route))
     .api(urlrouter(require('./lib/account-addresses').createRouter(app, config).route))
     .api(urlrouter(require('./lib/account/contacts')
