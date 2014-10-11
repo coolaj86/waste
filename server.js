@@ -100,7 +100,7 @@ function initApi(config, Db, app) {
   //
   // TODO a way to specify that a database should be attached to /me
   app
-    .api(urlrouter(require('./lib/session').create().route))
+    .api(urlrouter(require('./lib/session').createRouter().route))
     .api(urlrouter(require('./lib/accounts').createRouter(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/logins').create(app, config, Db, Auth, sessionLogic.manualLogin).route))
     .api(urlrouter(require('./lib/me').create(app, config, Db, Auth).route))
@@ -151,12 +151,10 @@ module.exports.create = function () {
     .use(serveStatic(path.join(__dirname, 'dist')))
     .use(serveStatic(path.join(__dirname, 'app')))
     //.use(require('morgan')())
-    /*
     .use(function (req, res, next) {
-      console.log(req.method, req.url, req.headers.authorization);
+      console.log('['+req.method+']', req.url, req.headers.authorization);
       next();
     })
-    */
     .use(require('errorhandler')({
       dumpExceptions: true
     , showStack: true
