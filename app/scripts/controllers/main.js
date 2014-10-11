@@ -33,6 +33,31 @@ angular.module('yololiumApp')
     M.video = $sce.trustAsResourceUrl(StApi.business.video);
     M.tpl = stConfig.business;
 
+    stConfig.oauth2Map = {};
+    stConfig.oauth2.forEach(function (o) {
+      stConfig.oauth2Map[o.provider] = o;
+    });
+    M.implicitLogin = function () {
+      console.log('stConfig');
+      console.log(stConfig.oauth2Map);
+      var lb = stConfig.oauth2Map.loopback
+        , url = lb.authorizeUrl
+            + '?response_type=token'
+            + '&client_id=' + lb.id
+            + '&redirect_uri=' + lb.redirectUrl
+            + '&scope=' + encodeURIComponent("me:::")
+            + '&state=' + Math.random().toString().replace(/^0./, '')
+        ;
+
+      console.log('login url', url);
+      M.loginWindow = M.loginWindow || window.open(url);
+      window.completeLoopbackLogin = function (href) {
+        console.log('got token in href', href);
+      };
+      // TODO interval on this thingy
+      //localStorage.getItem('loopbackStatus');
+    };
+
     if (StApi.redirectGuestsToSplash) {
       if (!mySession || 'guest' === mySession.account.role) {
         console.log('redirect to splash');
