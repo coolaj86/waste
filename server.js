@@ -152,7 +152,7 @@ module.exports.create = function () {
     .use(serveStatic(path.join(__dirname, 'app')))
     //.use(require('morgan')())
     .use(function (req, res, next) {
-      console.log('['+req.method+']', req.url, req.headers.authorization);
+      console.log('['+req.method+']', req.url, req.body && Object.keys(req.body));
       next();
     })
     .use(require('errorhandler')({
