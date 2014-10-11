@@ -35,4 +35,12 @@ window.StClientConfig = {
   , "ldsconnect": "/ldsconnect/connect"
   , "loopback": "/loopback/connect"
   }
+, "oauth2": [
+    { "provider": "loopback"
+    , "id": "pub_test_key_1"
+    , "explicitUrl": "/loopback/connect"
+    , "authorizeUrl": "http://local.ldsconnect.org:4004/oauth/dialog/authorize"
+    , "redirectUrl": "http://local.foobar3000.com:4005/loopback-close.html"
+    }
+  ]
 };
