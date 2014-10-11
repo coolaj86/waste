@@ -1,6 +1,6 @@
 {
   "protocol": "http",
-  "hostname": "local.ldsconnect.org",
+  "hostname": "local.foobar3000.com",
   "port": 4004,
   "wsport": 4204,
   "rootUser": {
@@ -13,7 +13,7 @@
     },
     "account": {
       "role": "root",
-      "email": "root@local.ldsconnect.org"
+      "email": "root@local.foobar3000.com"
     }
   },
   "webhooks": {
@@ -22,7 +22,7 @@
       "speakableBusiness": "Ackmee Corp"
     },
     "text": {
-      "smsdomain": "sms.local.ldsconnect.org"
+      "smsdomain": "sms.local.foobar3000.com"
     },
     "voicemail": {
       "forwardViaSms": false,
@@ -48,9 +48,9 @@
     "defaults": {
       "from": "Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>",
       "replyTo": "Mailgun Sandbox <postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org>",
-      "system": "Woof <woof@local.ldsconnect.org>",
-      "forwardEmailTo": "John Doe <john.doe+local.ldsconnect.org@gmail.com>",
-      "forwardTo": "John Doe <john.doe@local.ldsconnect.org>"
+      "system": "Woof <woof@local.foobar3000.com>",
+      "forwardEmailTo": "John Doe <john.doe+local.foobar3000.com@gmail.com>",
+      "forwardTo": "John Doe <john.doe@local.foobar3000.com>"
     },
     "subjectPrefixes": {
       "all": "✆ ℡ ☎ ☏ ✆ ✍ ☺ ☁ ⚑ ⚐ ⚙ ⚛ ✉ ✎ ✏ ✐ ✇ ☢ ★ ☣ ☠ ⍟ ✪ ✩ ⌂",
@@ -63,7 +63,7 @@
     },
     "apiKey": "key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "apiPublicKey": "pubkey-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "emaildomain": "local.ldsconnect.org",
+    "emaildomain": "local.foobar3000.com",
     "opts": {
       "auth": {
         "user": "postmaster@sandboxb68180cca73d4af5a748a7cf493d3f01.mailgun.org",
@@ -111,7 +111,7 @@
     "consumerSecret": "FhnXG8TPhQ3xl4xTtfDaCsgAOHHsg7QHUQzmqPmeMcrSjS4CQU"
   },
   "loopback": {
-    "id": "my-awesome-app",
-    "secret": "an awesome private key"
+    "id": "pub_test_key_1",
+    "secret": "sec_test_secret"
   }
 }
