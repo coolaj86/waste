@@ -1,6 +1,7 @@
 .container
   .row
     .col-xs-12
+      //- this needs to actually POST so that it can issue the redirect immediately
       form.form-horizontal(method="POST" action="/oauth/dialog/authorize/decision")
         fieldset
           legend Allow Application {{ O.appName }}
@@ -20,12 +21,35 @@
 
           //- TODO auto-update on change
           input(type="hidden" name="transaction_id" ng-value="O.transactionId")
-          input(type="hidden" name="json" ng-model="O.responseText")
+          input(type="hidden" name="accepted_scope" ng-value="O.acceptedScope")
+          input(type="hidden" name="selected_account_id" ng-value="O.selectedAccountId")
           .form-group
-            .col-xs-12
-              .checkbox(ng-repeat="scope in O.scope")
+            .col-xs-6
+              span {{ O.selectedAccount.displayName || 'Error: No Display Name' }}
+              br
+              img(ng-src="{{ O.selectedAccount.avatar || '/images/avatar-64px.png' }}")
+              .form-group(ng-if="O.accounts.length > 1")
                 label
-                  input(ng-model="scope.accepted" type="checkbox")
+                  span Choose a different account
+                select.form-control(
+                  ng-model="O.selectedAccount"
+                  ng-options="acc as acc.displayName for acc in O.accounts"
+                  ng-change="O.updateScope()"
+                )
+
+            .col-xs-6
+              span {{ O.client.title || 'Error: No App Title' }}
+              br
+              img(ng-src="{{ O.client.logo || '/images/app-icon-64px.png' }}")
+
+            .col-xs-12
+              .checkbox(ng-repeat="scope in O.deltaScope")
+                label
+                  input(
+                    ng-change="O.updateScope()"
+                    ng-model="scope.accepted"
+                    type="checkbox"
+                  )
                   |  {{ scope.name }}
 
             .form-group
@@ -34,10 +58,10 @@
                   button.btn.btn-default(
                     name="cancel"
                     type="submit"
-                    ng-disabled="O.invalids.length || !O.redirectUrl"
+                    ng-disabled="O.invalids.length || O.error"
                   ) Cancel
                 .col-xs-6
                   button.btn.btn-primary(
                     type="submit"
-                    ng-disabled="O.invalids.length || !O.redirectUrl"
+                    ng-disabled="O.invalids.length || O.error"
                   ) Allow
