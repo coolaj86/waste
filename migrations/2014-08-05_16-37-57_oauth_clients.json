@@ -45,6 +45,21 @@
     , "implicit": { "type": "boolean" }
     , "oauthclient_uuid": { "type": "uuid", "references": ["oauthclients", "uuid"] }
     , "account_uuid": { "type": "uuid", "references": ["accounts", "uuid"] }
+    , "login_hashid": { "type": "string", "references": ["logins", "hashid"] }
+    }
+  , "timestamps": true
+  , "xattrs": true
+  }
+
+, { "tablename": "scopes"
+  , "uuid": false
+  , "columns": {
+      "id": { "type": "string", "nullable": false, "primary": true }
+    , "apikey_id": { "type": "string", "references": ["apikeys", "id"] }
+    , "oauthclient_uuid": { "type": "uuid", "references": ["oauthclients", "uuid"] }
+    , "login_id": { "type": "string", "references": ["logins", "hashid"] }
+    , "account_uuid": { "type": "uuid", "references": ["accounts", "uuid"] }
+    , "scope": { "type": "text" }
     }
   , "timestamps": true
   , "xattrs": true

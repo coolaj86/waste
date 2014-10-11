@@ -18,3 +18,17 @@ All of the Logins need to be redone as to allow for passing `{ error: err, user:
 This will enable us to get info about why a login failed back to a user
 
 i.e. username doesn't exist or invalid password
+
+
+prompts
+------
+
+Use this account:
+<create://new_account>
+[] default to this account (you will still be able to use user-switching)
+[] ask me which account to use every time
+
+modules
+------
+
+scope-utils
