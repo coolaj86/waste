@@ -135,6 +135,15 @@ function initApi(config, Db, app) {
     .use(urlrouter(ws.create(app, config, wsport, [])))
     ;
   */
+
+  //
+  // 2nd Serve Static (catches loopback-close.html and such)
+  //
+  app
+    .use(serveStatic(path.join(__dirname, 'priv', 'public')))
+    .use(serveStatic(path.join(__dirname, 'dist')))
+    .use(serveStatic(path.join(__dirname, 'app')))
+    ;
 }
 
 module.exports = app;
