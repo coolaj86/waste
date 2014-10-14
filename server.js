@@ -17,6 +17,7 @@ function initApi(config, Db, app) {
     , Auth = require('./lib/auth-logic').create(Db, config)
     , Passport = require('passport').Passport
     , passport
+    , CORS = require('connect-cors')
     ;
 
   Object.defineProperty(config, 'host', {
@@ -71,6 +72,11 @@ function initApi(config, Db, app) {
   // Generic Template Auth
   //
   passport = new Passport();
+
+  // Allows CORS access to API with ?access_token=
+  app
+    .api(CORS({ credentials: false }))
+    ;
 
   // initialize after all passport.use, but before any passport.authorize
   app
