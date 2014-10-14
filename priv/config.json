@@ -43,6 +43,9 @@
   "alarms": {
     "url": "http://alarms.beta.coolaj86.com"
   },
+  "scopeGroups": {
+    "me": {}
+  },
   "mailer": {
     "service": "mailgun",
     "defaults": {

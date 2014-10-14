@@ -2,7 +2,10 @@
   .row
     .col-xs-12
       //- this needs to actually POST so that it can issue the redirect immediately
-      form.form-horizontal(method="POST" action="/oauth/dialog/authorize/decision")
+      form#oauth-hack-submit.form-horizontal(
+        method="POST"
+        action="/oauth/dialog/authorize/decision"
+      )
         fieldset
           legend Allow Application {{ O.appName }}
 
@@ -42,7 +45,10 @@
               br
               img(ng-src="{{ O.client.logo || '/images/app-icon-64px.png' }}")
 
-            .col-xs-12
+            .col-xs-12(ng-if="!O.deltaScope.length")
+              span Allow login
+
+            .col-xs-12(ng-if="O.deltaScope.length")
               .checkbox(ng-repeat="scope in O.deltaScope")
                 label
                   input(
@@ -55,11 +61,12 @@
             .form-group
               .col-lg-offset-10.col-lg-offset-2
                 .col-xs-6
-                  button.btn.btn-default(
+                  input.btn.btn-default(
                     name="cancel"
+                    value="Cancel"
                     type="submit"
                     ng-disabled="O.invalids.length || O.error"
-                  ) Cancel
+                  )
                 .col-xs-6
                   button.btn.btn-primary(
                     type="submit"
