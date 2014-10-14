@@ -8,15 +8,26 @@
  * Controller of the yololiumApp
  */
 angular.module('yololiumApp')
-  .controller('OauthCtrl', function ($scope, $http, $stateParams, StSession, StApi) {
+  .controller('OauthCtrl', [ 
+    '$window'
+  , '$scope'
+  , '$http'
+  , '$stateParams'
+  , 'StSession'
+  , 'StApi'
+  , function (
+      $window
+    , $scope
+    , $http
+    , $stateParams
+    , StSession
+    , StApi
+    ) {
     var scope = this
       ;
 
     // Convert all scope changes back to a scope string
     scope.updateScope = function () {
-      var accepted = scope.deltaScope
-        ;
-
       if (true === scope.selectedAccount.new) {
         scope.selectedAccount = scope.previousAccount;
         setTimeout(function () {
@@ -24,33 +35,96 @@ angular.module('yololiumApp')
         }, 0);
         return;
       }
-      scope.previousAccount = scope.selectedAccount;
 
+      scope.previousAccount = scope.selectedAccount;
 
       scope.selectedAccountId =
         scope.selectedAccount.id || scope.selectedAccount.uuid;
 
-      // TODO check for allow / deny
-      scope.acceptedScope = scope.requestedScopeString;
+      if (scope.selectedAccountId === scope.previousAccount.id) {
+        return;
+      }
 
-      /*
-      Object.keys(accepted).filter(function (k) {
-        var s = accepted[k]
+      selectAccount(scope.selectedAccountId).then(function (/*txdata*/) {
+        var accepted = scope.deltaScope
           ;
 
-        return s.accepted;
-      }).map(function (k) {
-        var s = accepted[k]
-          ;
+        // TODO check for allow / deny
+        scope.acceptedScope = scope.deltaScopeString;
 
-        return s.group + ':' + s.readable.join(',') + ':' + s.writeable.join(',') + ':' + s.executable.join(',');
-      }).join(' ');
-      */
+        /*
+        Object.keys(accepted).filter(function (k) {
+          var s = accepted[k]
+            ;
 
-      console.log('scope.acceptedScope', scope.acceptedScope);
-      console.log('scope.selectedAccountId', scope.selectedAccountId);
-      console.log('');
+          return s.accepted;
+        }).map(function (k) {
+          var s = accepted[k]
+            ;
+
+          return s.group + ':' + s.readable.join(',') + ':' + s.writeable.join(',') + ':' + s.executable.join(',');
+        }).join(' ');
+        */
+
+        console.log('scope.acceptedScope', scope.acceptedScope);
+        console.log('scope.selectedAccountId', scope.selectedAccountId);
+        console.log('');
+      });
     };
+
+    function selectAccount(accountId) {
+      return $http.get(
+        StApi.oauthPrefix
+      + '/scope/' + $stateParams.token
+      + '?account=' +  accountId
+      ).then(function (resp) {
+        if (resp.data.error) {
+          console.error('resp.data');
+          console.error(resp.data);
+          scope.error = resp.data.error;
+          scope.rawResponse = resp.data;
+          return;
+        }
+
+        if ('string' !== typeof resp.data.deltaScopeString) {
+          console.error('resp.data');
+          console.error(resp.data);
+          scope.error = { message: "missing scope request" };
+          scope.rawResponse = resp.data;
+
+          return;
+        }
+
+        return resp.data;
+      }).then(function (txdata) {
+        scope.client = txdata.client;
+
+        if (!scope.client.title) {
+          scope.client.title = scope.client.name || 'Missing App Title';
+        }
+
+        scope.grantedScopeString = txdata.grantedScopeString;
+        scope.requestedScopeString = txdata.requestedScopeString;
+        scope.deltaScopeString = txdata.deltaScopeString;
+
+        if (scope.deltaScopeString) {
+          scope.deltaScope = txdata.deltaScopeString.split(' ').map(function (str) {
+            return { accepted: true, name: str };
+          });
+        } else if ('string' === typeof scope.grantedScopeString) {
+          // TODO submit form with getElementById or whatever
+          setTimeout(function () {
+            // NOTE needs time for angular to set transactionId
+            if (!$window._gone) {
+              $window.jQuery('#oauth-hack-submit').submit();
+              $window._gone = true;
+            }
+          }, 50);
+        }
+
+        return txdata;
+      });
+    }
 
     StSession.ensureSession(
       // role
@@ -72,15 +146,11 @@ angular.module('yololiumApp')
       // get token from url param
       scope.token = $stateParams.token;
 
-      $http.get(StApi.oauthPrefix + '/scope/' + $stateParams.token).then(function (resp) {
-        console.log('resp.data');
-        console.log(resp.data);
-        console.log('');
-
-        scope.selectedAccount = session.account;
-        scope.previousAccount = session.account;
+      selectAccount(session.account.id).then(function (txdata) {
+        scope.transactionId = txdata.transactionId;
 
         scope.accounts = session.accounts.slice(0);
+
         scope.accounts.push({
           displayName: 'Create New Account'
         , new: true
@@ -92,30 +162,9 @@ angular.module('yololiumApp')
           }
         });
 
-        if (resp.data.error) {
-          scope.error = resp.data.error;
-          scope.rawResponse = resp.data;
-          return;
-        }
-        if (!resp.data.requestedScope) {
-          scope.error = { message: "missing scope request" };
-          scope.rawResponse = resp.data;
-          return;
-        }
-
-        scope.client = resp.data.client;
-        if (!scope.client.title) {
-          scope.client.title = scope.client.name || 'Missing App Title';
-        }
-
-        scope.invalids = resp.data.invalids;
-        scope.requestedScopeString = resp.data.requestedScopeString;
-        scope.deltaScope = resp.data.requestedScopeString.split(' ').map(function (str) {
-          return { accepted: true, name: str };
-        });
-        scope.transactionId = resp.data.transactionId;
-
+        scope.selectedAccount = session.account;
+        scope.previousAccount = session.account;
         scope.updateScope();
       });
     });
-  });
+  }]);
