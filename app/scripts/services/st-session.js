@@ -316,7 +316,9 @@ angular.module('yololiumApp')
             d.resolve(session);
           });
         };
-        login.loginWindow = login.loginWindow || window.open(authUrl);
+
+        console.info('[TODO] allow arbitrary scope requests on login and permission upgrade');
+        login.loginWindow = login.loginWindow || window.open(authUrl + '?scope=me:phone::');
         login['poll' + uAbbr + 'Int'] = setInterval(login['poll' + uAbbr + 'Login'], 300);
 
         return d.promise;
