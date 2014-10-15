@@ -425,27 +425,54 @@ curl http://local.ldsconnect.org:4004/api/me/payment-methods/card_abc123 \
   * "Card Expired"
 
 
-Logins and Accounts
----
+Logins vs Accounts vs Session
+-----------------------------
 
-In this documentation an `account` means an account in your application that the user logs into
-whereas a `login` means a login from a 3rd party provider (or yourself) that may access such an account.
+Waste is the first system to properly decouple Logins, Accouns, and Sessions.
 
-### Say What!?
+In this documentation **Login** refers to an authentication (**AuthN**) mechanism
+such as a username+passphrase, id+secret, or Facebook Connect whereas
+**Account** refers to a set of privileges
+and authorizations (**AuthZ**) that the user has access to.
 
-Essentially a `login` is an authentication method that is authorized for one or more `accounts`.
 
+**Philosophy**:
+This design is to facilitate multiple login and multiple account scenarios
+such as husband and wife or business partners who prefer to share
+an account as well as scenarios where a person may have separate accounts
+for various businesses, but doesn't wish to create multiple logins.
 
-For example:
+### Unopinionated
+
+The implementation provides the clear separation of concerns, but does not
+enforce any particular scenario. Reasonable defaults and examples are provided,
+but you can have complete control over delivering the experience that your users deserve.
+
+### Case Studies
 
 Google Plus allows one Google+ `login` to control several YouTube `accounts`. You can switch between multiple Google `logins` (say me@work.com and me@gmail.com) and each may manage the same account (say my work social media page).
 
-Buffer and HootSuite allow you to login with any number of `logins` to a single `account` which can cantrol multiple `logins`. However, you manage those same `logins` to login to a different `account`. When I login through the @coolaj86 login I always end up in the same acount - no user switching.
+Buffer and HootSuite allow you to login with any number of `logins` to a single `account`
+which can cantrol multiple oauth profiles.
+However, you manage those same `logins` to login to a different `account`.
+When I login through the @coolaj86 login I always end up in the same acount - no user switching.
 
-### Authentication and Authorization, Unopinionated
+Logins
+------
 
-We make no assumptions about how you might want to allow or restrict the sharing of account access among logins.
-You can build it out as you wish.
+### Social Connect (Facebook et al)
+
+Each of these URLs will redirect to the app authentication and or authorization dialog of the specified provider.
+
+Some providers only require authorization once (facebook) and will self-close every time.
+Others (tumblr) require authorization every single time.
+Others (twitter) are weird, but we work around the weirdness as best as we can to provide the simplest experience possible.
+
+* GET `/oauth/facebook/connect` redirects to facebook connect (login, permission dialog, or self-closes)
+* GET `/oauth/twitter/authn/connect` redirects to twitter authentication and then to twitter authorization, if needed (login, perms, or close)
+* GET `/oauth/twitter/authz/connect` redirects to twitter authorization (every time)
+* GET `/oauth/tumblr/connect` redirects to tumblr authorization (every time)
+* GET `/oauth/ldsconnect/connect` redirects to ldsconnect (same process as facebook)
 
 #### Create User
 
@@ -467,6 +494,8 @@ POST `/api/session/basic`
 Authorization: Basic dXNlcjpzZWNyZXQ=
 ```
 
+This will add the login to the current session using HTTP Basic Auth.
+
 #### Check User Existance
 
 GET `/api/logins?uid=<uid>`
@@ -484,7 +513,9 @@ Currently the only available resource to update is the primaryAccountId.
 ```
 POST /api/logins/:hashid
 
-{ "primaryAccountId": "an-id-already-associated-with-this-login" }
+{ "primaryAccountId": "an-id-already-associated-with-this-login"
+, "mostRecentAccountId": "an-id-already-associated-with-this-login"
+}
 ```
 
 ```
@@ -510,6 +541,9 @@ POST /api/logins/:hashid/secret
 
 BUG this action does not yet send push notifications to the user about the password change.
 
+Session
+-------
+
 #### Get Current Session
 
 * GET `/api/session`
@@ -518,34 +552,32 @@ If you don't implement anything to restrict the linking of logins and accounts y
 
 ```javascript
 {
-    "selectedAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
-    "mostRecentLoginId": "facebook:1234567890",
+    "mostRecentLoginId": "xxxxxxxx-0123-4xxx-abcd-xxxxxxxxxxxx",
     "accounts": [
         {
             "uuid": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
             "role": "user",
-            "loginIds": [
-                "ldsconnect:albusdumbledore"
+            "logins": [
+              { "provider": "facebook"
+              , "id": "xxxxxxxx-0123-4xxx-abcd-xxxxxxxxxxxx"
+              }
             ]
         }
     ],
     "logins": [
         // TODO finalize keynames as uid, type, typedUid?
         {
-            "id": "facebook:1234567890",
-            "typedUid": "facebook:1234567890",
-            //"pkey": "facebook:1234567890",
-            "type": "facebook",
-            //"provider": "facebook",
-            "uid": "1234567890",
+            "id": "1234567890adcdef",
+            "provider": "facebook",
             "primaryAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
-            "accoundIds": ["xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx"],
-            "guest": true,
+            "mostRecentAccountId": "xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx",
+            "accountIds": ["xxxxxxxx-test-4xxx-user-xxxxxxxxxxxx"],
             "test": true,
-            "emails": [
-                {
-                    "value": "albus@dumble.dore",
-                }
+            "contactnodes": [
+              {
+                "value": "albus@dumble.dore",
+              , "type": "email"
+              }
             ]
         }
     ]
@@ -585,18 +617,6 @@ curl http://localhost/api/session/basic \
   -H 'Authorization: Bearer xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 
 returns the same as `GET /api/session`
-
-### Facebook Connect et al
-
-Each of these URLs will redirect to the app authentication and or authorization dialog of the specified provider.
-
-Some providers only require authorization once (facebook) and will self-close every time. Others (tumblr) require authorization every single time. Others (twitter) are weird, but we work around the weirdness as best as we can to provide the simplest experience possible.
-
-* GET `/oauth/facebook/connect` redirects to facebook connect (login, permission dialog, or self-closes)
-* GET `/oauth/twitter/authn/connect` redirects to twitter authentication and then to twitter authorization, if needed (login, perms, or close)
-* GET `/oauth/twitter/authz/connect` redirects to twitter authorization (every time)
-* GET `/oauth/tumblr/connect` redirects to tumblr authorization (every time)
-* GET `/oauth/ldsconnect/connect` redirects to ldsconnect (same process as facebook)
 
 Scope
 ====
