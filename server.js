@@ -17,6 +17,7 @@ function initApi(config, Db, app) {
     , Auth = require('./lib/auth-logic').create(Db, config)
     , Passport = require('passport').Passport
     , passport
+    , CORS = require('connect-cors')
     ;
 
   Object.defineProperty(config, 'host', {
@@ -71,6 +72,11 @@ function initApi(config, Db, app) {
   // Generic Template Auth
   //
   passport = new Passport();
+
+  // Allows CORS access to API with ?access_token=
+  app
+    .api(CORS({ credentials: false }))
+    ;
 
   // initialize after all passport.use, but before any passport.authorize
   app
@@ -141,8 +147,8 @@ function initApi(config, Db, app) {
   //
   app
     .use(serveStatic(path.join(__dirname, 'priv', 'public')))
-    .use(serveStatic(path.join(__dirname, 'dist')))
-    .use(serveStatic(path.join(__dirname, 'app')))
+    .use(serveStatic(path.join(__dirname, 'frontend', 'dist')))
+    .use(serveStatic(path.join(__dirname, 'frontend', 'app')))
     ;
 }
 
@@ -157,8 +163,8 @@ module.exports.create = function () {
   app
     //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
     .use(serveStatic(path.join(__dirname, 'priv', 'public')))
-    .use(serveStatic(path.join(__dirname, 'dist')))
-    .use(serveStatic(path.join(__dirname, 'app')))
+    .use(serveStatic(path.join(__dirname, 'frontend', 'dist')))
+    .use(serveStatic(path.join(__dirname, 'frontend', 'app')))
     //.use(require('morgan')())
     .use(function (req, res, next) {
       console.log('['+req.method+']', req.url, req.body && Object.keys(req.body) || '');
