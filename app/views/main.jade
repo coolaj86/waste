@@ -1,0 +1,46 @@
+div(ui-view="content" autocroll="false")
+  .container
+    .row
+      .col-xs-12
+        button(ng-click="M.implicitLogin()") Loopback Implicit Login
+
+  .jumbotron(style="margin-bottom: 0;")
+    .row
+      .col-xs-12
+        p {{ M.tagline }}
+        br
+
+    .row
+      .container
+        .col-md-6(style="text-align: center;")
+          img.img-circle(
+            ng-src="http://beta.images.coolaj86.com/api/resize/height/250?url={{M.pic}}"
+            style="border: 5px solid white; width: 260px; height: 260px;"
+          )
+          h1 {{ M.tpl.personName }}
+          h3 {{ M.tpl.personTitle }}
+          h2
+            a(ng-href="tel:{{ M.tpl.phoneIntl }}" itemprop="telephone") {{ M.tpl.phone }}
+          h2
+            a(ng-href="mailto:{{ M.tpl.email }}" itemprop="email") {{ M.tpl.email }}
+          br
+          center
+            a.css-fb-like
+              include includes/like.html
+            a.css-google-plus
+              include includes/plus.html
+          br
+        .col-md-6(style="text-align: left;")
+          include includes/contact-form.jade
+
+  div(style="font-size: 14pt;")
+    #about(style="background-color: #772953; color: #fff;")
+      .container
+        h2 About
+        include includes/about.jade
+
+    div(style="height: 20px; background-color: #511c39;")
+
+  #privacy
+    .container
+      include includes/privacy.jade

@@ -1,0 +1,52 @@
+/* begin ry */
+.navbar {
+  border-radius: 0;
+}
+
+.auth-modal .nav {
+  margin: 1.2rem 0 -1.6rem;
+}
+.auth-modal .alert {
+  margin: 1rem 0 1.5rem;
+}
+.auth-modal .signin-option {
+  margin: 0.2rem 1.6rem -1.2rem;
+}
+.auth-modal .signin-option [class^="col"] {
+  margin: 0 0 0.8rem;
+}
+.auth-modal .signin-option button {
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
+}
+.auth-modal .signin-option span.signin {
+  display: block;
+  font-size: 0.8em;
+}
+
+@media (max-width: 767px) {
+  .auth-modal .signin-option {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+/* end ry */
+
+/* begin aj */
+.btn-ldsconnect {
+  background-color: #9aa85f;
+  color: white;
+}
+.btn-ldsconnect:hover {
+  background-color: #91a053;
+  color: white;
+}
+.btn-envelope {
+  background-color: #777777;
+  color:white
+}
+.btn-envelope:hover {
+  background-color: #666666;
+  color:white
+}
+/* end aj */
