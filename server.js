@@ -147,8 +147,8 @@ function initApi(config, Db, app) {
   //
   app
     .use(serveStatic(path.join(__dirname, 'priv', 'public')))
-    .use(serveStatic(path.join(__dirname, 'dist')))
-    .use(serveStatic(path.join(__dirname, 'app')))
+    .use(serveStatic(path.join(__dirname, 'frontend', 'dist')))
+    .use(serveStatic(path.join(__dirname, 'frontend', 'app')))
     ;
 }
 
@@ -163,8 +163,8 @@ module.exports.create = function () {
   app
     //.use(require('connect-jade')({ root: __dirname + "/views", debug: true }))
     .use(serveStatic(path.join(__dirname, 'priv', 'public')))
-    .use(serveStatic(path.join(__dirname, 'dist')))
-    .use(serveStatic(path.join(__dirname, 'app')))
+    .use(serveStatic(path.join(__dirname, 'frontend', 'dist')))
+    .use(serveStatic(path.join(__dirname, 'frontend', 'app')))
     //.use(require('morgan')())
     .use(function (req, res, next) {
       console.log('['+req.method+']', req.url, req.body && Object.keys(req.body) || '');
