@@ -447,6 +447,38 @@ Buffer and HootSuite allow you to login with any number of `logins` to a single 
 We make no assumptions about how you might want to allow or restrict the sharing of account access among logins.
 You can build it out as you wish.
 
+#### Create User
+
+POST `/api/logins`
+
+```json
+{ "uid": "user"
+, "secret": "super secret"
+}
+```
+
+This will first attempt a login and only create the user if the login fails.
+
+#### Login / Create User Session
+
+POST `/api/session/basic`
+
+```
+Authorization: Basic dXNlcjpzZWNyZXQ=
+```
+
+#### Check User Existance
+
+GET `/api/logins?uid=<uid>`
+
+```json
+{ "exists": true }
+```
+
+NOTE 3rd party apps should not use this resource.
+
+#### Get Current Session
+
 * GET `/api/session`
 
 If you don't implement anything to restrict the linking of logins and accounts you get back an object like this:
