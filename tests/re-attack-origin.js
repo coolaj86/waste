@@ -17,6 +17,9 @@ good = [
 , 'https://foobar3000.com/something/or'
 , 'https://whatever.foobar3000.com'
 , 'https://whatever.foobar3000.com/something/or/other'
+, 'https://foobar3000.com:8080'
+, 'https://foobar3000.com:8080/'
+, 'https://foobar3000.com:8080?'
 ];
 
 bad = [
@@ -31,7 +34,7 @@ bad = [
 ];
 
 function testOrigin(attacker) {
-  var re = new RegExp("^(https?|spdy):\\/\\/([^\\/]+\\.)?" + escapeRegExp(origin) + "($|\\/|\\?)")
+  var re = new RegExp("^(https?|spdy):\\/\\/([^\\/]+\\.)?" + escapeRegExp(origin) + "(:\\d+)?($|\\/|\\?)")
     ;
 
   return re.test(attacker);
