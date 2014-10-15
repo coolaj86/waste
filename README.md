@@ -477,6 +477,39 @@ GET `/api/logins?uid=<uid>`
 
 NOTE 3rd party apps should not use this resource.
 
+#### Update Login
+
+Currently the only available resource to update is the primaryAccountId.
+
+```
+POST /api/logins/:hashid
+
+{ "primaryAccountId": "an-id-already-associated-with-this-login" }
+```
+
+```
+{ "success": true }
+```
+
+If you would like to add a login to an account, you must add it to the account resource first.
+
+#### Update Secret (Password / Passphrase)
+
+```
+POST /api/logins/:hashid/secret
+
+{ "uid": "foouser"
+, "secret": "my-current-secret"
+, newSecret: "my-new-secret"
+}
+```
+
+```
+{ "success": true }
+```
+
+BUG this action does not yet send push notifications to the user about the password change.
+
 #### Get Current Session
 
 * GET `/api/session`
