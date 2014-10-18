@@ -1,4 +1,5 @@
 [
+
   { "tablename": "logins"
   , "uuid": false
   , "columns": {
@@ -15,6 +16,49 @@
     , "t.primary(['uid', 'type'])"
     ]
   }
+
+, { "tablename": "locallogins"
+  , "uuid": true
+  , "columns": {
+      "primary_account_id": "string"
+    }
+  , "timestamps": true
+  , "xattrs": true
+  }
+
+, { "tablename": "contactnodes_logins"
+  , "columns": {
+      "id": { "type": "string", "nullable": false, "primary": true }
+    , "contactnode_id": { "type": "string", "nullable": false, "references": ["contactnodes", "id"] }
+    , "login_id": { "type": "string", "nullable": false, "references": ["logins", "hashid"] }
+    }
+  , "timestamps": true
+  , "xattrs": true
+  }
+
+, { "tablename": "contactnodes_locallogins"
+  , "columns": {
+      "id": { "type": "string", "nullable": false, "primary": true }
+    , "contactnode_id": { "type": "string", "nullable": false, "references": ["contactnodes", "id"] }
+    , "locallogin_id": { "type": "uuid", "nullable": false, "references": ["locallogins", "uuid"] }
+    }
+  , "timestamps": true
+  , "xattrs": true
+  }
+
+, { "tablename": "oauthlogins"
+  , "uuid": false
+  , "columns": {
+      "id": { "type": "string", "nullable": false, "primary": true }
+    , "uid": { "type": "string", "nullable": false }
+    , "type": { "type": "string", "nullable": false }
+    , "primary_account_id": "string"
+    , "access_token": { "type": "string", "nullable": true }
+    }
+  , "timestamps": true
+  , "xattrs": true
+  }
+
 , { "tablename": "accounts"
   , "columns": {
       "contact_uuid": { "type": "uuid", "references": ["contacts", "uuid"] }
@@ -23,6 +67,25 @@
   , "timestamps": true
   , "xattrs": true
   }
+
+, { "tablename": "accounts_locallogins"
+  , "timestamps": true
+  , "columns": [
+      { "primary": true, "name": "locallogin_id", "type": "string", "references": ["locallogins", "id"] }
+    , { "primary": true, "name": "account_uuid", "type": "uuid", "references": ["accounts", "uuid"] }
+    ]
+  , "xattrs": true
+  }
+
+, { "tablename": "accounts_oauthlogins"
+  , "timestamps": true
+  , "columns": [
+      { "primary": true, "name": "oauthlogin_id", "type": "string", "references": ["oauthlogins", "id"] }
+    , { "primary": true, "name": "account_uuid", "type": "uuid", "references": ["accounts", "uuid"] }
+    ]
+  , "xattrs": true
+  }
+
 , { "tablename": "accounts_logins"
   , "timestamps": true
   , "columns": [
@@ -31,4 +94,5 @@
     ]
   , "xattrs": true
   }
+
 ]
