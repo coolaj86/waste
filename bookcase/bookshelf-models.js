@@ -61,7 +61,7 @@ function init(config, knex, meta, tableMap) {
       console.log(map[key]);
       console.log('');
       */
-      createModel(key, map[key]);
+      createModel(map[key].tableName || key, map[key]);
     });
   }
 

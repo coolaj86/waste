@@ -3,6 +3,11 @@
 var Db = {}
   ;
 
+//
+// WARNING: Non-join tables may NOT have _ in the name
+// As such, if the model is CamelCase, tableName should be set manually
+//
+
 module.exports.Db = Db;
 module.exports.models = {
   Accounts:
@@ -12,7 +17,7 @@ module.exports.models = {
       //return this.belongsToMany(Db.Logins, 'accounts_logins', 'account_uuid', 'login_hashid');
     }
   , oauthclients: function () {
-      return this.hasMany(Db.Oauthclients, 'account_uuid');
+      return this.hasMany(Db.OauthClients, 'account_uuid');
     }
   , contact: function () {
       return this.hasOne(Db.Contacts, 'account_uuid');
@@ -22,21 +27,22 @@ module.exports.models = {
     }
   , hasTimestamps: ['createdAt', 'updatedAt']
   }
-, Accesstokens:
-  { idAttribute: 'id'
+, AccessTokens:
+  { tableName: 'accesstokens'
+  , idAttribute: 'id'
   , account: function () {
       // by client as and in behalf of user
       return this.belongsTo(Db.Accounts, 'account_uuid');
     }
   , apikey: function () {
-      return this.belongsTo(Db.Apikeys, 'apikey_id');
+      return this.belongsTo(Db.ApiKeys, 'apikey_id');
     }
   , login: function () {
       return this.belongsTo(Db.Logins, 'logins_hashid');
     }
   , oauthclient: function () {
       // as client
-      return this.belongsTo(Db.Oauthclients, 'oauthclient_uuid');
+      return this.belongsTo(Db.OauthClients, 'oauthclient_uuid');
     }
   }
 , AccountsLogins:
@@ -58,23 +64,25 @@ module.exports.models = {
     }
   , hasTimestamps: ['createdAt', 'updatedAt']
   }
-, Apikeys:
-  { idAttribute: 'id'
+, ApiKeys:
+  { tableName: 'apikeys'
+  , idAttribute: 'id'
   , oauthclient: function () {
-      return this.belongsTo(Db.Oauthclients, 'oauthclient_uuid');
+      return this.belongsTo(Db.OauthClients, 'oauthclient_uuid');
     }
   }
 , Contacts:
   { contactnodes: function () {
-      return this.hasMany(Db.Contactnodes, 'contact_uuid');
+      return this.hasMany(Db.ContactNodes, 'contact_uuid');
     }
   , account: function () {
       return this.belongsTo(Db.Accounts, 'account_uuid');
     }
   , hasTimestamps: ['createdAt', 'updatedAt']
   }
-, Contactnodes:
-  { contacts: function () {
+, ContactNodes:
+  { tableName: 'contactnodes'
+  , contacts: function () {
       this.belongsTo(Db.Contacts, 'contact_uuid');
     }
   , hasTimestamps: ['createdAt', 'updatedAt', 'deletedAt']
@@ -82,7 +90,7 @@ module.exports.models = {
 , Logins:
   { idAttribute: 'hashid'
   , accessTokens: function () {
-      return this.hasMany(Db.Accesstokens, 'login_hashid');
+      return this.hasMany(Db.AccessTokens, 'login_hashid');
     }
   , accounts: function () {
       return this.belongsToMany(Db.Accounts);
@@ -95,13 +103,14 @@ module.exports.models = {
   { idAttribute: 'id'
   , hasTimestamps: ['createdAt', 'updatedAt']
   }
-, Oauthclients:
-  { idAttribute: 'uuid'
+, OauthClients:
+  { tableName: 'oauthclients'
+  , idAttribute: 'uuid'
   , accounts: function () {
       return this.belongsTo(Db.Accounts, 'account_uuid');
     }
   , apikeys: function () {
-      return this.hasMany(Db.Apikeys, 'oauthclient_uuid');
+      return this.hasMany(Db.ApiKeys, 'oauthclient_uuid');
     }
   , hasTimestamps: ['createdAt', 'updatedAt']
   }
