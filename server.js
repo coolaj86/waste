@@ -206,7 +206,7 @@ module.exports.create = function () {
   setup.getConfig().then(function (config) {
     // this will not be called until setup has completed
     config.knexInst = require('./lib/knex-connector').create(config.knex);
-    require('./lib/bookshelf-models').create(config, config.knexInst)
+    require('./bookcase/bookshelf-models').create(config, config.knexInst)
       .then(function (Db) {
         initApi(config, Db, app);
       });
