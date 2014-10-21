@@ -1,3 +1,7 @@
+#
+# Client Credentials
+#
+
 # Basic Auth Header
 function getSecureWithHeaders() {
   curl "http://local.foobar3000.com:4004/oauth/token" \
@@ -26,6 +30,15 @@ function getInsecureWithoutHeaders() {
   curl "http://local.foobar3000.com:4004/oauth/token" \
     -X POST \
     -d 'grant_type=client_credentials&scope=me:email::&state=randomstr&client_id=pub_test_key_2&client_secret=anonymous'
+}
+
+#
+# Resource Owner Password
+#
+function getPassword() {
+  curl "http://local.foobar3000.com:4004/oauth/token" \
+    -X POST \
+    -d 'grant_type=password&scope=fooscope&state=randomstr&client_id=pub_test_key_2&client_secret=anonymous&username=user&password=super secret'
 }
 
 getInsecureWithoutHeaders

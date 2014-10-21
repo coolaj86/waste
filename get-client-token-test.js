@@ -2,6 +2,7 @@
 
 var Oauth2 = require('./aj-oauth2')
   , oauth2
+  , PromiseA = require('bluebird').Promise
   ;
 
 
@@ -85,18 +86,20 @@ function failUserPassword() {
   });
 }
 
-clientCredentials().then(function (token) {
-  if (!token) {
-    throw new Error("should have successfully gotten grant_type=client_credentials");
-  }
-
+PromiseA.resolve().then(function () {
+  return clientCredentials().then(function (token) {
+    if (!token) {
+      throw new Error("should have successfully gotten grant_type=client_credentials");
+    }
+  });
+}).then(function () {
   return userPassword().then(function (token) {
     if (!token) {
       throw new Error("should have successfully gotten grant_type=password");
     }
   });
 }).then(function () {
-  failUserPassword().then(function (token) {
+  return failUserPassword().then(function (token) {
     if (token) {
       throw new Error("badfoo: should not have retrieved grant_type=password");
     }
