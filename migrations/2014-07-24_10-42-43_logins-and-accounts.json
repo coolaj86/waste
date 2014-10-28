@@ -27,9 +27,11 @@
   }
 
 , { "tablename": "contactnodes_logins"
+  , "COMMENT_1": "a contactnode can only belong to one login, but a login can have many contactnodes"
+  , "COMMENT_2": "this is made a separate table only to avoid polluting contactnodes with fks"
   , "columns": {
       "id": { "type": "string", "nullable": false, "primary": true }
-    , "contactnode_id": { "type": "string", "nullable": false, "references": ["contactnodes", "id"] }
+    , "contactnode_id": { "type": "string", "unique": true, "nullable": false, "references": ["contactnodes", "id"] }
     , "login_id": { "type": "string", "nullable": false, "references": ["logins", "hashid"] }
     }
   , "timestamps": true

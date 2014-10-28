@@ -57,12 +57,12 @@
     "urlrouter": "^0.5.4",
     "urlsafe-base64": "0.0.2",
     "useragent": "^2.0.9",
+    "uuid": "^2.0.1",
     "validator": "^3.16.1",
     "wasteful-scope": "^0.1.0",
     "ws": "^0.4.31"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "engines": {
     "node": ">= 0.10.26 < 2.x"
   },

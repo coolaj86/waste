@@ -15,6 +15,7 @@ function initApi(config, Db, app) {
     //, wsport = config.wsport || 8282
     , ru = config.rootUser
     , Auth = require('./lib/auth-logic').create(Db, config)
+    , ContactNodes = require('./lib/contact-nodes').create(Db, config)
     , Passport = require('passport').Passport
     , passport
     , CORS = require('connect-cors')
@@ -108,7 +109,7 @@ function initApi(config, Db, app) {
   app
     .api(urlrouter(require('./lib/session').createRouter().route))
     .api(urlrouter(require('./lib/accounts').createRouter(app, config, Db, Auth).route))
-    .api(urlrouter(require('./lib/logins').create(app, config, Db, Auth, sessionLogic.manualLogin).route))
+    .api(urlrouter(require('./lib/logins').create(app, config, Db, Auth, sessionLogic.manualLogin, ContactNodes).route))
     .api(urlrouter(require('./lib/me').create(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/oauthclients').createRouter(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/contacts').create(app, config, Db).route))

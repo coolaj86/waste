@@ -83,9 +83,28 @@ module.exports.models = {
 , ContactNodes:
   { tableName: 'contactnodes'
   , contacts: function () {
-      this.belongsTo(Db.Contacts, 'contact_uuid');
+      return this.belongsTo(Db.Contacts, 'contact_uuid');
     }
-  , hasTimestamps: ['createdAt', 'updatedAt', 'deletedAt']
+  , login: function () {
+      return this.hasOne(Db.Logins).through(Db.LoginNodes, 'contactnode_id', 'login_id');
+    }
+  , loginnode: function () {
+      return this.hasOne(Db.LoginNodes, 'contactnode_id');
+    }
+  , logins: function () {
+      return this.belongsToMany(Db.Logins);
+    }
+  , hasTimestamps: ['createdAt', 'updatedAt']
+  }
+, LoginNodes:
+  { tableName: 'contactnodes_logins'
+  , contactnode: function () {
+      return this.belongsTo(Db.ContactNodes, 'contactnode_id');
+    }
+  , login: function () {
+      return this.belongsTo(Db.Logins, 'login_id');
+    }
+  , hasTimestamps: ['createdAt', 'updatedAt']
   }
 , Logins:
   { idAttribute: 'hashid'
@@ -95,6 +114,12 @@ module.exports.models = {
   , accounts: function () {
       return this.belongsToMany(Db.Accounts);
       //return this.belongsToMany(Db.Accounts, 'accounts_logins', 'login_hashid', 'account_uuid');
+    }
+  , contactnodes: function () {
+      return this.belongsToMany(Db.ContactNodes);
+    }
+  , loginnodes: function () {
+      return this.hasMany(Db.LoginNodes, 'login_id');
     }
     // format before saving
   , hasTimestamps: ['createdAt', 'updatedAt']
