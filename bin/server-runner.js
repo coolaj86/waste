@@ -8,10 +8,29 @@ var config = require('../priv/config')
 
 config.port = process.argv[2] || config.port;
 
-server = http.createServer(require('../server')).listen(config.port, function () {
-  console.log('Listening on ' + config.protocol + '://127.0.0.1:' + server.address().port);
-  console.log('Listening on ' + config.protocol + '://' + server.address().address + ':' + server.address().port);
-  console.log('Listening on ' + config.href);
+server = http.createServer();
+
+console.log('\nWelcome to WASTE!\n');
+console.log('loading...');
+require('../server').create().then(function (app) {
+  server.on('request', app);
+  server.listen(config.port, function () {
+    console.log();
+    console.log();
+    console.log('Listening on ' + config.protocol + '://127.0.0.1:' + server.address().port);
+    console.log('Listening on ' + config.protocol + '://' + server.address().address + ':' + server.address().port);
+    console.log('Listening on ' + config.href);
+    console.log();
+  });
+  server.on('error', function (err) {
+    if (/EADDRINUSE/.test(err.toString())) {
+      console.error('\n' + err.toString());
+      console.error('::: The server is probably running in another tab.');
+      process.exit();
+      return;
+    }
+    throw err;
+  });
 });
 
 /*

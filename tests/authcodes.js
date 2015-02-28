@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('../config')
+var config = require('../priv/config')
   , path = require('path')
   , forEachAsync = require('forEachAsync').forEachAsync
   ;
@@ -40,12 +40,13 @@ function init(DB) {
   // Test that success is successful
   tests = [
     function ($code) {
-      return Codes.validate($code.get('uuid'), $code.get('code')).then(function (correct) {
-        if (true !== correct) {
-          throw new Error('expected true to be the promised value');
+      return Codes.validate($code.get('uuid'), $code.get('code'), { skipCheckId: true }).then(function (correct) {
+        if (!correct || !correct.uuid) {
+          console.error(correct);
+          throw new Error('expected $code.toJSON() to be the success result');
         }
 
-        return Codes.validate($code.get('uuid'), $code.get('code')).then(function () {
+        return Codes.validate($code.get('uuid'), $code.get('code'), { skipCheckId: true }).then(function () {
           throw new Error('expected the code to have been deleted');
         }, function (err) {
           if (!/not exist/.test(err.message)) {
@@ -56,17 +57,26 @@ function init(DB) {
       });
     }
   , function ($code) {
-      return Codes.validate($code.get('uuid'), 'not-the-right-code').then(function () {
+      return Codes.validate($code.get('uuid'), 'not-the-right-code', { skipCheckId: true }).then(function () {
         throw new Error("should have had an error");
       }, function (err) {
         if (!/incorrect/.test(err.message)) {
           console.error(err);
-          throw new Error('Got the wrong error');
+          throw new Error('should have had error about incorrect code');
         }
+
+        return Codes.validate($code.get('uuid'), 'not-the-right-code', { skipCheckId: true }).then(function () {
+          throw new Error("should have had an error");
+        }, function (err) {
+          if (!/you must wait/.test(err.message)) {
+            console.error(err);
+            throw new Error('should have had error about waiting longer between attempts');
+          }
+        });
       });
     }
   , function () {
-      return Codes.validate('not-the-right-id', 'not-the-right-code').then(function () {
+      return Codes.validate('not-the-right-id', 'not-the-right-code', { skipCheckId: true }).then(function () {
         throw new Error("expected this to not work");
       }, function (err) {
         if (!/not exist/.test(err.message)) {
@@ -79,7 +89,7 @@ function init(DB) {
 
   testsCheckId = [
     function ($code) {
-      return Codes.validate($code.get('uuid'), $code.get('code')).then(function () {
+      return Codes.validate($code.get('uuid'), $code.get('code'), { checkId: 'foo', skipSpeedCheck: true }).then(function () {
         throw new Error('Should have had checkId error');
       }, function (err) {
         if (!/wrong account/.test(err.message)) {
@@ -87,7 +97,7 @@ function init(DB) {
           throw new Error('Got the wrong error');
         }
       }).then(function () {
-        return Codes.validate($code.get('uuid'), $code.get('code'), { checkId: 'abc123' });
+        return Codes.validate($code.get('uuid'), $code.get('code'), { checkId: 'abc123', skipSpeedCheck: true });
       });
     }
   ];
@@ -122,7 +132,7 @@ function init(DB) {
 
 module.exports.create = function () {
   config.knexInst = require('../lib/knex-connector').create(config.knex);
-  require('../lib/bookshelf-models').create(config, config.knexInst).then(init);
+  require('../bookcase/bookshelf-models').create(config, config.knexInst).then(init);
 };
 
 module.exports.create();

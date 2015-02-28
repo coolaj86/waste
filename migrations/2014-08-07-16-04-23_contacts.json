@@ -1,5 +1,4 @@
 [
-
   { "tablename": "accounts_contacts"
   , "COMMENT_1": "This table is the 'address book', if you will"
   , "COMMENT_2": "The privacy restricts access to certain allowed fields (phone, email, etc)"

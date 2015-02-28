@@ -1,15 +1,43 @@
-### POST /accounts
+* Logins are identified by a secret and some number of contact nodes
+
+* Accounts can only be created with existing logins in the session
+
+### POST /logins/new
 
 Create, and link logins and accounts
 
 ```json
-{ "logins": [
-    { "id": "an-id-in-your-session" }
-  , { "uid": "coolaj86", "secret": "supersecret", "bar": "this login will be created", "garply": null }
+  [
+    { "nodes": [
+        { "type": "username"
+        , "node": "coolaj86"
+        , "claim": true
+        }
+      , { "type": "email"
+        , "node": "coolaj86"
+        , "claim": true
+        }
+      , { "type": "phone"
+        , "node": "+1 (555) 234-6789"
+        }
+      ]
+    , "secret": "supersecret"
+    }
   ]
-, "accounts": [
-    { "id": "an-id-in-your-session" }
-  , { "grault": "this will create a new account. both of these accounts will be attached to both logins" }
+```
+
+* contact nodes with claims can be used for login
+* unclaimed nodes can be used for recovery, but not login
+* you **WILL NOT** be able to login with a node unless it has been claimed
+* claiming requires verification via email, sms, etc
+
+### POST /accounts/new
+
+```json
+  [
+    { "account": { "foo": "bar" }
+    , "logins": [ { "id": "an-id-in-your-session"  } ]
+    }
   ]
 }
 ```

@@ -46,6 +46,7 @@ function init(DB) {
       console.error('ERROR', getFnName(fn));
       console.error('');
       return test.teardown().then(function () {
+        console.error(err.message);
         if (test.finalTeardown) {
           return test.finalTeardown().then(function () {
             throw err;

@@ -116,7 +116,7 @@ module.exports.models = {
       //return this.belongsToMany(Db.Accounts, 'accounts_logins', 'login_hashid', 'account_uuid');
     }
   , contactnodes: function () {
-      return this.belongsToMany(Db.ContactNodes);
+      return this.belongsToMany(Db.ContactNodes, 'contactnodes_logins', 'login_id');
     }
   , loginnodes: function () {
       return this.hasMany(Db.LoginNodes, 'login_id');

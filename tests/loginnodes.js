@@ -3,11 +3,12 @@
 function init(config, DB) {
   var PromiseA = require('bluebird').Promise
     , Auth = require('../lib/auth-logic').create(DB, config)
-    , ContactNodes = require('../lib/contact-nodes').createController(DB, config)
+    , ContactNodes = require('../lib/contact-nodes').createController(config, DB)
     , Logins = require('../lib/logins').createRestless(config, DB, Auth, ContactNodes)
     , tests
     , secretutils = require('secret-utils')
     , newEmail = 'coolaj86+test@gmail.com'
+    , newSecret = 'super secret'
     , checkId = secretutils.md5sum('claim-login:' + newEmail)
     , shared = {}
     ;
@@ -26,6 +27,19 @@ function init(config, DB) {
     return PromiseA.resolve();
   }
 
+  function finalTeardown() {
+    var cnid = ContactNodes.getId('email', newEmail)
+      ;
+
+    return DB.LoginNodes.forge({ contactnodeId: cnid }).fetch().then(function ($ln) {
+      if (!$ln) {
+        return null;
+      }
+
+      return $ln.destroy();
+    });
+  }
+
   // Test that success is successful
   tests = [
     function emailExists() {
@@ -37,27 +51,33 @@ function init(config, DB) {
     }
   , function getClaimCode() {
       return DB.AuthCodes.forge({ checkId: checkId }).fetch().then(function ($code) {
-        if ($code) {
-          return $code.destroy();
+        function fin() {
+          return Logins.getClaimCode('email', newEmail).then(function ($code) {
+
+            if ('email' !== $code.get('nodeType')) {
+              return PromiseA.reject(new Error("code should have nodeType"));
+            }
+
+            if (newEmail !== $code.get('loginNode')) {
+              return PromiseA.reject(new Error("code should have loginNode"));
+            }
+
+            if (!$code.get('code')) {
+              return PromiseA.reject(new Error("code should have code"));
+            }
+
+            shared.code = $code.get('code');
+            shared.uuid = $code.get('uuid');
+          });
         }
 
-        return Logins.getClaimCode('email', newEmail).then(function ($code) {
-
-          if ('email' !== $code.get('nodeType')) {
-            return PromiseA.reject(new Error("code should have nodeType"));
-          }
-
-          if (newEmail !== $code.get('loginNode')) {
-            return PromiseA.reject(new Error("code should have loginNode"));
-          }
-
-          if (!$code.get('code')) {
-            return PromiseA.reject(new Error("code should have code"));
-          }
-
-          shared.code = $code.get('code');
-          shared.uuid = $code.get('uuid');
-        });
+        if ($code) {
+          return $code.destroy().then(function () {
+            return fin();
+          });
+        } else {
+          return fin();
+        }
       });
     }
   , function failValidateClaimCodeUuid() {
@@ -89,7 +109,7 @@ function init(config, DB) {
       });
     }
   , function passValidateClaimCode() {
-      var opts = { destroyOnceUsed: true }
+      var opts = { destroyOnceUsed: false, skipSpeedCheck: true }
         ;
 
       return Logins.validateClaimCode('email', newEmail, shared.uuid, shared.code, opts).then(function (pass) {
@@ -110,7 +130,13 @@ function init(config, DB) {
         }
       ];
 
-      return Logins.create(contactnodes, 'short');
+      return Logins.create(contactnodes, 'short').then(function () {
+        return PromiseA.reject(new Error("secret should have been too short"));
+      }).error(function (err) {
+        if (!/at least/.test(err.message)) {
+          throw err;
+        }
+      });
     }
   , function failCreateLogin2() {
       var contactnodes
@@ -124,7 +150,14 @@ function init(config, DB) {
         }
       ];
 
-      return Logins.create(contactnodes, 'super secret');
+      return Logins.create(contactnodes, newSecret, { skipSpeedCheck: true }).then(function () {
+        return PromiseA.reject(new Error("code should not have validated"));
+      }).error(function (err) {
+        if (!/does not exist/.test(err.message)) {
+          throw err;
+        }
+      });
+
     }
   , function passCreateLogin() {
       var contactnodes
@@ -138,13 +171,42 @@ function init(config, DB) {
         }
       ];
 
-      return Logins.create(contactnodes, 'super secret');
+      return Logins.create(contactnodes, newSecret, { skipSpeedCheck: true }).catch(function (err) {
+        console.error("ERROR");
+        console.error(err);
+
+        throw err;
+      });
     }
-  , function failLogin() {
-      return PromiseA.reject(new Error("not implemented"));
+  , function passCheck() {
+      return Logins.check('email', newEmail).then(function (thingy) {
+        if (!thingy) {
+          return PromiseA.reject(new Error("email should exist in db"));
+        }
+      });
+    }
+  , function failLogin1() {
+      return Logins.login('email', 'baduid', newSecret).then(function (/*$login*/) {
+        return PromiseA.reject(new Error("login should have been rejected"));
+      }).error(function (err) {
+        if (!/could not be found/.test(err.message)) {
+          throw err;
+        }
+      });
+    }
+  , function failLogin2() {
+      return Logins.login('email', newEmail, 'incorrect secret').then(function () {
+        return PromiseA.reject(new Error("secret should have been rejected"));
+      }).error(function (err) {
+        if (!/invalid secret/.test(err.message)) {
+          throw err;
+        }
+      });
     }
   , function passLogin() {
-      return PromiseA.reject(new Error("not implemented"));
+      return Logins.login('email', newEmail, newSecret).then(function ($login) {
+        return $login;
+      });
     }
   , function destroyLogin() {
       return PromiseA.reject(new Error("not implemented"));
@@ -159,7 +221,7 @@ function init(config, DB) {
     tests: tests
   , setup: setup
   , teardown: teardown
-  //, finalTeardown: finalTeardown
+  , finalTeardown: finalTeardown
   };
 }
 

@@ -1,25 +1,25 @@
 'use strict';
 
-var connect = require('connect')
-  , app = connect()
-  , path = require('path')
-  , serveStatic = require('serve-static')
-  , urlrouter = require('urlrouter')
-  ;
+var path = require('path');
+var connect = require('connect');
+var serveStatic = require('serve-static');
+var urlrouter = require('urlrouter');
 
 function initApi(config, Db, app) {
   // TODO maybe a main DB for core (Accounts) and separate DBs for the modules?
-  var oauth2Logic
-    , sessionLogic
+  var oauth2Logic;
+  var sessionLogic;
     //, ws = require('./lib/ws')
     //, wsport = config.wsport || 8282
-    , ru = config.rootUser
-    , Auth = require('./lib/auth-logic').create(Db, config)
-    , ContactNodes = require('./lib/contact-nodes').create(Db, config)
-    , Passport = require('passport').Passport
-    , passport
-    , CORS = require('connect-cors')
-    ;
+  var ru = config.rootUser;
+  var Auth = require('./lib/auth-logic').create(Db, config);
+  var ContactNodes = require('./lib/contact-nodes').create(config, Db);
+  var Passport = require('passport').Passport;
+  var passport;
+  var CORS = require('connect-cors');
+  var Logins = require('./lib/logins');
+  var loginsController = Logins.createController(config, Db, ContactNodes);
+  var loginsRestful;
 
   Object.defineProperty(config, 'host', {
     get: function () {
@@ -95,8 +95,9 @@ function initApi(config, Db, app) {
     app.use(require('./lib/connect-shims/snake')([config.apiPrefix]));
   }
 
-  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth);
-  sessionLogic = require('./lib/sessionlogic').init(app, passport, config, Auth);
+  oauth2Logic = require('./lib/provide-oauth2').create(app, passport, config, Db, Auth, loginsController);
+  sessionLogic = require('./lib/sessionlogic').init(app, passport, config, Auth, loginsController);
+  loginsRestful = Logins.createRouter(app, config, Db, sessionLogic.manualLogin, ContactNodes);
 
   // TODO move attaching the account into a subsequent middleware?
   app.use(urlrouter(sessionLogic.route));
@@ -108,8 +109,8 @@ function initApi(config, Db, app) {
   // TODO a way to specify that a database should be attached to /me
   app
     .api(urlrouter(require('./lib/session').createRouter().route))
-    .api(urlrouter(require('./lib/accounts').createRouter(app, config, Db, Auth).route))
-    .api(urlrouter(require('./lib/logins').create(app, config, Db, Auth, sessionLogic.manualLogin, ContactNodes).route))
+    .api(urlrouter(require('./lib/accounts').createRouter(app, config, Db, Auth, loginsController).route))
+    .api(urlrouter(loginsRestful.route))
     .api(urlrouter(require('./lib/me').create(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/oauthclients').createRouter(app, config, Db, Auth).route))
     .api(urlrouter(require('./lib/contacts').create(app, config, Db).route))
@@ -151,12 +152,13 @@ function initApi(config, Db, app) {
     .use(serveStatic(path.join(__dirname, 'frontend', 'dist')))
     .use(serveStatic(path.join(__dirname, 'frontend', 'app')))
     ;
+
+  return app;
 }
 
-module.exports = app;
 module.exports.create = function () {
-  var setup
-    ;
+  var app = connect();
+  var setup;
 
   //
   // Generic Template API
@@ -204,13 +206,13 @@ module.exports.create = function () {
   setup = require('./lib/setup').create(app);
   app.use(urlrouter(setup.route));
 
-  setup.getConfig().then(function (config) {
+  return setup.getConfig().then(function (config) {
     // this will not be called until setup has completed
     config.knexInst = require('./lib/knex-connector').create(config.knex);
-    require('./bookcase/bookshelf-models').create(config, config.knexInst)
+    return require('./bookcase/bookshelf-models').create(config, config.knexInst)
       .then(function (Db) {
-        initApi(config, Db, app);
+        return initApi(config, Db, app);
+        //return app;
       });
   });
 };
-module.exports.create();
